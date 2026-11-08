@@ -13,7 +13,7 @@ import androidx.compose.ui.unit.dp
 
 @Composable
 fun UserAvatar(
-    size: Dp = 34.dp,
+    size: Dp = 32.dp,
     modifier: Modifier = Modifier
 ) {
     Canvas(modifier = modifier.size(size)) {
@@ -21,7 +21,7 @@ fun UserAvatar(
         val center = Offset(radius, radius)
 
         drawCircle(
-            color = Color(0xFFD6D7F8),
+            color = Color(0xFFE0E7FF),
             radius = radius,
             center = center
         )
@@ -33,7 +33,7 @@ fun UserAvatar(
         val rightEyeX = radius * 1.28f
 
         drawArc(
-            color = Color(0xFF6B667D),
+            color = Color(0xFF4338CA),
             startAngle = 180f,
             sweepAngle = 180f,
             useCenter = false,
@@ -43,7 +43,7 @@ fun UserAvatar(
         )
 
         drawArc(
-            color = Color(0xFF6B667D),
+            color = Color(0xFF4338CA),
             startAngle = 180f,
             sweepAngle = 180f,
             useCenter = false,
@@ -53,15 +53,14 @@ fun UserAvatar(
         )
 
         drawCircle(
-            color = Color(0xFFFF9AA2),
-            radius = radius * 0.12f,
+            color = Color(0xFFA5B4FC),
+            radius = radius * 0.14f,
             center = Offset(radius * 0.55f, radius * 1.15f)
         )
         drawCircle(
-            color = Color(0xFFFF9AA2),
-            radius = radius * 0.12f,
+            color = Color(0xFFA5B4FC),
+            radius = radius * 0.14f,
             center = Offset(radius * 1.45f, radius * 1.15f)
         )
     }
 }
-

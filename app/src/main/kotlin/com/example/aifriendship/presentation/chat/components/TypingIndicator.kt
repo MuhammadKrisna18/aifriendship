@@ -24,9 +24,10 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
-import com.example.aifriendship.ui.theme.KaleaBubbleBackground
+import com.example.aifriendship.ui.theme.AiBubbleBackground
+import com.example.aifriendship.ui.theme.AiBubbleBorder
+import com.example.aifriendship.ui.theme.primaryLight
 import kotlinx.coroutines.delay
 
 @Composable
@@ -62,13 +63,13 @@ fun TypingIndicator(
     Row(
         modifier = modifier
             .fillMaxWidth()
-            .padding(horizontal = 12.dp, vertical = 4.dp),
+            .padding(horizontal = 14.dp, vertical = 4.dp),
         horizontalArrangement = Arrangement.Start,
         verticalAlignment = Alignment.Bottom
     ) {
         LiaAvatar(
             imageUrl = avatarUrl,
-            size = 36.dp,
+            size = 34.dp,
             modifier = Modifier.align(Alignment.Bottom)
         )
 
@@ -76,9 +77,9 @@ fun TypingIndicator(
 
         Box(
             modifier = Modifier
-                .clip(RoundedCornerShape(topStart = 18.dp, topEnd = 18.dp, bottomStart = 6.dp, bottomEnd = 18.dp))
-                .background(KaleaBubbleBackground)
-                .border(1.dp, Color(0xFFECECEC), RoundedCornerShape(topStart = 18.dp, topEnd = 18.dp, bottomStart = 6.dp, bottomEnd = 18.dp))
+                .clip(RoundedCornerShape(topStart = 18.dp, topEnd = 18.dp, bottomStart = 4.dp, bottomEnd = 18.dp))
+                .background(AiBubbleBackground)
+                .border(1.dp, AiBubbleBorder, RoundedCornerShape(topStart = 18.dp, topEnd = 18.dp, bottomStart = 4.dp, bottomEnd = 18.dp))
                 .padding(horizontal = 16.dp, vertical = 12.dp)
         ) {
             Row(
@@ -91,7 +92,7 @@ fun TypingIndicator(
                             .offset(y = anim.value.dp)
                             .size(7.dp)
                             .clip(CircleShape)
-                            .background(Color(0xFFB0B0B0))
+                            .background(primaryLight)
                     )
                 }
             }

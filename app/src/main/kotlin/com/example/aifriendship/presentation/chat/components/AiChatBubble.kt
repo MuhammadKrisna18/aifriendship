@@ -19,13 +19,13 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.aifriendship.domain.model.ChatMessage
+import com.example.aifriendship.ui.theme.AiBubbleBackground
+import com.example.aifriendship.ui.theme.AiBubbleBorder
+import com.example.aifriendship.ui.theme.AiBubbleText
 import com.example.aifriendship.ui.theme.ChatTimestampColor
-import com.example.aifriendship.ui.theme.KaleaBubbleBackground
-import com.example.aifriendship.ui.theme.KaleaBubbleText
 
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
@@ -38,13 +38,13 @@ fun AiChatBubble(
     Row(
         modifier = modifier
             .fillMaxWidth()
-            .padding(horizontal = 12.dp, vertical = 4.dp),
+            .padding(horizontal = 14.dp, vertical = 4.dp),
         horizontalArrangement = Arrangement.Start,
         verticalAlignment = Alignment.Bottom
     ) {
         LiaAvatar(
             imageUrl = avatarUrl,
-            size = 36.dp,
+            size = 34.dp,
             modifier = Modifier.align(Alignment.Bottom)
         )
 
@@ -53,9 +53,9 @@ fun AiChatBubble(
         Box(
             modifier = Modifier
                 .widthIn(max = 265.dp)
-                .clip(RoundedCornerShape(topStart = 18.dp, topEnd = 18.dp, bottomStart = 6.dp, bottomEnd = 18.dp))
-                .background(KaleaBubbleBackground)
-                .border(1.dp, Color(0xFFECECEC), RoundedCornerShape(topStart = 18.dp, topEnd = 18.dp, bottomStart = 6.dp, bottomEnd = 18.dp))
+                .clip(RoundedCornerShape(topStart = 18.dp, topEnd = 18.dp, bottomStart = 4.dp, bottomEnd = 18.dp))
+                .background(AiBubbleBackground)
+                .border(1.dp, AiBubbleBorder, RoundedCornerShape(topStart = 18.dp, topEnd = 18.dp, bottomStart = 4.dp, bottomEnd = 18.dp))
                 .combinedClickable(
                     onClick = {},
                     onLongClick = onLongClick
@@ -73,9 +73,9 @@ fun AiChatBubble(
 
                 Text(
                     text = message.text,
-                    color = KaleaBubbleText,
+                    color = AiBubbleText,
                     fontSize = 15.sp,
-                    lineHeight = 20.sp
+                    lineHeight = 21.sp
                 )
             }
         }

@@ -203,7 +203,7 @@ class ChatViewModel(
                 delay(600L)
                 val errorMessage = ChatMessage(
                     sender = MessageSender.AI,
-                    text = "Eh lu belum pasang Gemini API Key di tombol setelan pojok kanan atas tuh, pasang dulu yaa biar kita bisa ngobrol!",
+                    text = "Duh ada kendala teknis pada koneksi AI gue nih, coba kirim lagi chatnya sebentar.",
                     status = MessageDeliveryStatus.SENT
                 )
                 chatRepository.saveMessage(errorMessage)

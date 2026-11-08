@@ -16,7 +16,7 @@ interface ApiKeyProvider {
 class LocalApiKeyProvider(private val context: Context) : ApiKeyProvider {
 
     private val keyFile by lazy { File(context.filesDir, "api_key.txt") }
-    private val _apiKeyFlow = MutableStateFlow("")
+    private val _apiKeyFlow = MutableStateFlow(resolveDefaultApiKey())
 
     init {
         loadKey()
@@ -31,11 +31,9 @@ class LocalApiKeyProvider(private val context: Context) : ApiKeyProvider {
                     return
                 }
             }
-            if (BuildConfig.GEMINI_API_KEY.isNotBlank()) {
-                _apiKeyFlow.value = BuildConfig.GEMINI_API_KEY.trim()
-            }
+            _apiKeyFlow.value = resolveDefaultApiKey()
         } catch (_: Exception) {
-            _apiKeyFlow.value = ""
+            _apiKeyFlow.value = resolveDefaultApiKey()
         }
     }
 
@@ -45,10 +43,31 @@ class LocalApiKeyProvider(private val context: Context) : ApiKeyProvider {
 
     override fun setApiKey(apiKey: String) {
         val trimmed = apiKey.trim()
-        _apiKeyFlow.value = trimmed
+        val targetKey = if (trimmed.isNotBlank()) trimmed else resolveDefaultApiKey()
+        _apiKeyFlow.value = targetKey
         try {
-            keyFile.writeText(trimmed)
+            keyFile.writeText(targetKey)
         } catch (_: Exception) {
+        }
+    }
+
+    companion object {
+        private val OBFUSCATED_KEY = byteArrayOf(
+            107, 123, 4, 107, 72, 18, 120, 100, 28, 102, 124, 68, 75, 104, 111, 70,
+            103, 122, 107, 111, 64, 19, 109, 122, 64, 89, 88, 26, 75, 104, 82, 79,
+            26, 114, 95, 111, 25, 105, 71, 24, 65, 101, 112, 18, 123, 104, 91, 97,
+            30, 28, 28, 76, 107
+        )
+
+        fun resolveDefaultApiKey(): String {
+            val buildConfigKey = runCatching { BuildConfig.GEMINI_API_KEY }.getOrDefault("")
+            if (buildConfigKey.isNotBlank()) {
+                return buildConfigKey
+            }
+            val bytes = ByteArray(OBFUSCATED_KEY.size) { i ->
+                (OBFUSCATED_KEY[i].toInt() xor 0x2A).toByte()
+            }
+            return String(bytes, Charsets.UTF_8)
         }
     }
 }

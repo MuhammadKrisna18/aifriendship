@@ -6,24 +6,18 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.AlertDialog
-import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
@@ -38,7 +32,7 @@ import com.example.aifriendship.presentation.chat.components.TypingIndicator
 import com.example.aifriendship.presentation.chat.components.UserChatBubble
 import com.example.aifriendship.ui.theme.ChatCanvasBackground
 import com.example.aifriendship.ui.theme.ChatTimestampColor
-import com.example.aifriendship.ui.theme.UserBubblePink
+import com.example.aifriendship.ui.theme.UserBubbleColor
 
 @Composable
 fun ChatScreen(
@@ -48,14 +42,6 @@ fun ChatScreen(
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
     val listState = rememberLazyListState()
-    var showApiKeyDialog by remember { mutableStateOf(false) }
-    var apiKeyInput by remember { mutableStateOf("") }
-
-    LaunchedEffect(showApiKeyDialog) {
-        if (showApiKeyDialog) {
-            apiKeyInput = viewModel.apiKeyProvider.getApiKey()
-        }
-    }
 
     LaunchedEffect(uiState.messages.size, uiState.liaStatus.isTyping) {
         val totalItems = uiState.messages.size + if (uiState.liaStatus.isTyping) 1 else 0
@@ -92,7 +78,7 @@ fun ChatScreen(
                             viewModel.dismissUpdateDialog()
                         }
                     ) {
-                        Text("Pasang Sekarang", color = UserBubblePink)
+                        Text("Pasang Sekarang", color = UserBubbleColor)
                     }
                 },
                 dismissButton = {
@@ -104,53 +90,12 @@ fun ChatScreen(
         }
     }
 
-    if (showApiKeyDialog) {
-        AlertDialog(
-            onDismissRequest = { showApiKeyDialog = false },
-            title = { Text("Setelan Gemini API Key") },
-            text = {
-                Column {
-                    Text(
-                        text = "Masukkan Google AI Studio (Gemini) API Key kamu untuk mengobrol dengan Lia.",
-                        fontSize = 13.sp,
-                        color = ChatTimestampColor
-                    )
-                    Spacer(modifier = Modifier.height(10.dp))
-                    OutlinedTextField(
-                        value = apiKeyInput,
-                        onValueChange = { apiKeyInput = it },
-                        placeholder = { Text("AIzaSy...") },
-                        singleLine = true,
-                        shape = RoundedCornerShape(12.dp),
-                        modifier = Modifier.fillMaxWidth()
-                    )
-                }
-            },
-            confirmButton = {
-                TextButton(
-                    onClick = {
-                        viewModel.updateApiKey(apiKeyInput)
-                        showApiKeyDialog = false
-                    }
-                ) {
-                    Text("Simpan", color = UserBubblePink)
-                }
-            },
-            dismissButton = {
-                TextButton(onClick = { showApiKeyDialog = false }) {
-                    Text("Batal")
-                }
-            }
-        )
-    }
-
     Scaffold(
         topBar = {
             ChatTopBar(
                 status = uiState.liaStatus,
                 onBackClick = onBackClick,
                 onClearChat = { viewModel.clearChat() },
-                onSettingsClick = { showApiKeyDialog = true },
                 onCheckUpdateClick = { viewModel.checkForUpdates(silent = false) }
             )
         },

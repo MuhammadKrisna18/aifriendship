@@ -18,7 +18,6 @@ import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.Send
-import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.Mic
 import androidx.compose.material.icons.filled.SentimentSatisfiedAlt
@@ -42,7 +41,7 @@ import com.example.aifriendship.domain.model.ChatMessage
 import com.example.aifriendship.domain.model.MessageSender
 import com.example.aifriendship.ui.theme.ChatInputBackground
 import com.example.aifriendship.ui.theme.ChatInputBorder
-import com.example.aifriendship.ui.theme.UserBubblePink
+import com.example.aifriendship.ui.theme.UserBubbleColor
 
 @Composable
 fun ChatBottomBar(
@@ -54,7 +53,8 @@ fun ChatBottomBar(
     modifier: Modifier = Modifier
 ) {
     Surface(
-        color = Color(0xFFF7F5F0),
+        color = Color.White,
+        shadowElevation = 2.dp,
         modifier = modifier.fillMaxWidth()
     ) {
         Column(
@@ -66,7 +66,7 @@ fun ChatBottomBar(
                 Row(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .background(Color(0xFFEFECE6))
+                        .background(Color(0xFFEEF2FF))
                         .padding(horizontal = 16.dp, vertical = 6.dp),
                     verticalAlignment = Alignment.CenterVertically
                 ) {
@@ -75,7 +75,7 @@ fun ChatBottomBar(
                             .width(3.dp)
                             .size(height = 32.dp, width = 3.dp)
                             .clip(RoundedCornerShape(1.5.dp))
-                            .background(UserBubblePink)
+                            .background(UserBubbleColor)
                     )
 
                     Spacer(modifier = Modifier.width(8.dp))
@@ -87,12 +87,12 @@ fun ChatBottomBar(
                             text = if (reply.sender == MessageSender.USER) "Membalas pesan kamu" else "Membalas Lia",
                             fontSize = 11.sp,
                             fontWeight = FontWeight.Bold,
-                            color = UserBubblePink
+                            color = UserBubbleColor
                         )
                         Text(
                             text = reply.text,
                             fontSize = 13.sp,
-                            color = Color(0xFF555555),
+                            color = Color(0xFF475569),
                             maxLines = 1,
                             overflow = TextOverflow.Ellipsis
                         )
@@ -105,7 +105,7 @@ fun ChatBottomBar(
                         Icon(
                             imageVector = Icons.Default.Close,
                             contentDescription = null,
-                            tint = Color(0xFF8E8E93),
+                            tint = Color(0xFF94A3B8),
                             modifier = Modifier.size(16.dp)
                         )
                     }
@@ -115,17 +115,17 @@ fun ChatBottomBar(
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(horizontal = 10.dp, vertical = 8.dp),
+                    .padding(horizontal = 12.dp, vertical = 8.dp),
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 IconButton(
                     onClick = { },
-                    modifier = Modifier.size(40.dp)
+                    modifier = Modifier.size(38.dp)
                 ) {
                     Icon(
-                        imageVector = Icons.Default.Mic,
+                        imageVector = Icons.Default.SentimentSatisfiedAlt,
                         contentDescription = null,
-                        tint = Color(0xFF757575),
+                        tint = Color(0xFF64748B),
                         modifier = Modifier.size(24.dp)
                     )
                 }
@@ -133,17 +133,17 @@ fun ChatBottomBar(
                 Box(
                     modifier = Modifier
                         .weight(1f)
-                        .clip(RoundedCornerShape(24.dp))
+                        .clip(RoundedCornerShape(22.dp))
                         .background(ChatInputBackground)
-                        .border(1.dp, ChatInputBorder, RoundedCornerShape(24.dp))
+                        .border(1.dp, ChatInputBorder, RoundedCornerShape(22.dp))
                         .padding(horizontal = 14.dp, vertical = 10.dp),
                     contentAlignment = Alignment.CenterStart
                 ) {
                     if (inputText.isEmpty()) {
                         Text(
-                            text = "Tulis pesan...",
-                            color = Color(0xFF9E9E9E),
-                            fontSize = 15.sp
+                            text = "Ketik pesan ke Lia...",
+                            color = Color(0xFF94A3B8),
+                            fontSize = 14.sp
                         )
                     }
 
@@ -151,10 +151,10 @@ fun ChatBottomBar(
                         value = inputText,
                         onValueChange = onInputChanged,
                         textStyle = TextStyle(
-                            color = Color(0xFF1E1E1E),
+                            color = Color(0xFF0F172A),
                             fontSize = 15.sp
                         ),
-                        cursorBrush = SolidColor(UserBubblePink),
+                        cursorBrush = SolidColor(UserBubbleColor),
                         keyboardOptions = KeyboardOptions(
                             imeAction = if (inputText.isNotBlank()) ImeAction.Send else ImeAction.Default
                         ),
@@ -169,25 +169,15 @@ fun ChatBottomBar(
                     )
                 }
 
-                IconButton(
-                    onClick = { },
-                    modifier = Modifier.size(40.dp)
-                ) {
-                    Icon(
-                        imageVector = Icons.Default.SentimentSatisfiedAlt,
-                        contentDescription = null,
-                        tint = Color(0xFF757575),
-                        modifier = Modifier.size(24.dp)
-                    )
-                }
+                Spacer(modifier = Modifier.width(6.dp))
 
                 if (inputText.isNotBlank()) {
                     IconButton(
                         onClick = onSendMessage,
                         modifier = Modifier
-                            .size(38.dp)
+                            .size(40.dp)
                             .clip(CircleShape)
-                            .background(UserBubblePink)
+                            .background(UserBubbleColor)
                     ) {
                         Icon(
                             imageVector = Icons.AutoMirrored.Filled.Send,
@@ -199,13 +189,13 @@ fun ChatBottomBar(
                 } else {
                     IconButton(
                         onClick = { },
-                        modifier = Modifier.size(40.dp)
+                        modifier = Modifier.size(38.dp)
                     ) {
                         Icon(
-                            imageVector = Icons.Default.Add,
+                            imageVector = Icons.Default.Mic,
                             contentDescription = null,
-                            tint = Color(0xFF757575),
-                            modifier = Modifier.size(26.dp)
+                            tint = Color(0xFF64748B),
+                            modifier = Modifier.size(24.dp)
                         )
                     }
                 }

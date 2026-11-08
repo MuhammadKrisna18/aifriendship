@@ -19,6 +19,7 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.aifriendship.domain.model.QuotedMessage
+import com.example.aifriendship.ui.theme.UserBubbleColor
 
 @Composable
 fun QuotedMessageView(
@@ -29,19 +30,19 @@ fun QuotedMessageView(
     val backgroundColor = if (isUserBubble) {
         Color(0x33000000)
     } else {
-        Color(0xFFF1F1F1)
+        Color(0xFFF1F5F9)
     }
 
     val barColor = if (isUserBubble) {
         Color(0xFFFFFFFF)
     } else {
-        Color(0xFF8E8E93)
+        UserBubbleColor
     }
 
     val textColor = if (isUserBubble) {
         Color(0xFFFFFFFF)
     } else {
-        Color(0xFF555555)
+        Color(0xFF475569)
     }
 
     Row(
@@ -49,7 +50,7 @@ fun QuotedMessageView(
             .fillMaxWidth()
             .clip(RoundedCornerShape(6.dp))
             .background(backgroundColor)
-            .padding(horizontal = 8.dp, vertical = 4.dp),
+            .padding(horizontal = 8.dp, vertical = 5.dp),
         verticalAlignment = Alignment.CenterVertically
     ) {
         Box(
@@ -71,4 +72,3 @@ fun QuotedMessageView(
         )
     }
 }
-
