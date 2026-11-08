@@ -9,6 +9,7 @@ import com.example.aifriendship.data.remote.gemini.dto.GeminiResponseDto
 import com.example.aifriendship.data.remote.gemini.dto.GeminiSystemInstruction
 import com.example.aifriendship.domain.model.AiResponse
 import com.example.aifriendship.domain.model.ChatMessage
+import com.example.aifriendship.domain.model.ChatTimeFormatter
 import com.example.aifriendship.domain.model.MessageSender
 import com.example.aifriendship.domain.model.QuotedMessage
 import com.example.aifriendship.domain.model.UserProfile
@@ -107,11 +108,16 @@ class GeminiAiService(
                         .orEmpty()
 
                     val cleanJson = cleanJsonString(rawText)
-                    val parsedAiResponse = try {
+                    val rawParsedAiResponse = try {
                         json.decodeFromString<AiResponse>(cleanJson)
                     } catch (_: Exception) {
                         fallbackTextToAiResponse(rawText)
                     }
+
+                    val sanitizedBubbles = sanitizeBubbles(rawParsedAiResponse.bubbles)
+                    val parsedAiResponse = rawParsedAiResponse.copy(
+                        bubbles = if (sanitizedBubbles.isEmpty()) listOf("...") else sanitizedBubbles
+                    )
 
                     activeModelIndex = modelIdx
                     return@withContext Result.success(parsedAiResponse)
@@ -132,9 +138,10 @@ class GeminiAiService(
         val slidingHistory = history.takeLast(15)
         val contents = slidingHistory.map { msg ->
             val role = if (msg.sender == MessageSender.USER) "user" else "model"
+            val timePrefix = ChatTimeFormatter.format(msg.timestamp)
             GeminiContent(
                 role = role,
-                parts = listOf(GeminiPart(text = msg.text))
+                parts = listOf(GeminiPart(text = "[$timePrefix] ${msg.text}"))
             )
         }.toMutableList()
 
@@ -166,6 +173,13 @@ class GeminiAiService(
         return jsonString.toRequestBody("application/json".toMediaType())
     }
 
+    private fun sanitizeBubbles(bubbles: List<String>): List<String> {
+        val timePrefixRegex = Regex("""^\[\d{1,2}:\d{2}\]\s*""")
+        return bubbles
+            .map { it.replace(timePrefixRegex, "").trim() }
+            .filter { it.isNotBlank() }
+    }
+
     private fun cleanJsonString(raw: String): String {
         var text = raw.trim()
         if (text.startsWith("```json")) {
@@ -180,11 +194,13 @@ class GeminiAiService(
     }
 
     private fun fallbackTextToAiResponse(raw: String): AiResponse {
-        val lines = raw.lines()
-            .map { it.trim() }
-            .filter { it.isNotBlank() }
+        val lines = sanitizeBubbles(
+            raw.lines()
+                .map { it.trim() }
+                .filter { it.isNotBlank() }
+        )
 
-        val bubbles = if (lines.isNotEmpty()) lines else listOf(raw)
+        val bubbles = if (lines.isNotEmpty()) lines else listOf(raw.trim())
         return AiResponse(
             bubbles = bubbles,
             statusSubtitle = "online"

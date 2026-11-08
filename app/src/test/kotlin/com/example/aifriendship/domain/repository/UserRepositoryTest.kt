@@ -104,6 +104,21 @@ class UserRepositoryTest {
         assertTrue(instruction.contains("Vira"))
         assertTrue(instruction.contains("suka ngopi, ceplas-ceplos gen Z"))
     }
+
+    @Test
+    fun formatTimeContext_returnsFormattedDateAndClock() {
+        val (description, clock) = LiaPromptDefinition.formatTimeContext(1762646400000L)
+        assertTrue(description.isNotBlank())
+        assertTrue(clock.contains(":"))
+    }
+
+    @Test
+    fun buildSystemInstruction_injectsRealTimeAwareness() {
+        val instruction = LiaPromptDefinition.buildSystemInstruction(null)
+        assertTrue(instruction.contains("Real-time Awareness"))
+        assertTrue(instruction.contains("Jam sekarang:"))
+        assertTrue(instruction.contains("Waktu sekarang di perangkat user:"))
+    }
 }
 
 private class FakeUserLocalDataSource : UserLocalDataSource {
