@@ -13,6 +13,7 @@ A modern Native Android AI Companion app built with **Kotlin** and **Jetpack Com
   - *Layer 1 (Silent Failover):* Seamlessly falls back to secondary models (e.g., Gemini 2.0 Flash / Flash-8B) if the primary model reaches rate limits (HTTP 429).
   - *Layer 2 (In-Character Pause):* Emits a humorous, roleplayed human excuse (e.g., *"Bentar ya woy, emak nyuruh beli garem ke warung..."*) with header status updates and an automatic retry timer if all limits are exhausted.
 - **Offline-First Persistence:** Thread-safe, non-blocking local storage ensuring complete message histories persist across application restarts.
+- **In-App Auto-Update:** Checks GitHub Releases on launch or via menu, downloading and installing APK updates directly on the phone without manual PC flashing.
 
 ---
 
@@ -23,13 +24,15 @@ This project strictly adheres to **Clean Architecture** and **SOLID principles**
 ```
 com.example.aifriendship/
 ├── domain/
-│   ├── model/           # ChatMessage, LiaProfile, DeliveryStatus, QuotedMessage, AiResponse
-│   ├── service/         # AiService interface, QuotaExceededException
+│   ├── model/           # ChatMessage, LiaProfile, DeliveryStatus, QuotedMessage, AiResponse, AppUpdateInfo
+│   ├── service/         # AiService, AppUpdateService, QuotaExceededException, AllModelsQuotaExceededException
 │   └── repository/      # ChatRepository interface
 ├── data/
 │   ├── config/          # ApiKeyProvider & LocalApiKeyProvider
 │   ├── local/           # ChatLocalDataSource & JsonChatLocalDataSource
-│   ├── remote/gemini/   # GeminiAiService, DTOs & LiaPromptDefinition
+│   ├── remote/
+│   │   ├── gemini/      # GeminiAiService, DTOs & LiaPromptDefinition
+│   │   └── update/      # GitHubUpdateService & GitHubReleaseDto
 │   └── repository/      # DefaultChatRepository implementation
 ├── presentation/
 │   └── chat/            # ChatScreen, ChatViewModel, ChatUiState
