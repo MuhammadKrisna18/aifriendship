@@ -15,3 +15,4 @@ data class UserProfile(
     val vibe: CommunicationVibe = CommunicationVibe.BARBAR,
     val isOnboardingCompleted: Boolean = false
 )
+

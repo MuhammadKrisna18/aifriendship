@@ -28,8 +28,10 @@ import com.example.aifriendship.domain.model.MessageSender
 import com.example.aifriendship.presentation.chat.components.AiChatBubble
 import com.example.aifriendship.presentation.chat.components.ChatBottomBar
 import com.example.aifriendship.presentation.chat.components.ChatTopBar
+import com.example.aifriendship.presentation.chat.components.QuickVibeChips
 import com.example.aifriendship.presentation.chat.components.TypingIndicator
 import com.example.aifriendship.presentation.chat.components.UserChatBubble
+import com.example.aifriendship.presentation.chat.components.UserProfileDialog
 import com.example.aifriendship.ui.theme.ChatCanvasBackground
 import com.example.aifriendship.ui.theme.ChatTimestampColor
 import com.example.aifriendship.ui.theme.UserBubbleColor
@@ -48,6 +50,14 @@ fun ChatScreen(
         if (totalItems > 0) {
             listState.animateScrollToItem(totalItems - 1)
         }
+    }
+
+    if (uiState.isUserProfileDialogVisible) {
+        UserProfileDialog(
+            currentProfile = uiState.userProfile,
+            onDismiss = { viewModel.hideUserProfileDialog() },
+            onSave = { name, vibe -> viewModel.updateUserProfile(name, vibe) }
+        )
     }
 
     uiState.updateInfo?.let { update ->
@@ -95,18 +105,26 @@ fun ChatScreen(
             ChatTopBar(
                 status = uiState.liaStatus,
                 onBackClick = onBackClick,
-                onClearChat = { viewModel.clearChat() },
-                onCheckUpdateClick = { viewModel.checkForUpdates(silent = false) }
+                onClearChat = { viewModel.resetChat() },
+                onCheckUpdateClick = { viewModel.checkForUpdates(silent = false) },
+                onProfileClick = { viewModel.showUserProfileDialog() }
             )
         },
         bottomBar = {
-            ChatBottomBar(
-                inputText = uiState.inputText,
-                onInputChanged = { viewModel.onInputTextChanged(it) },
-                onSendMessage = { viewModel.sendMessage() },
-                replyingTo = uiState.replyingTo,
-                onDismissReply = { viewModel.onReplyMessage(null) }
-            )
+            Column {
+                QuickVibeChips(
+                    visible = (uiState.onboardingStep == OnboardingStep.ASK_VIBE),
+                    onVibeSelected = { viewModel.selectVibe(it) }
+                )
+                ChatBottomBar(
+                    inputText = uiState.inputText,
+                    onInputChanged = { viewModel.onInputTextChanged(it) },
+                    onSendMessage = { viewModel.sendMessage() },
+                    placeholder = if (uiState.onboardingStep == OnboardingStep.ASK_NAME) "Ketik nama panggilanmu..." else "Ketik pesan ke Lia...",
+                    replyingTo = uiState.replyingTo,
+                    onDismissReply = { viewModel.onReplyMessage(null) }
+                )
+            }
         },
         containerColor = ChatCanvasBackground,
         modifier = modifier.fillMaxSize()

@@ -18,6 +18,7 @@ import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.CheckCircle
 import androidx.compose.material.icons.filled.DeleteOutline
 import androidx.compose.material.icons.filled.MoreVert
+import androidx.compose.material.icons.filled.Person
 import androidx.compose.material.icons.filled.SystemUpdate
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
@@ -48,6 +49,7 @@ fun ChatTopBar(
     onBackClick: () -> Unit = {},
     onClearChat: () -> Unit = {},
     onCheckUpdateClick: () -> Unit = {},
+    onProfileClick: () -> Unit = {},
     modifier: Modifier = Modifier
 ) {
     var menuExpanded by remember { mutableStateOf(false) }
@@ -173,7 +175,35 @@ fun ChatTopBar(
                     onDismissRequest = { menuExpanded = false }
                 ) {
                     DropdownMenuItem(
-                        text = { Text("Hapus Riwayat Chat", color = Color(0xFFEF4444)) },
+                        text = { Text("Profil Pengguna") },
+                        leadingIcon = {
+                            Icon(
+                                imageVector = Icons.Default.Person,
+                                contentDescription = null,
+                                tint = Color(0xFF1E293B)
+                            )
+                        },
+                        onClick = {
+                            menuExpanded = false
+                            onProfileClick()
+                        }
+                    )
+                    DropdownMenuItem(
+                        text = { Text("Periksa Pembaruan") },
+                        leadingIcon = {
+                            Icon(
+                                imageVector = Icons.Default.SystemUpdate,
+                                contentDescription = null,
+                                tint = Color(0xFF1E293B)
+                            )
+                        },
+                        onClick = {
+                            menuExpanded = false
+                            onCheckUpdateClick()
+                        }
+                    )
+                    DropdownMenuItem(
+                        text = { Text("Reset & Ulangi Obrolan", color = Color(0xFFEF4444)) },
                         leadingIcon = {
                             Icon(
                                 imageVector = Icons.Default.DeleteOutline,

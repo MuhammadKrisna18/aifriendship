@@ -3,6 +3,13 @@ package com.example.aifriendship.presentation.chat
 import com.example.aifriendship.domain.model.AppUpdateInfo
 import com.example.aifriendship.domain.model.ChatMessage
 import com.example.aifriendship.domain.model.LiaStatus
+import com.example.aifriendship.domain.model.UserProfile
+
+enum class OnboardingStep {
+    COMPLETED,
+    ASK_NAME,
+    ASK_VIBE
+}
 
 data class ChatUiState(
     val messages: List<ChatMessage> = emptyList(),
@@ -12,5 +19,8 @@ data class ChatUiState(
     val isLoading: Boolean = false,
     val errorMessage: String? = null,
     val updateInfo: AppUpdateInfo? = null,
-    val isCheckingUpdate: Boolean = false
+    val isCheckingUpdate: Boolean = false,
+    val userProfile: UserProfile = UserProfile(),
+    val onboardingStep: OnboardingStep = OnboardingStep.COMPLETED,
+    val isUserProfileDialogVisible: Boolean = false
 )

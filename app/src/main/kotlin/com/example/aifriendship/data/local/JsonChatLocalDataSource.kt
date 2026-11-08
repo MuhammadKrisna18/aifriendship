@@ -39,17 +39,7 @@ class JsonChatLocalDataSource(
 
     private fun loadInitialData() {
         val loadedMessages = readMessagesFromFile()
-        if (loadedMessages.isEmpty()) {
-            val initialSeed = createSeedMessages()
-            _messagesFlow.value = initialSeed
-            try {
-                val content = json.encodeToString(initialSeed)
-                messagesFile.writeText(content)
-            } catch (_: Exception) {
-            }
-        } else {
-            _messagesFlow.value = loadedMessages
-        }
+        _messagesFlow.value = loadedMessages
 
         val loadedStatus = readStatusFromFile()
         _statusFlow.value = loadedStatus

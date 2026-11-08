@@ -8,3 +8,4 @@ interface UserLocalDataSource {
     suspend fun getUserProfile(): UserProfile
     suspend fun saveUserProfile(profile: UserProfile)
 }
+

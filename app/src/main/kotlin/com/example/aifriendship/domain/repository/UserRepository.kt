@@ -12,3 +12,4 @@ interface UserRepository {
     suspend fun updateVibe(vibe: CommunicationVibe)
     suspend fun completeOnboarding()
 }
+

@@ -4,11 +4,14 @@ import com.example.aifriendship.data.config.ApiKeyProvider
 import com.example.aifriendship.domain.model.AiResponse
 import com.example.aifriendship.domain.model.AppUpdateInfo
 import com.example.aifriendship.domain.model.ChatMessage
+import com.example.aifriendship.domain.model.CommunicationVibe
 import com.example.aifriendship.domain.model.LiaStatus
+import com.example.aifriendship.domain.model.MessageDeliveryStatus
 import com.example.aifriendship.domain.model.MessageSender
 import com.example.aifriendship.domain.model.QuotedMessage
 import com.example.aifriendship.domain.model.UserProfile
 import com.example.aifriendship.domain.repository.ChatRepository
+import com.example.aifriendship.domain.repository.UserRepository
 import com.example.aifriendship.domain.service.AiService
 import com.example.aifriendship.domain.service.AllModelsQuotaExceededException
 import com.example.aifriendship.domain.service.AppUpdateService
@@ -16,6 +19,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
@@ -35,6 +39,7 @@ class ChatViewModelTest {
 
     private val testDispatcher = StandardTestDispatcher()
     private lateinit var fakeRepository: FakeChatRepository
+    private lateinit var fakeUserRepository: FakeUserRepository
     private lateinit var fakeAiService: FakeAiService
     private lateinit var fakeApiKeyProvider: FakeApiKeyProvider
     private lateinit var fakeAppUpdateService: FakeAppUpdateService
@@ -44,10 +49,17 @@ class ChatViewModelTest {
     fun setUp() {
         Dispatchers.setMain(testDispatcher)
         fakeRepository = FakeChatRepository()
+        fakeUserRepository = FakeUserRepository()
         fakeAiService = FakeAiService()
         fakeApiKeyProvider = FakeApiKeyProvider()
         fakeAppUpdateService = FakeAppUpdateService()
-        viewModel = ChatViewModel(fakeRepository, fakeAiService, fakeApiKeyProvider, fakeAppUpdateService)
+        viewModel = ChatViewModel(
+            fakeRepository,
+            fakeUserRepository,
+            fakeAiService,
+            fakeApiKeyProvider,
+            fakeAppUpdateService
+        )
     }
 
     @After
@@ -120,6 +132,40 @@ class ChatViewModelTest {
         assertTrue(viewModel.uiState.value.updateInfo?.isUpdateAvailable == true)
         assertEquals("v1.0.1", viewModel.uiState.value.updateInfo?.latestVersion)
     }
+
+    @Test
+    fun onboarding_handlesNameInputAndTransitionsToVibe() = runTest {
+        val emptyUserRepo = FakeUserRepository(
+            UserProfile(name = "", vibe = CommunicationVibe.BARBAR, isOnboardingCompleted = false)
+        )
+        val freshViewModel = ChatViewModel(
+            fakeRepository,
+            emptyUserRepo,
+            fakeAiService,
+            fakeApiKeyProvider,
+            fakeAppUpdateService
+        )
+        backgroundScope.launch(UnconfinedTestDispatcher(testScheduler)) {
+            freshViewModel.uiState.collect()
+        }
+        testDispatcher.scheduler.advanceUntilIdle()
+
+        assertEquals(OnboardingStep.ASK_NAME, freshViewModel.uiState.value.onboardingStep)
+
+        freshViewModel.onInputTextChanged("Krisna")
+        freshViewModel.sendMessage()
+        testDispatcher.scheduler.advanceUntilIdle()
+
+        assertEquals("Krisna", emptyUserRepo.getUserProfile().name)
+        assertEquals(OnboardingStep.ASK_VIBE, freshViewModel.uiState.value.onboardingStep)
+
+        freshViewModel.selectVibe(CommunicationVibe.CHILL)
+        testDispatcher.scheduler.advanceUntilIdle()
+
+        assertEquals(CommunicationVibe.CHILL, emptyUserRepo.getUserProfile().vibe)
+        assertTrue(emptyUserRepo.getUserProfile().isOnboardingCompleted)
+        assertEquals(OnboardingStep.COMPLETED, freshViewModel.uiState.value.onboardingStep)
+    }
 }
 
 private class FakeAppUpdateService : AppUpdateService {
@@ -143,7 +189,7 @@ private class FakeAppUpdateService : AppUpdateService {
 }
 
 private class FakeApiKeyProvider : ApiKeyProvider {
-    private var key: String = "fake_key"
+    private var key = "test-api-key"
     private val keyFlow = MutableStateFlow(key)
 
     override fun getApiKey(): String = key
@@ -187,7 +233,7 @@ private class FakeChatRepository : ChatRepository {
     private val messagesFlow = MutableStateFlow<List<ChatMessage>>(emptyList())
     private val statusFlow = MutableStateFlow(LiaStatus())
 
-    override fun getMessages(): Flow<List<ChatMessage>> = messagesFlow
+    override fun getMessages(): Flow<List<ChatMessage>> = messagesFlow.asStateFlow()
 
     override suspend fun saveMessage(message: ChatMessage) {
         messagesFlow.value = messagesFlow.value + message
@@ -205,9 +251,35 @@ private class FakeChatRepository : ChatRepository {
         messagesFlow.value = emptyList()
     }
 
-    override fun getLiaStatus(): Flow<LiaStatus> = statusFlow
+    override fun getLiaStatus(): Flow<LiaStatus> = statusFlow.asStateFlow()
 
     override suspend fun updateLiaStatus(status: LiaStatus) {
         statusFlow.value = status
+    }
+}
+
+private class FakeUserRepository(
+    initial: UserProfile = UserProfile(name = "Krisna", isOnboardingCompleted = true)
+) : UserRepository {
+    private val profileFlow = MutableStateFlow(initial)
+
+    override fun observeUserProfile(): Flow<UserProfile> = profileFlow.asStateFlow()
+
+    override suspend fun getUserProfile(): UserProfile = profileFlow.value
+
+    override suspend fun saveUserProfile(profile: UserProfile) {
+        profileFlow.value = profile
+    }
+
+    override suspend fun updateName(name: String) {
+        profileFlow.value = profileFlow.value.copy(name = name)
+    }
+
+    override suspend fun updateVibe(vibe: CommunicationVibe) {
+        profileFlow.value = profileFlow.value.copy(vibe = vibe)
+    }
+
+    override suspend fun completeOnboarding() {
+        profileFlow.value = profileFlow.value.copy(isOnboardingCompleted = true)
     }
 }

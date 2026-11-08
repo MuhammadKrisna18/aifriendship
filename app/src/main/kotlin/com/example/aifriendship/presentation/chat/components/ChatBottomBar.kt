@@ -48,6 +48,7 @@ fun ChatBottomBar(
     inputText: String,
     onInputChanged: (String) -> Unit,
     onSendMessage: () -> Unit,
+    placeholder: String = "Ketik pesan ke Lia...",
     replyingTo: ChatMessage? = null,
     onDismissReply: () -> Unit = {},
     modifier: Modifier = Modifier
@@ -141,7 +142,7 @@ fun ChatBottomBar(
                 ) {
                     if (inputText.isEmpty()) {
                         Text(
-                            text = "Ketik pesan ke Lia...",
+                            text = placeholder,
                             color = Color(0xFF94A3B8),
                             fontSize = 14.sp
                         )
