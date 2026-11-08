@@ -6,14 +6,17 @@ import com.example.aifriendship.data.config.LocalApiKeyProvider
 import com.example.aifriendship.data.local.ChatLocalDataSource
 import com.example.aifriendship.data.local.JsonChatLocalDataSource
 import com.example.aifriendship.data.remote.gemini.GeminiAiService
+import com.example.aifriendship.data.remote.update.GitHubUpdateService
 import com.example.aifriendship.data.repository.DefaultChatRepository
 import com.example.aifriendship.domain.repository.ChatRepository
 import com.example.aifriendship.domain.service.AiService
+import com.example.aifriendship.domain.service.AppUpdateService
 
 interface AppContainer {
     val chatRepository: ChatRepository
     val apiKeyProvider: ApiKeyProvider
     val aiService: AiService
+    val appUpdateService: AppUpdateService
 }
 
 class DefaultAppContainer(private val context: Context) : AppContainer {
@@ -32,5 +35,9 @@ class DefaultAppContainer(private val context: Context) : AppContainer {
 
     override val aiService: AiService by lazy {
         GeminiAiService(apiKeyProvider)
+    }
+
+    override val appUpdateService: AppUpdateService by lazy {
+        GitHubUpdateService(context)
     }
 }

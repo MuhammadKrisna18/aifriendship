@@ -64,6 +64,46 @@ fun ChatScreen(
         }
     }
 
+    uiState.updateInfo?.let { update ->
+        if (update.isUpdateAvailable) {
+            AlertDialog(
+                onDismissRequest = { viewModel.dismissUpdateDialog() },
+                title = { Text("Update Baru Tersedia! 🚀") },
+                text = {
+                    Column {
+                        Text(
+                            text = "Versi terbaru (${update.latestVersion}) sudah siap diunduh.",
+                            fontSize = 14.sp
+                        )
+                        if (update.releaseNotes.isNotBlank()) {
+                            Spacer(modifier = Modifier.height(8.dp))
+                            Text(
+                                text = "Catatan Pembaruan:\n${update.releaseNotes}",
+                                fontSize = 12.sp,
+                                color = ChatTimestampColor
+                            )
+                        }
+                    }
+                },
+                confirmButton = {
+                    TextButton(
+                        onClick = {
+                            viewModel.downloadAndInstallUpdate()
+                            viewModel.dismissUpdateDialog()
+                        }
+                    ) {
+                        Text("Pasang Sekarang", color = UserBubblePink)
+                    }
+                },
+                dismissButton = {
+                    TextButton(onClick = { viewModel.dismissUpdateDialog() }) {
+                        Text("Nanti Saja")
+                    }
+                }
+            )
+        }
+    }
+
     if (showApiKeyDialog) {
         AlertDialog(
             onDismissRequest = { showApiKeyDialog = false },
@@ -110,7 +150,8 @@ fun ChatScreen(
                 status = uiState.liaStatus,
                 onBackClick = onBackClick,
                 onClearChat = { viewModel.clearChat() },
-                onSettingsClick = { showApiKeyDialog = true }
+                onSettingsClick = { showApiKeyDialog = true },
+                onCheckUpdateClick = { viewModel.checkForUpdates(silent = false) }
             )
         },
         bottomBar = {

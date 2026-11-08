@@ -2,6 +2,7 @@ package com.example.aifriendship.presentation.chat
 
 import com.example.aifriendship.data.config.ApiKeyProvider
 import com.example.aifriendship.domain.model.AiResponse
+import com.example.aifriendship.domain.model.AppUpdateInfo
 import com.example.aifriendship.domain.model.ChatMessage
 import com.example.aifriendship.domain.model.LiaStatus
 import com.example.aifriendship.domain.model.MessageSender
@@ -9,6 +10,7 @@ import com.example.aifriendship.domain.model.QuotedMessage
 import com.example.aifriendship.domain.repository.ChatRepository
 import com.example.aifriendship.domain.service.AiService
 import com.example.aifriendship.domain.service.AllModelsQuotaExceededException
+import com.example.aifriendship.domain.service.AppUpdateService
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.Flow
@@ -34,6 +36,7 @@ class ChatViewModelTest {
     private lateinit var fakeRepository: FakeChatRepository
     private lateinit var fakeAiService: FakeAiService
     private lateinit var fakeApiKeyProvider: FakeApiKeyProvider
+    private lateinit var fakeAppUpdateService: FakeAppUpdateService
     private lateinit var viewModel: ChatViewModel
 
     @Before
@@ -42,7 +45,8 @@ class ChatViewModelTest {
         fakeRepository = FakeChatRepository()
         fakeAiService = FakeAiService()
         fakeApiKeyProvider = FakeApiKeyProvider()
-        viewModel = ChatViewModel(fakeRepository, fakeAiService, fakeApiKeyProvider)
+        fakeAppUpdateService = FakeAppUpdateService()
+        viewModel = ChatViewModel(fakeRepository, fakeAiService, fakeApiKeyProvider, fakeAppUpdateService)
     }
 
     @After
@@ -100,6 +104,40 @@ class ChatViewModelTest {
         assertTrue(messages.any { it.text.contains("beli garem") })
         val status = fakeRepository.getLiaStatus().first()
         assertEquals("online", status.subtitle)
+    }
+
+    @Test
+    fun checkForUpdates_findsNewVersion() = runTest {
+        backgroundScope.launch(UnconfinedTestDispatcher(testScheduler)) {
+            viewModel.uiState.collect()
+        }
+
+        fakeAppUpdateService.hasUpdate = true
+        viewModel.checkForUpdates(silent = false)
+        testDispatcher.scheduler.advanceUntilIdle()
+
+        assertTrue(viewModel.uiState.value.updateInfo?.isUpdateAvailable == true)
+        assertEquals("v1.0.1", viewModel.uiState.value.updateInfo?.latestVersion)
+    }
+}
+
+private class FakeAppUpdateService : AppUpdateService {
+    var hasUpdate: Boolean = false
+
+    override suspend fun checkForUpdate(): Result<AppUpdateInfo> {
+        return Result.success(
+            AppUpdateInfo(
+                isUpdateAvailable = hasUpdate,
+                currentVersion = "1.0",
+                latestVersion = if (hasUpdate) "v1.0.1" else "1.0",
+                downloadUrl = "https://example.com/app.apk",
+                releaseNotes = "Perbaikan performa dan fitur baru"
+            )
+        )
+    }
+
+    override fun downloadAndInstallUpdate(downloadUrl: String, fileName: String): Result<Unit> {
+        return Result.success(Unit)
     }
 }
 

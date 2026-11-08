@@ -7,6 +7,7 @@ import androidx.lifecycle.viewmodel.initializer
 import androidx.lifecycle.viewmodel.viewModelFactory
 import com.example.aifriendship.AiFriendshipApplication
 import com.example.aifriendship.data.config.ApiKeyProvider
+import com.example.aifriendship.domain.model.AppUpdateInfo
 import com.example.aifriendship.domain.model.ChatMessage
 import com.example.aifriendship.domain.model.LiaStatus
 import com.example.aifriendship.domain.model.MessageDeliveryStatus
@@ -15,7 +16,9 @@ import com.example.aifriendship.domain.model.QuotedMessage
 import com.example.aifriendship.domain.repository.ChatRepository
 import com.example.aifriendship.domain.service.AiService
 import com.example.aifriendship.domain.service.AllModelsQuotaExceededException
+import com.example.aifriendship.domain.service.AppUpdateService
 import com.example.aifriendship.domain.service.QuotaExceededException
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -29,13 +32,16 @@ import kotlinx.coroutines.launch
 class ChatViewModel(
     private val chatRepository: ChatRepository,
     private val aiService: AiService,
-    val apiKeyProvider: ApiKeyProvider
+    val apiKeyProvider: ApiKeyProvider,
+    private val appUpdateService: AppUpdateService
 ) : ViewModel() {
 
     private val _inputText = MutableStateFlow("")
     private val _replyingTo = MutableStateFlow<ChatMessage?>(null)
     private val _isLoading = MutableStateFlow(false)
     private val _errorMessage = MutableStateFlow<String?>(null)
+    private val _updateInfo = MutableStateFlow<AppUpdateInfo?>(null)
+    private val _isCheckingUpdate = MutableStateFlow(false)
     private var cooldownJob: Job? = null
 
     val uiState: StateFlow<ChatUiState> = combine(
@@ -51,7 +57,9 @@ class ChatViewModel(
             inputText = input,
             replyingTo = replying,
             isLoading = loading,
-            errorMessage = _errorMessage.value
+            errorMessage = _errorMessage.value,
+            updateInfo = _updateInfo.value,
+            isCheckingUpdate = _isCheckingUpdate.value
         )
     }.stateIn(
         scope = viewModelScope,
@@ -59,12 +67,51 @@ class ChatViewModel(
         initialValue = ChatUiState()
     )
 
+    init {
+        checkForUpdates(silent = true)
+    }
+
     fun onInputTextChanged(text: String) {
         _inputText.value = text
     }
 
     fun onReplyMessage(message: ChatMessage?) {
         _replyingTo.value = message
+    }
+
+    fun checkForUpdates(silent: Boolean = false) {
+        viewModelScope.launch {
+            _isCheckingUpdate.value = true
+            appUpdateService.checkForUpdate().fold(
+                onSuccess = { info ->
+                    _isCheckingUpdate.value = false
+                    if (info.isUpdateAvailable) {
+                        _updateInfo.value = info
+                    } else if (!silent) {
+                        val notice = ChatMessage(
+                            sender = MessageSender.AI,
+                            text = "Aplikasi kamu sudah versi terbaru (${info.currentVersion}) kok!",
+                            status = MessageDeliveryStatus.SENT
+                        )
+                        chatRepository.saveMessage(notice)
+                    }
+                },
+                onFailure = {
+                    _isCheckingUpdate.value = false
+                }
+            )
+        }
+    }
+
+    fun downloadAndInstallUpdate() {
+        val info = _updateInfo.value ?: return
+        viewModelScope.launch(Dispatchers.IO) {
+            appUpdateService.downloadAndInstallUpdate(info.downloadUrl, "update.apk")
+        }
+    }
+
+    fun dismissUpdateDialog() {
+        _updateInfo.value = null
     }
 
     fun sendMessage() {
@@ -234,7 +281,8 @@ class ChatViewModel(
                 ChatViewModel(
                     chatRepository = application.container.chatRepository,
                     aiService = application.container.aiService,
-                    apiKeyProvider = application.container.apiKeyProvider
+                    apiKeyProvider = application.container.apiKeyProvider,
+                    appUpdateService = application.container.appUpdateService
                 )
             }
         }

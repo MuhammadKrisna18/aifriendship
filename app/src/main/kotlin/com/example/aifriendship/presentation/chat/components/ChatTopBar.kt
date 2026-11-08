@@ -18,6 +18,7 @@ import androidx.compose.material.icons.filled.DeleteOutline
 import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material.icons.filled.Key
 import androidx.compose.material.icons.filled.Settings
+import androidx.compose.material.icons.filled.SystemUpdate
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.Icon
@@ -47,6 +48,7 @@ fun ChatTopBar(
     onBackClick: () -> Unit = {},
     onClearChat: () -> Unit = {},
     onSettingsClick: () -> Unit = {},
+    onCheckUpdateClick: () -> Unit = {},
     modifier: Modifier = Modifier
 ) {
     var menuExpanded by remember { mutableStateOf(false) }
@@ -172,6 +174,20 @@ fun ChatTopBar(
                         onClick = {
                             menuExpanded = false
                             onSettingsClick()
+                        }
+                    )
+                    DropdownMenuItem(
+                        text = { Text("Periksa Pembaruan") },
+                        leadingIcon = {
+                            Icon(
+                                imageVector = Icons.Default.SystemUpdate,
+                                contentDescription = null,
+                                tint = Color(0xFF757575)
+                            )
+                        },
+                        onClick = {
+                            menuExpanded = false
+                            onCheckUpdateClick()
                         }
                     )
                     DropdownMenuItem(
