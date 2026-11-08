@@ -7,7 +7,7 @@ A modern Native Android AI Companion app built with **Kotlin** and **Jetpack Com
 ## 📱 Features
 
 - **Human-like Chat Cadence:** Messages are broken down into natural, successive chat bubbles with realistic typing delays instead of monolithic text walls.
-- **Dynamic Persona Status:** Real-time subtitle updates reflecting Kalea's mood, activities, and reactions (e.g., *"gemas juga ngajarin dia ngoding"*, *"capek banget punya teman suka lupa"*).
+- **Dynamic Persona Status:** Real-time subtitle updates reflecting Lia's mood, activities, and reactions (e.g., *"gemas juga ngajarin dia ngoding"*, *"capek banget punya teman suka lupa"*).
 - **Quoted / Reply Message:** Long-press to quote and reply to specific messages with visual parent-message previews.
 - **Two-Layer Anti-Stall System:**
   - *Layer 1 (Silent Failover):* Seamlessly falls back to secondary models (e.g., Gemini 2.0 Flash / Flash-8B) if the primary model reaches rate limits (HTTP 429).
@@ -23,15 +23,18 @@ This project strictly adheres to **Clean Architecture** and **SOLID principles**
 ```
 com.example.aifriendship/
 ├── domain/
-│   ├── model/           # ChatMessage, KaleaProfile, DeliveryStatus, QuotedMessage
+│   ├── model/           # ChatMessage, LiaProfile, DeliveryStatus, QuotedMessage, AiResponse
+│   ├── service/         # AiService interface, QuotaExceededException
 │   └── repository/      # ChatRepository interface
 ├── data/
+│   ├── config/          # ApiKeyProvider & LocalApiKeyProvider
 │   ├── local/           # ChatLocalDataSource & JsonChatLocalDataSource
+│   ├── remote/gemini/   # GeminiAiService, DTOs & LiaPromptDefinition
 │   └── repository/      # DefaultChatRepository implementation
 ├── presentation/
 │   └── chat/            # ChatScreen, ChatViewModel, ChatUiState
 │       └── components/  # ChatTopBar, UserChatBubble, AiChatBubble,
-│                        # ChatBottomBar, TypingIndicator, UserAvatar, KaleaAvatar
+│                        # ChatBottomBar, TypingIndicator, UserAvatar, LiaAvatar
 ├── di/                  # AppContainer (Dependency Injection without overengineering)
 └── ui/theme/            # Theme, Color, Type definitions
 ```

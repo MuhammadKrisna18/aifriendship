@@ -19,7 +19,7 @@ import androidx.compose.ui.unit.sp
 import coil.compose.AsyncImage
 
 @Composable
-fun KaleaAvatar(
+fun LiaAvatar(
     imageUrl: String = "",
     size: Dp = 38.dp,
     modifier: Modifier = Modifier
@@ -46,7 +46,7 @@ fun KaleaAvatar(
                 contentAlignment = Alignment.Center
             ) {
                 Text(
-                    text = "K",
+                    text = "L",
                     color = Color.White,
                     fontSize = (size.value * 0.42f).sp,
                     fontWeight = FontWeight.Bold

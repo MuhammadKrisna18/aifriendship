@@ -2,7 +2,7 @@ package com.example.aifriendship.data.repository
 
 import com.example.aifriendship.data.local.ChatLocalDataSource
 import com.example.aifriendship.domain.model.ChatMessage
-import com.example.aifriendship.domain.model.KaleaStatus
+import com.example.aifriendship.domain.model.LiaStatus
 import com.example.aifriendship.domain.repository.ChatRepository
 import kotlinx.coroutines.flow.Flow
 
@@ -30,12 +30,11 @@ class DefaultChatRepository(
         localDataSource.clearMessages()
     }
 
-    override fun getKaleaStatus(): Flow<KaleaStatus> {
-        return localDataSource.getKaleaStatus()
+    override fun getLiaStatus(): Flow<LiaStatus> {
+        return localDataSource.getLiaStatus()
     }
 
-    override suspend fun updateKaleaStatus(status: KaleaStatus) {
-        localDataSource.saveKaleaStatus(status)
+    override suspend fun updateLiaStatus(status: LiaStatus) {
+        localDataSource.saveLiaStatus(status)
     }
 }
-

@@ -1,7 +1,7 @@
 package com.example.aifriendship.domain.repository
 
 import com.example.aifriendship.domain.model.ChatMessage
-import com.example.aifriendship.domain.model.KaleaStatus
+import com.example.aifriendship.domain.model.LiaStatus
 import kotlinx.coroutines.flow.Flow
 
 interface ChatRepository {
@@ -10,7 +10,6 @@ interface ChatRepository {
     suspend fun saveMessages(messages: List<ChatMessage>)
     suspend fun deleteMessage(id: String)
     suspend fun clearMessages()
-    fun getKaleaStatus(): Flow<KaleaStatus>
-    suspend fun updateKaleaStatus(status: KaleaStatus)
+    fun getLiaStatus(): Flow<LiaStatus>
+    suspend fun updateLiaStatus(status: LiaStatus)
 }
-

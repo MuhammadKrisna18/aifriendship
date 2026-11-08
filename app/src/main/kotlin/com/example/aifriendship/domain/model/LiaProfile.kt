@@ -3,7 +3,7 @@ package com.example.aifriendship.domain.model
 import kotlinx.serialization.Serializable
 
 @Serializable
-data class KaleaStatus(
+data class LiaStatus(
     val subtitle: String = "gemas juga ngajarin dia ngoding",
     val isOnline: Boolean = true,
     val isTyping: Boolean = false,
@@ -11,10 +11,10 @@ data class KaleaStatus(
     val cooldownSecondsRemaining: Int = 0
 )
 
-data class KaleaProfile(
-    val name: String = "Kalea Restika",
+data class LiaProfile(
+    val name: String = "Lia",
     val levelBadge: Int = 5,
     val avatarUrl: String = "",
-    val status: KaleaStatus = KaleaStatus()
+    val status: LiaStatus = LiaStatus()
 )
 

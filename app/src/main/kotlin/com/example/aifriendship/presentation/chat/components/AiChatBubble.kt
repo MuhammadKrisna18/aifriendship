@@ -42,7 +42,7 @@ fun AiChatBubble(
         horizontalArrangement = Arrangement.Start,
         verticalAlignment = Alignment.Bottom
     ) {
-        KaleaAvatar(
+        LiaAvatar(
             imageUrl = avatarUrl,
             size = 36.dp,
             modifier = Modifier.align(Alignment.Bottom)
@@ -90,4 +90,3 @@ fun AiChatBubble(
         )
     }
 }
-

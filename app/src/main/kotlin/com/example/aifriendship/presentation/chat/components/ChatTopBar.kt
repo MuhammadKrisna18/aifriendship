@@ -16,6 +16,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.DeleteOutline
 import androidx.compose.material.icons.filled.Favorite
+import androidx.compose.material.icons.filled.Key
 import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
@@ -36,13 +37,13 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.example.aifriendship.domain.model.KaleaStatus
+import com.example.aifriendship.domain.model.LiaStatus
 import com.example.aifriendship.ui.theme.BadgeLevelBackground
 import com.example.aifriendship.ui.theme.BadgeLevelGreen
 
 @Composable
 fun ChatTopBar(
-    status: KaleaStatus,
+    status: LiaStatus,
     onBackClick: () -> Unit = {},
     onClearChat: () -> Unit = {},
     onSettingsClick: () -> Unit = {},
@@ -84,7 +85,7 @@ fun ChatTopBar(
                     verticalAlignment = Alignment.CenterVertically
                 ) {
                     Text(
-                        text = "Kalea Restika",
+                        text = "Lia",
                         fontSize = 17.sp,
                         fontWeight = FontWeight.Bold,
                         color = Color(0xFF1C1C1E)
@@ -160,7 +161,14 @@ fun ChatTopBar(
                     onDismissRequest = { menuExpanded = false }
                 ) {
                     DropdownMenuItem(
-                        text = { Text("Pengaturan API & Persona") },
+                        text = { Text("Pengaturan API Key") },
+                        leadingIcon = {
+                            Icon(
+                                imageVector = Icons.Default.Key,
+                                contentDescription = null,
+                                tint = Color(0xFF757575)
+                            )
+                        },
                         onClick = {
                             menuExpanded = false
                             onSettingsClick()
@@ -185,4 +193,3 @@ fun ChatTopBar(
         }
     }
 }
-

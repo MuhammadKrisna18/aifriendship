@@ -2,7 +2,7 @@ package com.example.aifriendship.data.local
 
 import android.content.Context
 import com.example.aifriendship.domain.model.ChatMessage
-import com.example.aifriendship.domain.model.KaleaStatus
+import com.example.aifriendship.domain.model.LiaStatus
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -25,10 +25,10 @@ class JsonChatLocalDataSource(
 
     private val mutex = Mutex()
     private val messagesFile by lazy { File(context.filesDir, "chat_history.json") }
-    private val statusFile by lazy { File(context.filesDir, "kalea_status.json") }
+    private val statusFile by lazy { File(context.filesDir, "lia_status.json") }
 
     private val _messagesFlow = MutableStateFlow<List<ChatMessage>>(emptyList())
-    private val _statusFlow = MutableStateFlow(KaleaStatus())
+    private val _statusFlow = MutableStateFlow(LiaStatus())
 
     init {
         loadInitialData()
@@ -75,9 +75,9 @@ class JsonChatLocalDataSource(
         }
     }
 
-    override fun getKaleaStatus(): Flow<KaleaStatus> = _statusFlow.asStateFlow()
+    override fun getLiaStatus(): Flow<LiaStatus> = _statusFlow.asStateFlow()
 
-    override suspend fun saveKaleaStatus(status: KaleaStatus) {
+    override suspend fun saveLiaStatus(status: LiaStatus) {
         mutex.withLock {
             _statusFlow.value = status
             writeStatusToFile(status)
@@ -111,24 +111,24 @@ class JsonChatLocalDataSource(
         }
     }
 
-    private fun readStatusFromFile(): KaleaStatus {
+    private fun readStatusFromFile(): LiaStatus {
         return try {
             if (statusFile.exists()) {
                 val content = statusFile.readText()
                 if (content.isNotBlank()) {
-                    json.decodeFromString<KaleaStatus>(content)
+                    json.decodeFromString<LiaStatus>(content)
                 } else {
-                    KaleaStatus()
+                    LiaStatus()
                 }
             } else {
-                KaleaStatus()
+                LiaStatus()
             }
         } catch (_: Exception) {
-            KaleaStatus()
+            LiaStatus()
         }
     }
 
-    private suspend fun writeStatusToFile(status: KaleaStatus) {
+    private suspend fun writeStatusToFile(status: LiaStatus) {
         withContext(Dispatchers.IO) {
             try {
                 val content = json.encodeToString(status)
@@ -138,4 +138,3 @@ class JsonChatLocalDataSource(
         }
     }
 }
-

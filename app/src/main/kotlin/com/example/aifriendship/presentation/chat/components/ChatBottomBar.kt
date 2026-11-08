@@ -84,7 +84,7 @@ fun ChatBottomBar(
                         modifier = Modifier.weight(1f)
                     ) {
                         Text(
-                            text = if (reply.sender == MessageSender.USER) "Membalas pesan kamu" else "Membalas Kalea",
+                            text = if (reply.sender == MessageSender.USER) "Membalas pesan kamu" else "Membalas Lia",
                             fontSize = 11.sp,
                             fontWeight = FontWeight.Bold,
                             color = UserBubblePink
@@ -213,4 +213,3 @@ fun ChatBottomBar(
         }
     }
 }
-
