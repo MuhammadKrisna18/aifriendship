@@ -31,6 +31,8 @@ import com.example.aifriendship.ui.theme.ChatTimestampColor
 @Composable
 fun AiChatBubble(
     message: ChatMessage,
+    companionName: String = "Lia",
+    avatarColorHex: String = "#6366F1",
     avatarUrl: String = "",
     onLongClick: () -> Unit = {},
     modifier: Modifier = Modifier
@@ -43,6 +45,8 @@ fun AiChatBubble(
         verticalAlignment = Alignment.Bottom
     ) {
         LiaAvatar(
+            name = companionName,
+            avatarColorHex = avatarColorHex,
             imageUrl = avatarUrl,
             size = 34.dp,
             modifier = Modifier.align(Alignment.Bottom)
@@ -63,11 +67,10 @@ fun AiChatBubble(
                 .padding(horizontal = 14.dp, vertical = 10.dp)
         ) {
             Column {
-                message.quotedMessage?.let {
+                if (message.quotedMessage != null) {
                     QuotedMessageView(
-                        quotedMessage = it,
-                        isUserBubble = false,
-                        modifier = Modifier.padding(bottom = 6.dp)
+                        quotedMessage = message.quotedMessage,
+                        isUserBubble = false
                     )
                 }
 
@@ -77,16 +80,18 @@ fun AiChatBubble(
                     fontSize = 15.sp,
                     lineHeight = 21.sp
                 )
+
+                Row(
+                    modifier = Modifier.align(Alignment.End),
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Text(
+                        text = ChatTimeFormatter.format(message.timestamp),
+                        color = ChatTimestampColor,
+                        fontSize = 11.sp
+                    )
+                }
             }
         }
-
-        Spacer(modifier = Modifier.width(6.dp))
-
-        Text(
-            text = ChatTimeFormatter.format(message.timestamp),
-            color = ChatTimestampColor,
-            fontSize = 11.sp,
-            modifier = Modifier.align(Alignment.Bottom).padding(bottom = 2.dp)
-        )
     }
 }

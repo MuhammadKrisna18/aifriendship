@@ -21,10 +21,17 @@ import coil.compose.AsyncImage
 
 @Composable
 fun LiaAvatar(
+    name: String = "Lia",
+    avatarColorHex: String = "#6366F1",
     imageUrl: String = "",
     size: Dp = 38.dp,
     modifier: Modifier = Modifier
 ) {
+    val initialLetter = name.trim().firstOrNull()?.uppercaseChar()?.toString() ?: "L"
+    val baseColor = runCatching {
+        Color(android.graphics.Color.parseColor(avatarColorHex))
+    }.getOrDefault(Color(0xFF6366F1))
+
     Box(
         modifier = modifier
             .size(size)
@@ -45,13 +52,13 @@ fun LiaAvatar(
                     .size(size)
                     .background(
                         Brush.linearGradient(
-                            colors = listOf(Color(0xFF6366F1), Color(0xFF8B5CF6))
+                            colors = listOf(baseColor, baseColor.copy(alpha = 0.8f))
                         )
                     ),
                 contentAlignment = Alignment.Center
             ) {
                 Text(
-                    text = "L",
+                    text = initialLetter,
                     color = Color.White,
                     fontSize = (size.value * 0.44f).sp,
                     fontWeight = FontWeight.Bold

@@ -40,10 +40,14 @@ import com.example.aifriendship.ui.theme.UserBubbleColor
 fun ChatScreen(
     viewModel: ChatViewModel = viewModel(factory = ChatViewModel.Factory),
     onBackClick: () -> Unit = {},
+    onChangeCompanionClick: () -> Unit = {},
     modifier: Modifier = Modifier
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
     val listState = rememberLazyListState()
+
+    val companionName = uiState.userProfile.companion.name.ifBlank { "Lia" }
+    val avatarColorHex = uiState.userProfile.companion.avatarColorHex
 
     LaunchedEffect(uiState.messages.size, uiState.liaStatus.isTyping) {
         val totalItems = uiState.messages.size + if (uiState.liaStatus.isTyping) 1 else 0
@@ -104,10 +108,13 @@ fun ChatScreen(
         topBar = {
             ChatTopBar(
                 status = uiState.liaStatus,
+                companionName = companionName,
+                avatarColorHex = avatarColorHex,
                 onBackClick = onBackClick,
                 onClearChat = { viewModel.resetChat() },
                 onCheckUpdateClick = { viewModel.checkForUpdates(silent = false) },
-                onProfileClick = { viewModel.showUserProfileDialog() }
+                onProfileClick = { viewModel.showUserProfileDialog() },
+                onChangeCompanionClick = onChangeCompanionClick
             )
         },
         bottomBar = {
@@ -120,7 +127,7 @@ fun ChatScreen(
                     inputText = uiState.inputText,
                     onInputChanged = { viewModel.onInputTextChanged(it) },
                     onSendMessage = { viewModel.sendMessage() },
-                    placeholder = if (uiState.onboardingStep == OnboardingStep.ASK_NAME) "Ketik nama panggilanmu..." else "Ketik pesan ke Lia...",
+                    placeholder = if (uiState.onboardingStep == OnboardingStep.ASK_NAME) "Ketik nama panggilanmu..." else "Ketik pesan ke $companionName...",
                     replyingTo = uiState.replyingTo,
                     onDismissReply = { viewModel.onReplyMessage(null) }
                 )
@@ -141,7 +148,7 @@ fun ChatScreen(
                     contentAlignment = Alignment.Center
                 ) {
                     Text(
-                        text = "Mulai obrolan santai dengan Lia...",
+                        text = "Mulai obrolan santai dengan $companionName...",
                         color = ChatTimestampColor,
                         fontSize = 14.sp
                     )
@@ -164,6 +171,8 @@ fun ChatScreen(
                         } else {
                             AiChatBubble(
                                 message = message,
+                                companionName = companionName,
+                                avatarColorHex = avatarColorHex,
                                 onLongClick = { viewModel.onReplyMessage(message) }
                             )
                         }

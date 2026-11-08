@@ -9,3 +9,4 @@ data class AiCompanion(
     val customTraitDescription: String = "",
     val avatarColorHex: String = "#6366F1"
 )
+

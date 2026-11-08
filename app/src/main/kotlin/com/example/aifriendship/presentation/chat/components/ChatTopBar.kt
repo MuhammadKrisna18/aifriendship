@@ -15,6 +15,7 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material.icons.filled.AutoAwesome
 import androidx.compose.material.icons.filled.CheckCircle
 import androidx.compose.material.icons.filled.DeleteOutline
 import androidx.compose.material.icons.filled.MoreVert
@@ -46,10 +47,13 @@ import com.example.aifriendship.ui.theme.primaryLight
 @Composable
 fun ChatTopBar(
     status: LiaStatus,
+    companionName: String = "Lia",
+    avatarColorHex: String = "#6366F1",
     onBackClick: () -> Unit = {},
     onClearChat: () -> Unit = {},
     onCheckUpdateClick: () -> Unit = {},
     onProfileClick: () -> Unit = {},
+    onChangeCompanionClick: () -> Unit = {},
     modifier: Modifier = Modifier
 ) {
     var menuExpanded by remember { mutableStateOf(false) }
@@ -81,6 +85,8 @@ fun ChatTopBar(
 
             Box {
                 LiaAvatar(
+                    name = companionName,
+                    avatarColorHex = avatarColorHex,
                     size = 42.dp
                 )
                 if (status.isOnline) {
@@ -106,7 +112,7 @@ fun ChatTopBar(
                     verticalAlignment = Alignment.CenterVertically
                 ) {
                     Text(
-                        text = "Lia",
+                        text = companionName,
                         fontSize = 17.sp,
                         fontWeight = FontWeight.Bold,
                         color = Color(0xFF0F172A)
@@ -175,6 +181,20 @@ fun ChatTopBar(
                     onDismissRequest = { menuExpanded = false }
                 ) {
                     DropdownMenuItem(
+                        text = { Text("Ubah Teman AI") },
+                        leadingIcon = {
+                            Icon(
+                                imageVector = Icons.Default.AutoAwesome,
+                                contentDescription = null,
+                                tint = primaryLight
+                            )
+                        },
+                        onClick = {
+                            menuExpanded = false
+                            onChangeCompanionClick()
+                        }
+                    )
+                    DropdownMenuItem(
                         text = { Text("Profil Pengguna") },
                         leadingIcon = {
                             Icon(
@@ -203,7 +223,7 @@ fun ChatTopBar(
                         }
                     )
                     DropdownMenuItem(
-                        text = { Text("Reset & Ulangi Obrolan", color = Color(0xFFEF4444)) },
+                        text = { Text("Reset Obrolan", color = Color(0xFFEF4444)) },
                         leadingIcon = {
                             Icon(
                                 imageVector = Icons.Default.DeleteOutline,

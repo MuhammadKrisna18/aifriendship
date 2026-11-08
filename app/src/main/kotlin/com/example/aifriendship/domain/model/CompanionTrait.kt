@@ -103,3 +103,4 @@ enum class CompanionTrait(
         promptInstruction = "Gaya bahasa kustom sesuai preferensi yang ditentukan pengguna."
     )
 }
+
