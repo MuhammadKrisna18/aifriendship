@@ -13,6 +13,6 @@ enum class CommunicationVibe(val label: String, val description: String) {
 data class UserProfile(
     val name: String = "",
     val vibe: CommunicationVibe = CommunicationVibe.BARBAR,
+    val companion: AiCompanion = AiCompanion(),
     val isOnboardingCompleted: Boolean = false
 )
-

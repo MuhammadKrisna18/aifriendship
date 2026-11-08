@@ -1,6 +1,7 @@
 package com.example.aifriendship.data.repository
 
 import com.example.aifriendship.data.local.UserLocalDataSource
+import com.example.aifriendship.domain.model.AiCompanion
 import com.example.aifriendship.domain.model.CommunicationVibe
 import com.example.aifriendship.domain.model.UserProfile
 import com.example.aifriendship.domain.repository.UserRepository
@@ -28,9 +29,13 @@ class DefaultUserRepository(
         localDataSource.saveUserProfile(current.copy(vibe = vibe))
     }
 
+    override suspend fun updateCompanion(companion: AiCompanion) {
+        val current = localDataSource.getUserProfile()
+        localDataSource.saveUserProfile(current.copy(companion = companion))
+    }
+
     override suspend fun completeOnboarding() {
         val current = localDataSource.getUserProfile()
         localDataSource.saveUserProfile(current.copy(isOnboardingCompleted = true))
     }
 }
-

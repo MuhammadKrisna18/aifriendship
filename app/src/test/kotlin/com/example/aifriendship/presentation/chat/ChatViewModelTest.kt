@@ -1,6 +1,7 @@
 package com.example.aifriendship.presentation.chat
 
 import com.example.aifriendship.data.config.ApiKeyProvider
+import com.example.aifriendship.domain.model.AiCompanion
 import com.example.aifriendship.domain.model.AiResponse
 import com.example.aifriendship.domain.model.AppUpdateInfo
 import com.example.aifriendship.domain.model.ChatMessage
@@ -277,6 +278,10 @@ private class FakeUserRepository(
 
     override suspend fun updateVibe(vibe: CommunicationVibe) {
         profileFlow.value = profileFlow.value.copy(vibe = vibe)
+    }
+
+    override suspend fun updateCompanion(companion: AiCompanion) {
+        profileFlow.value = profileFlow.value.copy(companion = companion)
     }
 
     override suspend fun completeOnboarding() {
