@@ -1,7 +1,16 @@
+import java.io.FileInputStream
+import java.util.Properties
+
 plugins {
   alias(libs.plugins.android.application)
   alias(libs.plugins.compose.compiler)
   alias(libs.plugins.kotlin.serialization)
+}
+
+val localProperties = Properties()
+val localPropertiesFile = rootProject.file("local.properties")
+if (localPropertiesFile.exists()) {
+  localProperties.load(FileInputStream(localPropertiesFile))
 }
 
 android {
@@ -13,6 +22,9 @@ android {
     targetSdk = 37
     versionCode = 1
     versionName = "1.0"
+
+    val geminiApiKey = localProperties.getProperty("GEMINI_API_KEY") ?: ""
+    buildConfigField("String", "GEMINI_API_KEY", "\"$geminiApiKey\"")
   }
 
   buildTypes {
@@ -27,8 +39,8 @@ android {
   }
   buildFeatures {
     compose = true
+    buildConfig = true
     aidl = false
-    buildConfig = false
     shaders = false
   }
 

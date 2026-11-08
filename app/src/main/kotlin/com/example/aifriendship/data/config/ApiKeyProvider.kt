@@ -1,6 +1,7 @@
 package com.example.aifriendship.data.config
 
 import android.content.Context
+import com.example.aifriendship.BuildConfig
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -24,7 +25,14 @@ class LocalApiKeyProvider(private val context: Context) : ApiKeyProvider {
     private fun loadKey() {
         try {
             if (keyFile.exists()) {
-                _apiKeyFlow.value = keyFile.readText().trim()
+                val stored = keyFile.readText().trim()
+                if (stored.isNotBlank()) {
+                    _apiKeyFlow.value = stored
+                    return
+                }
+            }
+            if (BuildConfig.GEMINI_API_KEY.isNotBlank()) {
+                _apiKeyFlow.value = BuildConfig.GEMINI_API_KEY.trim()
             }
         } catch (_: Exception) {
             _apiKeyFlow.value = ""
@@ -44,4 +52,3 @@ class LocalApiKeyProvider(private val context: Context) : ApiKeyProvider {
         }
     }
 }
-
