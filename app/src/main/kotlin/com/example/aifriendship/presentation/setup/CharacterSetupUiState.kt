@@ -12,3 +12,4 @@ data class CharacterSetupUiState(
     val avatarColorHex: String = "#6366F1",
     val isSaving: Boolean = false
 )
+
