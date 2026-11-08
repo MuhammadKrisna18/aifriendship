@@ -11,6 +11,7 @@ import com.example.aifriendship.domain.model.AiResponse
 import com.example.aifriendship.domain.model.ChatMessage
 import com.example.aifriendship.domain.model.MessageSender
 import com.example.aifriendship.domain.model.QuotedMessage
+import com.example.aifriendship.domain.model.UserProfile
 import com.example.aifriendship.domain.service.AiService
 import com.example.aifriendship.domain.service.AllModelsQuotaExceededException
 import kotlinx.coroutines.Dispatchers
@@ -61,14 +62,15 @@ class GeminiAiService(
 
     override suspend fun generateReply(
         history: List<ChatMessage>,
-        quotedMessage: QuotedMessage?
+        quotedMessage: QuotedMessage?,
+        userProfile: UserProfile?
     ): Result<AiResponse> = withContext(Dispatchers.IO) {
         val apiKey = apiKeyProvider.getApiKey()
         if (apiKey.isBlank()) {
             return@withContext Result.failure(IllegalStateException("API Key belum disetel"))
         }
 
-        val requestBody = prepareRequestBody(history, quotedMessage)
+        val requestBody = prepareRequestBody(history, quotedMessage, userProfile)
         var lastException: Exception? = null
 
         val modelsToTry = fallbackModelChain.indices.map { offset ->
@@ -126,7 +128,8 @@ class GeminiAiService(
 
     private fun prepareRequestBody(
         history: List<ChatMessage>,
-        quotedMessage: QuotedMessage?
+        quotedMessage: QuotedMessage?,
+        userProfile: UserProfile?
     ): okhttp3.RequestBody {
         val slidingHistory = history.takeLast(15)
         val contents = slidingHistory.map { msg ->
@@ -151,7 +154,7 @@ class GeminiAiService(
 
         val requestBodyDto = GeminiRequestDto(
             systemInstruction = GeminiSystemInstruction(
-                parts = listOf(GeminiPart(text = LiaPromptDefinition.SYSTEM_INSTRUCTION))
+                parts = listOf(GeminiPart(text = LiaPromptDefinition.buildSystemInstruction(userProfile)))
             ),
             contents = contents,
             generationConfig = GeminiGenerationConfig(

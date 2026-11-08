@@ -7,6 +7,7 @@ import com.example.aifriendship.domain.model.ChatMessage
 import com.example.aifriendship.domain.model.LiaStatus
 import com.example.aifriendship.domain.model.MessageSender
 import com.example.aifriendship.domain.model.QuotedMessage
+import com.example.aifriendship.domain.model.UserProfile
 import com.example.aifriendship.domain.repository.ChatRepository
 import com.example.aifriendship.domain.service.AiService
 import com.example.aifriendship.domain.service.AllModelsQuotaExceededException
@@ -167,7 +168,8 @@ private class FakeAiService : AiService {
 
     override suspend fun generateReply(
         history: List<ChatMessage>,
-        quotedMessage: QuotedMessage?
+        quotedMessage: QuotedMessage?,
+        userProfile: UserProfile?
     ): Result<AiResponse> {
         if (shouldFailWithQuota) {
             return Result.failure(AllModelsQuotaExceededException())

@@ -3,14 +3,15 @@ package com.example.aifriendship.domain.service
 import com.example.aifriendship.domain.model.AiResponse
 import com.example.aifriendship.domain.model.ChatMessage
 import com.example.aifriendship.domain.model.QuotedMessage
+import com.example.aifriendship.domain.model.UserProfile
 
 interface AiService {
     suspend fun generateReply(
         history: List<ChatMessage>,
-        quotedMessage: QuotedMessage? = null
+        quotedMessage: QuotedMessage? = null,
+        userProfile: UserProfile? = null
     ): Result<AiResponse>
 
     fun getActiveModel(): String
     fun setActiveModel(modelName: String)
 }
-
