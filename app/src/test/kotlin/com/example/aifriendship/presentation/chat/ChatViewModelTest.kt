@@ -8,6 +8,7 @@ import com.example.aifriendship.domain.model.MessageSender
 import com.example.aifriendship.domain.model.QuotedMessage
 import com.example.aifriendship.domain.repository.ChatRepository
 import com.example.aifriendship.domain.service.AiService
+import com.example.aifriendship.domain.service.AllModelsQuotaExceededException
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.Flow
@@ -22,6 +23,7 @@ import kotlinx.coroutines.test.runTest
 import kotlinx.coroutines.test.setMain
 import org.junit.After
 import org.junit.Assert.assertEquals
+import org.junit.Assert.assertTrue
 import org.junit.Before
 import org.junit.Test
 
@@ -82,6 +84,23 @@ class ChatViewModelTest {
         assertEquals(MessageSender.AI, messages[2].sender)
         assertEquals("pointer itu alamat memori", messages[2].text)
     }
+
+    @Test
+    fun onQuotaExceeded_triggersRoleplayExcuseAndCooldown() = runTest {
+        backgroundScope.launch(UnconfinedTestDispatcher(testScheduler)) {
+            viewModel.uiState.collect()
+        }
+
+        fakeAiService.shouldFailWithQuota = true
+        viewModel.onInputTextChanged("Spam chat")
+        viewModel.sendMessage()
+        testDispatcher.scheduler.advanceUntilIdle()
+
+        val messages = fakeRepository.getMessages().first()
+        assertTrue(messages.any { it.text.contains("beli garem") })
+        val status = fakeRepository.getLiaStatus().first()
+        assertEquals("online", status.subtitle)
+    }
 }
 
 private class FakeApiKeyProvider : ApiKeyProvider {
@@ -100,6 +119,7 @@ private class FakeApiKeyProvider : ApiKeyProvider {
 
 private class FakeAiService : AiService {
     private var model = "gemini-1.5-flash"
+    var shouldFailWithQuota = false
 
     override fun getActiveModel(): String = model
 
@@ -111,6 +131,9 @@ private class FakeAiService : AiService {
         history: List<ChatMessage>,
         quotedMessage: QuotedMessage?
     ): Result<AiResponse> {
+        if (shouldFailWithQuota) {
+            return Result.failure(AllModelsQuotaExceededException())
+        }
         return Result.success(
             AiResponse(
                 bubbles = listOf("wah rajin banget", "pointer itu alamat memori"),

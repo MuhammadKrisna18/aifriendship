@@ -12,7 +12,7 @@ import com.example.aifriendship.domain.model.ChatMessage
 import com.example.aifriendship.domain.model.MessageSender
 import com.example.aifriendship.domain.model.QuotedMessage
 import com.example.aifriendship.domain.service.AiService
-import com.example.aifriendship.domain.service.QuotaExceededException
+import com.example.aifriendship.domain.service.AllModelsQuotaExceededException
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import kotlinx.serialization.encodeToString
@@ -37,12 +37,25 @@ class GeminiAiService(
     }
 ) : AiService {
 
-    private var currentModel: String = "gemini-1.5-flash"
+    private val fallbackModelChain = listOf(
+        "gemini-1.5-flash",
+        "gemini-2.0-flash",
+        "gemini-1.5-flash-8b"
+    )
 
-    override fun getActiveModel(): String = currentModel
+    private var activeModelIndex: Int = 0
+
+    override fun getActiveModel(): String = fallbackModelChain[activeModelIndex]
 
     override fun setActiveModel(modelName: String) {
-        currentModel = modelName
+        val foundIndex = fallbackModelChain.indexOf(modelName)
+        if (foundIndex != -1) {
+            activeModelIndex = foundIndex
+        }
+    }
+
+    fun resetToPrimaryModel() {
+        activeModelIndex = 0
     }
 
     override suspend fun generateReply(
@@ -54,6 +67,66 @@ class GeminiAiService(
             return@withContext Result.failure(IllegalStateException("API Key belum disetel"))
         }
 
+        val requestBody = prepareRequestBody(history, quotedMessage)
+        var lastException: Exception? = null
+
+        val modelsToTry = fallbackModelChain.indices.map { offset ->
+            (activeModelIndex + offset) % fallbackModelChain.size
+        }
+
+        for (modelIdx in modelsToTry) {
+            val candidateModel = fallbackModelChain[modelIdx]
+            val url = "https://generativelanguage.googleapis.com/v1beta/models/$candidateModel:generateContent?key=$apiKey"
+            val httpRequest = Request.Builder()
+                .url(url)
+                .post(requestBody)
+                .build()
+
+            try {
+                client.newCall(httpRequest).execute().use { response ->
+                    if (response.code == 429) {
+                        lastException = AllModelsQuotaExceededException("Quota exceeded on $candidateModel", 429)
+                        return@use
+                    }
+
+                    if (!response.isSuccessful) {
+                        val errorBody = response.body?.string().orEmpty()
+                        lastException = IOException("HTTP ${response.code}: $errorBody")
+                        return@use
+                    }
+
+                    val responseBodyString = response.body?.string().orEmpty()
+                    val geminiResponse = json.decodeFromString<GeminiResponseDto>(responseBodyString)
+                    val rawText = geminiResponse.candidates.firstOrNull()
+                        ?.content
+                        ?.parts
+                        ?.firstOrNull()
+                        ?.text
+                        ?.trim()
+                        .orEmpty()
+
+                    val cleanJson = cleanJsonString(rawText)
+                    val parsedAiResponse = try {
+                        json.decodeFromString<AiResponse>(cleanJson)
+                    } catch (_: Exception) {
+                        fallbackTextToAiResponse(rawText)
+                    }
+
+                    activeModelIndex = modelIdx
+                    return@withContext Result.success(parsedAiResponse)
+                }
+            } catch (e: Exception) {
+                lastException = e
+            }
+        }
+
+        Result.failure(lastException ?: AllModelsQuotaExceededException())
+    }
+
+    private fun prepareRequestBody(
+        history: List<ChatMessage>,
+        quotedMessage: QuotedMessage?
+    ): okhttp3.RequestBody {
         val slidingHistory = history.takeLast(15)
         val contents = slidingHistory.map { msg ->
             val role = if (msg.sender == MessageSender.USER) "user" else "model"
@@ -88,47 +161,7 @@ class GeminiAiService(
         )
 
         val jsonString = json.encodeToString(requestBodyDto)
-        val requestBody = jsonString.toRequestBody("application/json".toMediaType())
-
-        val url = "https://generativelanguage.googleapis.com/v1beta/models/$currentModel:generateContent?key=$apiKey"
-        val httpRequest = Request.Builder()
-            .url(url)
-            .post(requestBody)
-            .build()
-
-        try {
-            client.newCall(httpRequest).execute().use { response ->
-                if (response.code == 429) {
-                    return@withContext Result.failure(QuotaExceededException("Quota exceeded on $currentModel", 429))
-                }
-
-                if (!response.isSuccessful) {
-                    val errorBody = response.body?.string().orEmpty()
-                    return@withContext Result.failure(IOException("HTTP ${response.code}: $errorBody"))
-                }
-
-                val responseBodyString = response.body?.string().orEmpty()
-                val geminiResponse = json.decodeFromString<GeminiResponseDto>(responseBodyString)
-                val rawText = geminiResponse.candidates.firstOrNull()
-                    ?.content
-                    ?.parts
-                    ?.firstOrNull()
-                    ?.text
-                    ?.trim()
-                    .orEmpty()
-
-                val cleanJson = cleanJsonString(rawText)
-                val parsedAiResponse = try {
-                    json.decodeFromString<AiResponse>(cleanJson)
-                } catch (_: Exception) {
-                    fallbackTextToAiResponse(rawText)
-                }
-
-                Result.success(parsedAiResponse)
-            }
-        } catch (e: Exception) {
-            Result.failure(e)
-        }
+        return jsonString.toRequestBody("application/json".toMediaType())
     }
 
     private fun cleanJsonString(raw: String): String {
@@ -156,4 +189,3 @@ class GeminiAiService(
         )
     }
 }
-
