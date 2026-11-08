@@ -70,11 +70,26 @@ cd aifriendship
 ./gradlew assembleDebug
 ```
 
+The compiled APK will be located at:
+`app/build/outputs/apk/debug/app-debug.apk`
+
+Install directly to a connected Android device or emulator:
+```bash
+./gradlew installDebug
+```
+
 Run unit tests:
 
 ```bash
 ./gradlew test
 ```
+
+### Initial Setup in App
+
+1. Launch the app on your Android device.
+2. Tap the **Settings icon** (⚙️) on the top-right corner.
+3. Select **Pengaturan API Key** and paste your Google AI Studio (Gemini) API Key.
+4. Start chatting naturally with Lia!
 
 ---
 

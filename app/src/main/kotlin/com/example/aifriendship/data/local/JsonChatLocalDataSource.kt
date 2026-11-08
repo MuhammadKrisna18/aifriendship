@@ -3,6 +3,9 @@ package com.example.aifriendship.data.local
 import android.content.Context
 import com.example.aifriendship.domain.model.ChatMessage
 import com.example.aifriendship.domain.model.LiaStatus
+import com.example.aifriendship.domain.model.MessageDeliveryStatus
+import com.example.aifriendship.domain.model.MessageSender
+import com.example.aifriendship.domain.model.QuotedMessage
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -36,7 +39,17 @@ class JsonChatLocalDataSource(
 
     private fun loadInitialData() {
         val loadedMessages = readMessagesFromFile()
-        _messagesFlow.value = loadedMessages
+        if (loadedMessages.isEmpty()) {
+            val initialSeed = createSeedMessages()
+            _messagesFlow.value = initialSeed
+            try {
+                val content = json.encodeToString(initialSeed)
+                messagesFile.writeText(content)
+            } catch (_: Exception) {
+            }
+        } else {
+            _messagesFlow.value = loadedMessages
+        }
 
         val loadedStatus = readStatusFromFile()
         _statusFlow.value = loadedStatus
@@ -136,5 +149,109 @@ class JsonChatLocalDataSource(
             } catch (_: Exception) {
             }
         }
+    }
+
+    private fun createSeedMessages(): List<ChatMessage> {
+        val now = System.currentTimeMillis()
+        return listOf(
+            ChatMessage(
+                sender = MessageSender.USER,
+                text = "Sekarang ajarin gue pointer",
+                timestamp = now - 600000L,
+                status = MessageDeliveryStatus.READ
+            ),
+            ChatMessage(
+                sender = MessageSender.AI,
+                text = "wah, rajin banget nih",
+                timestamp = now - 590000L
+            ),
+            ChatMessage(
+                sender = MessageSender.AI,
+                text = "malam-malam minta diajarin",
+                timestamp = now - 580000L
+            ),
+            ChatMessage(
+                sender = MessageSender.AI,
+                text = "pointer itu ibarat alamat rumah di memori",
+                timestamp = now - 570000L
+            ),
+            ChatMessage(
+                sender = MessageSender.AI,
+                text = "bukan datanya langsung yang disimpen",
+                timestamp = now - 560000L
+            ),
+            ChatMessage(
+                sender = MessageSender.AI,
+                text = "tapi lokasi tempat data itu berada",
+                timestamp = now - 550000L
+            ),
+            ChatMessage(
+                sender = MessageSender.AI,
+                text = "coba bayangin kayak google maps buat variabel lu biar ga tersesat",
+                timestamp = now - 540000L
+            ),
+            ChatMessage(
+                sender = MessageSender.USER,
+                text = "Contoh code, bingung cok maksudnya * sama &",
+                timestamp = now - 480000L,
+                status = MessageDeliveryStatus.READ
+            ),
+            ChatMessage(
+                sender = MessageSender.AI,
+                text = "oh bintang sama and persampelan itu emang bikin puyeng",
+                timestamp = now - 470000L
+            ),
+            ChatMessage(
+                sender = MessageSender.USER,
+                text = "Oh gitu, misal *a = &b berarti nunjuk nilai dari b ya?",
+                timestamp = now - 360000L,
+                status = MessageDeliveryStatus.READ
+            ),
+            ChatMessage(
+                sender = MessageSender.AI,
+                text = "eh hampir bener sih tapi kebalik",
+                timestamp = now - 350000L
+            ),
+            ChatMessage(
+                sender = MessageSender.AI,
+                text = "ampersand itu buat ngambil alamat si b",
+                timestamp = now - 340000L
+            ),
+            ChatMessage(
+                sender = MessageSender.AI,
+                text = "bintang itu buat naro nilai di alamat itu",
+                timestamp = now - 330000L
+            ),
+            ChatMessage(
+                sender = MessageSender.AI,
+                text = "makanya jangan ngebut belajarnya",
+                timestamp = now - 320000L
+            ),
+            ChatMessage(
+                sender = MessageSender.AI,
+                text = "pusing kan jadinya malam malam gini",
+                timestamp = now - 310000L
+            ),
+            ChatMessage(
+                sender = MessageSender.USER,
+                text = "Gancok😂contohin yg bener",
+                timestamp = now - 240000L,
+                status = MessageDeliveryStatus.READ
+            ),
+            ChatMessage(
+                sender = MessageSender.AI,
+                text = "ih ketawa lagi dia",
+                timestamp = now - 230000L,
+                quotedMessage = QuotedMessage(
+                    senderName = "Krisna",
+                    text = "Gancok😂contohin yg bener"
+                )
+            ),
+            ChatMessage(
+                sender = MessageSender.AI,
+                text = "nih contoh benernya liat baik baik",
+                timestamp = now - 220000L
+            )
+        )
     }
 }
