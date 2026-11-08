@@ -156,7 +156,7 @@ private class FakeApiKeyProvider : ApiKeyProvider {
 }
 
 private class FakeAiService : AiService {
-    private var model = "gemini-1.5-flash"
+    private var model = "gemini-2.5-flash"
     var shouldFailWithQuota = false
 
     override fun getActiveModel(): String = model
