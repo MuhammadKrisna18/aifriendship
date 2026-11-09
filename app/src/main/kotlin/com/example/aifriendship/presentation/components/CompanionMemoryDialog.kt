@@ -44,6 +44,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.aifriendship.domain.model.AiCompanion
+import com.example.aifriendship.ui.theme.parseHexColor
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
@@ -57,10 +58,8 @@ fun CompanionMemoryDialog(
     onAddFact: (String) -> Unit
 ) {
     var newFactInput by remember { mutableStateOf("") }
-    val avatarColor = try {
-        Color(android.graphics.Color.parseColor(companion.avatarColorHex))
-    } catch (_: Exception) {
-        MaterialTheme.colorScheme.primary
+    val avatarColor = remember(companion.avatarColorHex) {
+        parseHexColor(companion.avatarColorHex)
     }
 
     val effectiveUserName = userName.trim().ifBlank { "Kamu" }

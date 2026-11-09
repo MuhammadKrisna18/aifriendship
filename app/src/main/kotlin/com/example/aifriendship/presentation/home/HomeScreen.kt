@@ -72,6 +72,7 @@ import com.example.aifriendship.domain.model.CompanionMood
 import com.example.aifriendship.domain.model.CompanionRelationship
 import com.example.aifriendship.presentation.chat.components.UserProfileDialog
 import com.example.aifriendship.presentation.components.CompanionMemoryDialog
+import com.example.aifriendship.ui.theme.parseHexColor
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -382,10 +383,8 @@ private fun CompanionChatRow(
     lastMessage: ChatMessage?,
     onClick: () -> Unit
 ) {
-    val avatarColor = try {
-        Color(android.graphics.Color.parseColor(companion.avatarColorHex))
-    } catch (_: Exception) {
-        MaterialTheme.colorScheme.primary
+    val avatarColor = remember(companion.avatarColorHex) {
+        parseHexColor(companion.avatarColorHex)
     }
 
     Row(
@@ -553,10 +552,8 @@ private fun CompanionsTabContent(
         }
 
         items(companions, key = { it.id }) { companion ->
-            val avatarColor = try {
-                Color(android.graphics.Color.parseColor(companion.avatarColorHex))
-            } catch (_: Exception) {
-                MaterialTheme.colorScheme.primary
+            val avatarColor = remember(companion.avatarColorHex) {
+                parseHexColor(companion.avatarColorHex)
             }
 
             Card(

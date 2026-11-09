@@ -27,3 +27,11 @@ val ChatInputBorder = Color(0xFFCBD5E1)
 
 val OnlineBadgeGreen = Color(0xFF10B981)
 val OnlineBadgeBackground = Color(0xFFD1FAE5)
+
+fun parseHexColor(hex: String, fallback: Color = primaryLight): Color {
+    if (hex.isBlank()) return fallback
+    return runCatching {
+        val cleanHex = if (hex.startsWith("#")) hex else "#$hex"
+        Color(android.graphics.Color.parseColor(cleanHex))
+    }.getOrDefault(fallback)
+}

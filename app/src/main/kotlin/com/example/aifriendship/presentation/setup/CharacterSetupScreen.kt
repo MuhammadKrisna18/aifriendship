@@ -60,6 +60,7 @@ import com.example.aifriendship.domain.model.CompanionTrait
 import com.example.aifriendship.domain.model.CompanionTraitCategory
 import com.example.aifriendship.presentation.chat.components.LiaAvatar
 import com.example.aifriendship.ui.theme.ChatCanvasBackground
+import com.example.aifriendship.ui.theme.parseHexColor
 import com.example.aifriendship.ui.theme.primaryLight
 
 @Composable
@@ -199,11 +200,7 @@ fun CharacterSetupScreen(
                                 verticalAlignment = Alignment.CenterVertically
                             ) {
                                 state.availableColors.forEach { colorHex ->
-                                    val parsedColor = try {
-                                        Color(android.graphics.Color.parseColor(colorHex))
-                                    } catch (_: Exception) {
-                                        primaryLight
-                                    }
+                                    val parsedColor = parseHexColor(colorHex)
                                     val isSelected = state.avatarColorHex.equals(colorHex, ignoreCase = true)
 
                                     Box(
@@ -277,8 +274,10 @@ fun CharacterSetupScreen(
 
                             Spacer(modifier = Modifier.height(12.dp))
 
-                            val filteredTraits = state.availableTraits.filter { trait ->
-                                selectedCategory == null || trait.category == selectedCategory
+                            val filteredTraits = remember(state.availableTraits, selectedCategory) {
+                                state.availableTraits.filter { trait ->
+                                    selectedCategory == null || trait.category == selectedCategory
+                                }
                             }
 
                             Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {

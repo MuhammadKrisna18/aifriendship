@@ -24,6 +24,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
 import com.example.aifriendship.ui.theme.AiBubbleBackground
 import com.example.aifriendship.ui.theme.AiBubbleBorder
@@ -93,7 +94,7 @@ fun TypingIndicator(
                 dots.forEach { anim ->
                     Box(
                         modifier = Modifier
-                            .offset(y = anim.value.dp)
+                            .offset { IntOffset(x = 0, y = anim.value.dp.roundToPx()) }
                             .size(7.dp)
                             .clip(CircleShape)
                             .background(primaryLight)
