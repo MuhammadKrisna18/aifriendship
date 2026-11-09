@@ -2,8 +2,8 @@ package com.example.aifriendship.presentation.setup
 
 import com.example.aifriendship.domain.model.AiCompanion
 import com.example.aifriendship.domain.model.ChatMessage
-import com.example.aifriendship.domain.model.CompanionTrait
-import com.example.aifriendship.domain.model.CompanionTraitCategory
+import com.example.aifriendship.domain.model.CompanionMood
+import com.example.aifriendship.domain.model.CompanionRelationship
 import com.example.aifriendship.domain.model.LiaStatus
 import com.example.aifriendship.domain.model.UserProfile
 import com.example.aifriendship.domain.repository.ChatRepository
@@ -21,7 +21,6 @@ import kotlinx.coroutines.test.runTest
 import kotlinx.coroutines.test.setMain
 import org.junit.After
 import org.junit.Assert.assertEquals
-import org.junit.Assert.assertNotNull
 import org.junit.Assert.assertTrue
 import org.junit.Before
 import org.junit.Test
@@ -53,7 +52,7 @@ class CharacterSetupViewModelTest {
         val state = viewModel.uiState.value
         assertEquals("", state.userName)
         assertEquals("Lia", state.companionName)
-        assertEquals(CompanionTrait.BARBAR, state.selectedTrait)
+        assertEquals("#6366F1", state.avatarColorHex)
     }
 
     @Test
@@ -69,25 +68,9 @@ class CharacterSetupViewModelTest {
     }
 
     @Test
-    fun onTraitToggled_addsAndRemovesTraitsUpToMax() = runTest {
-        viewModel.onTraitToggled(CompanionTrait.TSUNDERE)
-        assertTrue(viewModel.uiState.value.selectedTraits.contains(CompanionTrait.TSUNDERE))
-
-        viewModel.onTraitToggled(CompanionTrait.MATERNAL)
-        assertTrue(viewModel.uiState.value.selectedTraits.contains(CompanionTrait.MATERNAL))
-        assertEquals(3, viewModel.uiState.value.selectedTraits.size)
-
-        viewModel.onTraitToggled(CompanionTrait.CHEERFUL)
-        assertEquals(3, viewModel.uiState.value.selectedTraits.size)
-
-        viewModel.onTraitToggled(CompanionTrait.BARBAR)
-        assertEquals(2, viewModel.uiState.value.selectedTraits.size)
-    }
-
-    @Test
-    fun onCategorySelected_updatesCategoryFilter() = runTest {
-        viewModel.onCategorySelected(CompanionTraitCategory.SPICY)
-        assertEquals(CompanionTraitCategory.SPICY, viewModel.uiState.value.selectedCategory)
+    fun onAvatarColorSelected_updatesState() = runTest {
+        viewModel.onAvatarColorSelected("#EC4899")
+        assertEquals("#EC4899", viewModel.uiState.value.avatarColorHex)
     }
 
     @Test
@@ -95,7 +78,6 @@ class CharacterSetupViewModelTest {
         viewModel.onRandomize()
         val state = viewModel.uiState.value
         assertTrue(state.companionName.isNotBlank())
-        assertNotNull(state.selectedTrait)
         assertTrue(state.avatarColorHex.startsWith("#"))
     }
 
@@ -104,7 +86,7 @@ class CharacterSetupViewModelTest {
         var completed = false
         viewModel.onUserNameChanged("Krisna")
         viewModel.onCompanionNameChanged("Clara")
-        viewModel.onTraitToggled(CompanionTrait.TSUNDERE)
+        viewModel.onAvatarColorSelected("#10B981")
 
         viewModel.saveAndStartChat {
             completed = true
@@ -115,6 +97,9 @@ class CharacterSetupViewModelTest {
         val profile = fakeUserRepository.getUserProfile()
         assertEquals("Krisna", profile.name)
         assertEquals("Clara", profile.activeCompanion.name)
+        assertEquals("#10B981", profile.activeCompanion.avatarColorHex)
+        assertEquals(CompanionRelationship.TEMAN_BIASA, profile.activeCompanion.currentRelationship)
+        assertEquals(CompanionMood.BIASA, profile.activeCompanion.currentMood)
         assertTrue(profile.isOnboardingCompleted)
 
         val messages = fakeChatRepository.getMessages().first()

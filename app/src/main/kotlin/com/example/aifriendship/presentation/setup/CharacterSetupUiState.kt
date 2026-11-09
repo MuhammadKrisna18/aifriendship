@@ -1,24 +1,26 @@
 package com.example.aifriendship.presentation.setup
 
 import com.example.aifriendship.domain.model.CompanionTrait
-import com.example.aifriendship.domain.model.CompanionTraitCategory
 
 data class CharacterSetupUiState(
     val userName: String = "",
     val companionName: String = "Lia",
-    val selectedTraits: Set<CompanionTrait> = setOf(CompanionTrait.BARBAR),
-    val selectedCategory: CompanionTraitCategory? = null,
     val avatarColorHex: String = "#6366F1",
     val isSaving: Boolean = false,
-    val maxTraits: Int = 3
+    val availableColors: List<String> = listOf(
+        "#6366F1",
+        "#EC4899",
+        "#8B5CF6",
+        "#10B981",
+        "#F59E0B",
+        "#06B6D4",
+        "#F43F5E",
+        "#3B82F6"
+    )
 ) {
     val selectedTrait: CompanionTrait
-        get() = selectedTraits.firstOrNull() ?: CompanionTrait.BARBAR
-
-    val customTraitDescription: String = ""
+        get() = CompanionTrait.BARBAR
 
     val traitsSummary: String
-        get() = selectedTraits.joinToString(", ") {
-            it.title.replace(Regex("^[\\p{So}\\p{Sk}\\p{Sm}\\p{Sc}]+\\s*"), "")
-        }
+        get() = "Sahabat AI Dinamis"
 }
