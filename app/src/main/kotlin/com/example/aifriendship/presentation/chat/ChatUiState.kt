@@ -7,8 +7,7 @@ import com.example.aifriendship.domain.model.UserProfile
 
 enum class OnboardingStep {
     COMPLETED,
-    ASK_NAME,
-    ASK_VIBE
+    ASK_NAME
 }
 
 data class ChatUiState(

@@ -2,6 +2,9 @@ package com.example.aifriendship.data.remote.update
 
 import android.content.Context
 import android.content.Intent
+import android.net.Uri
+import android.os.Build
+import android.provider.Settings
 import androidx.core.content.FileProvider
 import com.example.aifriendship.BuildConfig
 import com.example.aifriendship.data.remote.update.dto.GitHubReleaseDto
@@ -18,7 +21,10 @@ import java.io.IOException
 
 class GitHubUpdateService(
     private val context: Context,
-    private val client: OkHttpClient = OkHttpClient(),
+    private val client: OkHttpClient = OkHttpClient.Builder()
+        .followRedirects(true)
+        .followSslRedirects(true)
+        .build(),
     private val json: Json = Json { ignoreUnknownKeys = true }
 ) : AppUpdateService {
 
@@ -63,6 +69,19 @@ class GitHubUpdateService(
 
     override fun downloadAndInstallUpdate(downloadUrl: String, fileName: String): Result<Unit> {
         return try {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                if (!context.packageManager.canRequestPackageInstalls()) {
+                    val settingsIntent = Intent(
+                        Settings.ACTION_MANAGE_UNKNOWN_APP_SOURCES,
+                        Uri.parse("package:${context.packageName}")
+                    ).apply {
+                        flags = Intent.FLAG_ACTIVITY_NEW_TASK
+                    }
+                    context.startActivity(settingsIntent)
+                    return Result.failure(IllegalStateException("Izin instal aplikasi belum aktif"))
+                }
+            }
+
             val request = Request.Builder().url(downloadUrl).build()
             val response = client.newCall(request).execute()
 
@@ -70,7 +89,8 @@ class GitHubUpdateService(
                 return Result.failure(IOException("Failed to download APK: HTTP ${response.code}"))
             }
 
-            val apkFile = File(context.cacheDir, "update.apk")
+            val targetDir = context.getExternalFilesDir(null) ?: context.filesDir
+            val apkFile = File(targetDir, "update.apk")
             if (apkFile.exists()) apkFile.delete()
 
             response.body?.byteStream()?.use { input ->
@@ -87,7 +107,9 @@ class GitHubUpdateService(
 
             val installIntent = Intent(Intent.ACTION_VIEW).apply {
                 setDataAndType(apkUri, "application/vnd.android.package-archive")
-                flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_GRANT_READ_URI_PERMISSION
+                flags = Intent.FLAG_ACTIVITY_NEW_TASK or
+                        Intent.FLAG_GRANT_READ_URI_PERMISSION or
+                        Intent.FLAG_ACTIVITY_CLEAR_TOP
             }
 
             context.startActivity(installIntent)
@@ -114,4 +136,3 @@ class GitHubUpdateService(
         return false
     }
 }
-

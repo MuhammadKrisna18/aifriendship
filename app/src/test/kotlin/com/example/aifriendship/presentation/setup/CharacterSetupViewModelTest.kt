@@ -2,7 +2,6 @@ package com.example.aifriendship.presentation.setup
 
 import com.example.aifriendship.domain.model.AiCompanion
 import com.example.aifriendship.domain.model.ChatMessage
-import com.example.aifriendship.domain.model.CommunicationVibe
 import com.example.aifriendship.domain.model.CompanionTrait
 import com.example.aifriendship.domain.model.CompanionTraitCategory
 import com.example.aifriendship.domain.model.LiaStatus
@@ -139,10 +138,6 @@ private class FakeUserRepository(
 
     override suspend fun updateName(name: String) {
         profileFlow.value = profileFlow.value.copy(name = name)
-    }
-
-    override suspend fun updateVibe(vibe: CommunicationVibe) {
-        profileFlow.value = profileFlow.value.copy(vibe = vibe)
     }
 
     override suspend fun updateCompanion(companion: AiCompanion) {

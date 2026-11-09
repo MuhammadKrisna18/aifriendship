@@ -4,7 +4,6 @@ import com.example.aifriendship.data.local.UserLocalDataSource
 import com.example.aifriendship.data.remote.gemini.LiaPromptDefinition
 import com.example.aifriendship.data.repository.DefaultUserRepository
 import com.example.aifriendship.domain.model.AiCompanion
-import com.example.aifriendship.domain.model.CommunicationVibe
 import com.example.aifriendship.domain.model.CompanionTrait
 import com.example.aifriendship.domain.model.RandomCompanionGenerator
 import com.example.aifriendship.domain.model.UserProfile
@@ -31,10 +30,9 @@ class UserRepositoryTest {
     }
 
     @Test
-    fun defaultProfile_hasEmptyNameAndDefaultVibe() = runTest {
+    fun defaultProfile_hasEmptyNameAndNotCompleted() = runTest {
         val profile = repository.getUserProfile()
         assertEquals("", profile.name)
-        assertEquals(CommunicationVibe.BARBAR, profile.vibe)
         assertEquals(false, profile.isOnboardingCompleted)
         assertEquals("Lia", profile.companion.name)
         assertEquals(CompanionTrait.BARBAR, profile.companion.trait)
@@ -45,13 +43,6 @@ class UserRepositoryTest {
         repository.updateName("Krisna")
         val updated = repository.observeUserProfile().first()
         assertEquals("Krisna", updated.name)
-    }
-
-    @Test
-    fun updateVibe_persistsAndUpdatesFlow() = runTest {
-        repository.updateVibe(CommunicationVibe.CHILL)
-        val updated = repository.observeUserProfile().first()
-        assertEquals(CommunicationVibe.CHILL, updated.vibe)
     }
 
     @Test

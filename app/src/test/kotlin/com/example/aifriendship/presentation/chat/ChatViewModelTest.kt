@@ -5,7 +5,6 @@ import com.example.aifriendship.domain.model.AiCompanion
 import com.example.aifriendship.domain.model.AiResponse
 import com.example.aifriendship.domain.model.AppUpdateInfo
 import com.example.aifriendship.domain.model.ChatMessage
-import com.example.aifriendship.domain.model.CommunicationVibe
 import com.example.aifriendship.domain.model.LiaStatus
 import com.example.aifriendship.domain.model.MessageDeliveryStatus
 import com.example.aifriendship.domain.model.MessageSender
@@ -135,9 +134,9 @@ class ChatViewModelTest {
     }
 
     @Test
-    fun onboarding_handlesNameInputAndTransitionsToVibe() = runTest {
+    fun onboarding_handlesNameInputAndCompletesOnboarding() = runTest {
         val emptyUserRepo = FakeUserRepository(
-            UserProfile(name = "", vibe = CommunicationVibe.BARBAR, isOnboardingCompleted = false)
+            UserProfile(name = "", isOnboardingCompleted = false)
         )
         val freshViewModel = ChatViewModel(
             fakeRepository,
@@ -158,12 +157,6 @@ class ChatViewModelTest {
         testDispatcher.scheduler.advanceUntilIdle()
 
         assertEquals("Krisna", emptyUserRepo.getUserProfile().name)
-        assertEquals(OnboardingStep.ASK_VIBE, freshViewModel.uiState.value.onboardingStep)
-
-        freshViewModel.selectVibe(CommunicationVibe.CHILL)
-        testDispatcher.scheduler.advanceUntilIdle()
-
-        assertEquals(CommunicationVibe.CHILL, emptyUserRepo.getUserProfile().vibe)
         assertTrue(emptyUserRepo.getUserProfile().isOnboardingCompleted)
         assertEquals(OnboardingStep.COMPLETED, freshViewModel.uiState.value.onboardingStep)
     }
@@ -282,10 +275,6 @@ private class FakeUserRepository(
 
     override suspend fun updateName(name: String) {
         profileFlow.value = profileFlow.value.copy(name = name)
-    }
-
-    override suspend fun updateVibe(vibe: CommunicationVibe) {
-        profileFlow.value = profileFlow.value.copy(vibe = vibe)
     }
 
     override suspend fun updateCompanion(companion: AiCompanion) {

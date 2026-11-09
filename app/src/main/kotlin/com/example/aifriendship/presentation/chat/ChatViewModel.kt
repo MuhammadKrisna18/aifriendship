@@ -9,7 +9,6 @@ import com.example.aifriendship.AiFriendshipApplication
 import com.example.aifriendship.data.config.ApiKeyProvider
 import com.example.aifriendship.domain.model.AppUpdateInfo
 import com.example.aifriendship.domain.model.ChatMessage
-import com.example.aifriendship.domain.model.CommunicationVibe
 import com.example.aifriendship.domain.model.LiaStatus
 import com.example.aifriendship.domain.model.MessageDeliveryStatus
 import com.example.aifriendship.domain.model.MessageSender
@@ -97,7 +96,7 @@ class ChatViewModel(
                 } else if (profile.name.isBlank()) {
                     _onboardingStep.value = OnboardingStep.ASK_NAME
                 } else {
-                    _onboardingStep.value = OnboardingStep.ASK_VIBE
+                    _onboardingStep.value = OnboardingStep.COMPLETED
                 }
             } else {
                 _onboardingStep.value = OnboardingStep.COMPLETED
@@ -184,14 +183,6 @@ class ChatViewModel(
             OnboardingStep.ASK_NAME -> {
                 handleOnboardingNameInput(textToSend)
             }
-            OnboardingStep.ASK_VIBE -> {
-                val matchedVibe = when {
-                    textToSend.contains("kalem", ignoreCase = true) || textToSend.contains("chill", ignoreCase = true) -> CommunicationVibe.CHILL
-                    textToSend.contains("absurd", ignoreCase = true) || textToSend.contains("acak", ignoreCase = true) || textToSend.contains("campur", ignoreCase = true) -> CommunicationVibe.ABSURD
-                    else -> CommunicationVibe.BARBAR
-                }
-                selectVibe(matchedVibe)
-            }
             OnboardingStep.COMPLETED -> {
                 sendNormalMessage(textToSend)
             }
@@ -208,50 +199,13 @@ class ChatViewModel(
             )
             chatRepository.saveMessage(userMessage)
             userRepository.updateName(name)
-            _onboardingStep.value = OnboardingStep.ASK_VIBE
-
-            delay(500L)
-            chatRepository.updateLiaStatus(
-                LiaStatus(
-                    subtitle = "Menyesuaikan frekuensi...",
-                    isOnline = true,
-                    isTyping = true
-                )
-            )
-            delay(1200L)
-            val liaReply = ChatMessage(
-                sender = MessageSender.AI,
-                text = "Oalah $name! Siap sob $name. Btw gaya ngobrol yang lu suka gimana nih? Biar gue bisa nyesuaiin frekuensi kita haha.",
-                status = MessageDeliveryStatus.SENT
-            )
-            chatRepository.saveMessage(liaReply)
-            chatRepository.updateLiaStatus(
-                LiaStatus(
-                    subtitle = "Nungguin pilihan lu",
-                    isOnline = true,
-                    isTyping = false
-                )
-            )
-        }
-    }
-
-    fun selectVibe(vibe: CommunicationVibe) {
-        _inputText.value = ""
-        viewModelScope.launch {
-            val userMessage = ChatMessage(
-                sender = MessageSender.USER,
-                text = vibe.label,
-                status = MessageDeliveryStatus.SENT
-            )
-            chatRepository.saveMessage(userMessage)
-            userRepository.updateVibe(vibe)
             userRepository.completeOnboarding()
             _onboardingStep.value = OnboardingStep.COMPLETED
 
             delay(500L)
             chatRepository.updateLiaStatus(
                 LiaStatus(
-                    subtitle = "Sahabat lu sekarang",
+                    subtitle = "Lagi ngetik...",
                     isOnline = true,
                     isTyping = true
                 )
@@ -259,7 +213,7 @@ class ChatViewModel(
             delay(1200L)
             val liaReply = ChatMessage(
                 sender = MessageSender.AI,
-                text = "Sip mantep, udah gue catet di memori gue! Lu jangan sungkan ya, kalau lagi gabut, pengen curhat, atau mau sharing apa aja langsung senggol gue di sini!",
+                text = "Oalah $name! Siap sob $name. Lu jangan sungkan ya, kalau lagi gabut, pengen curhat, atau mau sharing apa aja langsung senggol gue di sini!",
                 status = MessageDeliveryStatus.SENT
             )
             chatRepository.saveMessage(liaReply)
@@ -440,7 +394,6 @@ class ChatViewModel(
             userRepository.saveUserProfile(
                 UserProfile(
                     name = "",
-                    vibe = CommunicationVibe.BARBAR,
                     isOnboardingCompleted = false
                 )
             )
@@ -457,16 +410,9 @@ class ChatViewModel(
         _isUserProfileDialogVisible.value = false
     }
 
-    fun updateUserProfile(name: String, vibe: CommunicationVibe) {
+    fun updateUserProfile(name: String) {
         viewModelScope.launch {
-            val current = userRepository.getUserProfile()
-            userRepository.saveUserProfile(
-                current.copy(
-                    name = name.trim(),
-                    vibe = vibe,
-                    isOnboardingCompleted = true
-                )
-            )
+            userRepository.updateName(name.trim())
             _isUserProfileDialogVisible.value = false
         }
     }

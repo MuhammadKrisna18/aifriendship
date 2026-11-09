@@ -1,5 +1,7 @@
 package com.example.aifriendship.presentation.home
 
+import android.content.Intent
+import android.net.Uri
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -24,6 +26,7 @@ import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.AutoAwesome
 import androidx.compose.material.icons.filled.DeleteOutline
 import androidx.compose.material.icons.filled.Person
+import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Badge
 import androidx.compose.material3.BadgedBox
 import androidx.compose.material3.Button
@@ -40,6 +43,7 @@ import androidx.compose.material3.PrimaryTabRow
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Tab
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
@@ -48,6 +52,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
@@ -67,6 +72,7 @@ fun HomeScreen(
     viewModel: HomeViewModel = viewModel(factory = HomeViewModel.Factory)
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
+    val context = LocalContext.current
 
     Scaffold(
         topBar = {
@@ -188,11 +194,66 @@ fun HomeScreen(
         }
     }
 
+    uiState.updateInfo?.let { update ->
+        if (update.isUpdateAvailable) {
+            AlertDialog(
+                onDismissRequest = { viewModel.dismissUpdateDialog() },
+                title = { Text("Update Baru Tersedia! 🚀") },
+                text = {
+                    Column {
+                        Text(
+                            text = "Versi terbaru (${update.latestVersion}) sudah siap diunduh.",
+                            fontSize = 14.sp
+                        )
+                        if (update.releaseNotes.isNotBlank()) {
+                            Spacer(modifier = Modifier.height(8.dp))
+                            Text(
+                                text = "Catatan Pembaruan:\n${update.releaseNotes}",
+                                fontSize = 12.sp,
+                                color = MaterialTheme.colorScheme.onSurfaceVariant
+                            )
+                        }
+                    }
+                },
+                confirmButton = {
+                    Row {
+                        TextButton(
+                            onClick = {
+                                val intent = Intent(
+                                    Intent.ACTION_VIEW,
+                                    Uri.parse("https://github.com/MuhammadKrisna18/aifriendship/releases/latest")
+                                )
+                                context.startActivity(intent)
+                                viewModel.dismissUpdateDialog()
+                            }
+                        ) {
+                            Text("Buka Browser")
+                        }
+                        Spacer(modifier = Modifier.width(8.dp))
+                        Button(
+                            onClick = {
+                                viewModel.downloadAndInstallUpdate()
+                                viewModel.dismissUpdateDialog()
+                            }
+                        ) {
+                            Text("Pasang Otomatis")
+                        }
+                    }
+                },
+                dismissButton = {
+                    TextButton(onClick = { viewModel.dismissUpdateDialog() }) {
+                        Text("Nanti Saja")
+                    }
+                }
+            )
+        }
+    }
+
     if (uiState.showProfileDialog) {
         UserProfileDialog(
             currentProfile = uiState.userProfile,
             onDismiss = { viewModel.onDismissProfileDialog() },
-            onSave = { name, vibe -> viewModel.onSaveProfile(name, vibe) }
+            onSave = { name -> viewModel.onSaveProfile(name) }
         )
     }
 }

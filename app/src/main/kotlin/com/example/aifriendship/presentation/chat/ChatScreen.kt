@@ -1,13 +1,17 @@
 package com.example.aifriendship.presentation.chat
 
+import android.content.Intent
+import android.net.Uri
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
@@ -20,6 +24,7 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -28,7 +33,6 @@ import com.example.aifriendship.domain.model.MessageSender
 import com.example.aifriendship.presentation.chat.components.AiChatBubble
 import com.example.aifriendship.presentation.chat.components.ChatBottomBar
 import com.example.aifriendship.presentation.chat.components.ChatTopBar
-import com.example.aifriendship.presentation.chat.components.QuickVibeChips
 import com.example.aifriendship.presentation.chat.components.TypingIndicator
 import com.example.aifriendship.presentation.chat.components.UserChatBubble
 import com.example.aifriendship.presentation.chat.components.UserProfileDialog
@@ -45,6 +49,7 @@ fun ChatScreen(
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
     val listState = rememberLazyListState()
+    val context = LocalContext.current
 
     val companion = uiState.userProfile.activeCompanion
     val companionName = companion.name.ifBlank { "Lia" }
@@ -61,7 +66,7 @@ fun ChatScreen(
         UserProfileDialog(
             currentProfile = uiState.userProfile,
             onDismiss = { viewModel.hideUserProfileDialog() },
-            onSave = { name, vibe -> viewModel.updateUserProfile(name, vibe) }
+            onSave = { name -> viewModel.updateUserProfile(name) }
         )
     }
 
@@ -87,13 +92,28 @@ fun ChatScreen(
                     }
                 },
                 confirmButton = {
-                    TextButton(
-                        onClick = {
-                            viewModel.downloadAndInstallUpdate()
-                            viewModel.dismissUpdateDialog()
+                    Row {
+                        TextButton(
+                            onClick = {
+                                val intent = Intent(
+                                    Intent.ACTION_VIEW,
+                                    Uri.parse("https://github.com/MuhammadKrisna18/aifriendship/releases/latest")
+                                )
+                                context.startActivity(intent)
+                                viewModel.dismissUpdateDialog()
+                            }
+                        ) {
+                            Text("Buka Browser")
                         }
-                    ) {
-                        Text("Pasang Sekarang", color = UserBubbleColor)
+                        Spacer(modifier = Modifier.width(8.dp))
+                        TextButton(
+                            onClick = {
+                                viewModel.downloadAndInstallUpdate()
+                                viewModel.dismissUpdateDialog()
+                            }
+                        ) {
+                            Text("Pasang Otomatis", color = UserBubbleColor)
+                        }
                     }
                 },
                 dismissButton = {
@@ -119,20 +139,14 @@ fun ChatScreen(
             )
         },
         bottomBar = {
-            Column {
-                QuickVibeChips(
-                    visible = (uiState.onboardingStep == OnboardingStep.ASK_VIBE),
-                    onVibeSelected = { viewModel.selectVibe(it) }
-                )
-                ChatBottomBar(
-                    inputText = uiState.inputText,
-                    onInputChanged = { viewModel.onInputTextChanged(it) },
-                    onSendMessage = { viewModel.sendMessage() },
-                    placeholder = if (uiState.onboardingStep == OnboardingStep.ASK_NAME) "Ketik nama panggilanmu..." else "Ketik pesan ke $companionName...",
-                    replyingTo = uiState.replyingTo,
-                    onDismissReply = { viewModel.onReplyMessage(null) }
-                )
-            }
+            ChatBottomBar(
+                inputText = uiState.inputText,
+                onInputChanged = { viewModel.onInputTextChanged(it) },
+                onSendMessage = { viewModel.sendMessage() },
+                placeholder = if (uiState.onboardingStep == OnboardingStep.ASK_NAME) "Ketik nama panggilanmu..." else "Ketik pesan ke $companionName...",
+                replyingTo = uiState.replyingTo,
+                onDismissReply = { viewModel.onReplyMessage(null) }
+            )
         },
         containerColor = ChatCanvasBackground,
         modifier = modifier.fillMaxSize()

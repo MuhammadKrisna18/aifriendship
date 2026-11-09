@@ -1,13 +1,14 @@
 package com.example.aifriendship.presentation.home
 
 import com.example.aifriendship.domain.model.AiCompanion
+import com.example.aifriendship.domain.model.AppUpdateInfo
 import com.example.aifriendship.domain.model.ChatMessage
-import com.example.aifriendship.domain.model.CommunicationVibe
 import com.example.aifriendship.domain.model.CompanionTrait
 import com.example.aifriendship.domain.model.LiaStatus
 import com.example.aifriendship.domain.model.UserProfile
 import com.example.aifriendship.domain.repository.ChatRepository
 import com.example.aifriendship.domain.repository.UserRepository
+import com.example.aifriendship.domain.service.AppUpdateService
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.Flow
@@ -34,6 +35,7 @@ class HomeViewModelTest {
     private val testDispatcher = StandardTestDispatcher()
     private lateinit var fakeUserRepository: FakeUserRepository
     private lateinit var fakeChatRepository: FakeChatRepository
+    private lateinit var fakeAppUpdateService: FakeAppUpdateService
     private lateinit var viewModel: HomeViewModel
 
     @Before
@@ -50,7 +52,8 @@ class HomeViewModelTest {
             )
         )
         fakeChatRepository = FakeChatRepository()
-        viewModel = HomeViewModel(fakeUserRepository, fakeChatRepository)
+        fakeAppUpdateService = FakeAppUpdateService()
+        viewModel = HomeViewModel(fakeUserRepository, fakeChatRepository, fakeAppUpdateService)
     }
 
     @After
@@ -110,17 +113,16 @@ class HomeViewModelTest {
     }
 
     @Test
-    fun onSaveProfile_updatesNameAndVibe() = runTest {
+    fun onSaveProfile_updatesName() = runTest {
         backgroundScope.launch(UnconfinedTestDispatcher(testScheduler)) {
             viewModel.uiState.collect()
         }
         advanceUntilIdle()
-        viewModel.onSaveProfile("Krisna Arga", CommunicationVibe.CHILL)
+        viewModel.onSaveProfile("Krisna Arga")
         advanceUntilIdle()
 
         val updatedProfile = fakeUserRepository.getUserProfile()
         assertEquals("Krisna Arga", updatedProfile.name)
-        assertEquals(CommunicationVibe.CHILL, updatedProfile.vibe)
         assertFalse(viewModel.uiState.value.showProfileDialog)
     }
 
@@ -172,10 +174,6 @@ private class FakeUserRepository(
 
     override suspend fun updateName(name: String) {
         profileFlow.value = profileFlow.value.copy(name = name)
-    }
-
-    override suspend fun updateVibe(vibe: CommunicationVibe) {
-        profileFlow.value = profileFlow.value.copy(vibe = vibe)
     }
 
     override suspend fun updateCompanion(companion: AiCompanion) {
@@ -241,4 +239,18 @@ private class FakeChatRepository : ChatRepository {
     override suspend fun updateLiaStatus(status: LiaStatus) {
         statusFlow.value = status
     }
+}
+
+private class FakeAppUpdateService : AppUpdateService {
+    override suspend fun checkForUpdate(): Result<AppUpdateInfo> = Result.success(
+        AppUpdateInfo(
+            isUpdateAvailable = false,
+            currentVersion = "1.3.0",
+            latestVersion = "1.3.0",
+            downloadUrl = "",
+            releaseNotes = ""
+        )
+    )
+
+    override fun downloadAndInstallUpdate(downloadUrl: String, fileName: String): Result<Unit> = Result.success(Unit)
 }

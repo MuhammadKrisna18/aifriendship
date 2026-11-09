@@ -1,45 +1,59 @@
 # AiFriendship 💬✨
 
-A modern Native Android AI Companion app built with **Kotlin** and **Jetpack Compose**. Designed to deliver a natural, emotionally expressive, and truly human-like conversation experience inspired by everyday messaging apps.
+A modern Native Android AI Companion app built with **Kotlin** and **Jetpack Compose**. Designed to deliver a natural, emotionally expressive, and truly human-like conversation experience inspired by everyday messaging apps like WhatsApp.
 
 ---
 
 ## 📱 Features
 
-- **Human-like Chat Cadence:** Messages are broken down into natural, successive chat bubbles with realistic typing delays instead of monolithic text walls.
+- **WhatsApp-Style Multi-Chat Interface:**
+  - **Tab 1 (OBROLAN):** Overview of all active chats with companion avatars, trait badges, message previews, and formatted timestamps.
+  - **Tab 2 (SAHABAT AI):** Manage your roster of companions, view archetype descriptions, or create a new companion anytime.
+- **Multi-Companion Architecture:** Chat with different AI companions simultaneously, each maintaining isolated conversation history and distinct personalities.
+- **11 Character Archetypes with Multi-Trait Combinations:**
+  - Choose and mix 1 to 3 archetypes to produce unique hybrid personalities (e.g., *Tsundere + Keibuan + Barbar*).
+  - Archetypes: *Santai & Barbar, Kalem & Chill, Tsundere Gengsi, Clueless Polos, Ambisius & Perfeksionis, Lembut & Keibuan, Ceria & Hyperaktif, Sarkastik & Tajam, Romantis & Manja, Introvert & Pemikir, Tomboy & Sporty*.
+- **Subtle Real-Time Temporal Awareness:**
+  - Dynamic time awareness that naturally aligns with morning, afternoon, evening, and late-night vibes without intrusive repetition (no repetitive bedtime or breakfast nagging).
+- **Human-like Chat Cadence:** Messages arrive as natural, successive chat bubbles with realistic typing delays instead of monolithic text walls.
 - **Dynamic Persona Status:** Real-time subtitle updates reflecting Lia's mood, activities, and reactions (e.g., *"gemas juga ngajarin dia ngoding"*, *"capek banget punya teman suka lupa"*).
 - **Quoted / Reply Message:** Long-press to quote and reply to specific messages with visual parent-message previews.
-- **Two-Layer Anti-Stall System:**
-  - *Layer 1 (Silent Failover):* Seamlessly falls back to secondary models (e.g., Gemini 2.0 Flash / Flash-8B) if the primary model reaches rate limits (HTTP 429).
-  - *Layer 2 (In-Character Pause):* Emits a humorous, roleplayed human excuse (e.g., *"Bentar ya woy, emak nyuruh beli garem ke warung..."*) with header status updates and an automatic retry timer if all limits are exhausted.
+- **Multi-Tier Model Fallback Chain:**
+  - Intelligent sequential failover: `gemini-3.5-flash-lite` ➔ `gemini-3.1-flash-lite` ➔ `gemini-2.5-flash` ➔ `gemini-flash-latest`.
+  - In-character pause & roleplayed excuse (*"Bentar ya woy, emak gue nyuruh beli garem dulu ke warung... 1 menit lagi gue balik!"*) with countdown timer when all quotas are temporarily exhausted.
+- **Enhanced In-App Auto-Updater:**
+  - Checks GitHub Releases on launch or via menu.
+  - Automatic download and package installer integration with Android 8.0+ unknown app sources permissions (`ACTION_MANAGE_UNKNOWN_APP_SOURCES`) and FileProvider support.
+  - Fallback "Buka Browser" button for instant manual download if direct installation is restricted.
 - **Offline-First Persistence:** Thread-safe, non-blocking local storage ensuring complete message histories persist across application restarts.
-- **In-App Auto-Update:** Checks GitHub Releases on launch or via menu, downloading and installing APK updates directly on the phone without manual PC flashing.
 
 ---
 
 ## 🏛️ Architecture & Tech Stack
 
-This project strictly adheres to **Clean Architecture** and **SOLID principles** while maintaining clean, self-explanatory code without superfluous comments:
+This project strictly adheres to **Clean Architecture** and **SOLID principles** while maintaining clean, self-explanatory code without comments:
 
 ```
 com.example.aifriendship/
 ├── domain/
-│   ├── model/           # ChatMessage, LiaProfile, DeliveryStatus, QuotedMessage, AiResponse, AppUpdateInfo
+│   ├── model/           # ChatMessage, AiCompanion, CompanionTrait, UserProfile, AiResponse, AppUpdateInfo
 │   ├── service/         # AiService, AppUpdateService, QuotaExceededException, AllModelsQuotaExceededException
-│   └── repository/      # ChatRepository interface
+│   └── repository/      # ChatRepository, UserRepository
 ├── data/
 │   ├── config/          # ApiKeyProvider & LocalApiKeyProvider
-│   ├── local/           # ChatLocalDataSource & JsonChatLocalDataSource
+│   ├── local/           # ChatLocalDataSource & UserLocalDataSource
 │   ├── remote/
 │   │   ├── gemini/      # GeminiAiService, DTOs & LiaPromptDefinition
 │   │   └── update/      # GitHubUpdateService & GitHubReleaseDto
-│   └── repository/      # DefaultChatRepository implementation
+│   └── repository/      # DefaultChatRepository & DefaultUserRepository
 ├── presentation/
-│   └── chat/            # ChatScreen, ChatViewModel, ChatUiState
-│       └── components/  # ChatTopBar, UserChatBubble, AiChatBubble,
-│                        # ChatBottomBar, TypingIndicator, UserAvatar, LiaAvatar
-├── di/                  # AppContainer (Dependency Injection without overengineering)
-└── ui/theme/            # Theme, Color, Type definitions
+│   ├── home/            # HomeScreen, HomeViewModel, HomeUiState
+│   ├── chat/            # ChatScreen, ChatViewModel, ChatUiState
+│   │   └── components/  # ChatTopBar, UserChatBubble, AiChatBubble, ChatBottomBar, TypingIndicator, UserProfileDialog
+│   ├── setup/           # CharacterSetupScreen, CharacterSetupViewModel, CharacterSetupUiState
+│   └── navigation/      # Navigation graph and destination routing
+├── di/                  # AppContainer (Manual Dependency Injection)
+└── ui/theme/            # Color, Theme, Typography definitions
 ```
 
 ### Technologies
@@ -50,7 +64,6 @@ com.example.aifriendship/
 - **Asynchronous:** Kotlin Coroutines & Flow
 - **Navigation:** AndroidX Navigation 3
 - **Network & Serialization:** OkHttp, Kotlinx Serialization JSON
-- **Image Loading:** Coil Compose
 - **Build System:** Gradle 9.x with Android Gradle Plugin 9.x
 
 ---
@@ -76,23 +89,11 @@ cd aifriendship
 The compiled APK will be located at:
 `app/build/outputs/apk/debug/app-debug.apk`
 
-Install directly to a connected Android device or emulator:
-```bash
-./gradlew installDebug
-```
-
 Run unit tests:
 
 ```bash
 ./gradlew test
 ```
-
-### Initial Setup in App
-
-1. Launch the app on your Android device.
-2. Tap the **Settings icon** (⚙️) on the top-right corner.
-3. Select **Pengaturan API Key** and paste your Google AI Studio (Gemini) API Key.
-4. Start chatting naturally with Lia!
 
 ---
 

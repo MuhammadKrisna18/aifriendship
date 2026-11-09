@@ -1,5 +1,6 @@
 package com.example.aifriendship.presentation.home
 
+import com.example.aifriendship.domain.model.AppUpdateInfo
 import com.example.aifriendship.domain.model.ChatMessage
 import com.example.aifriendship.domain.model.UserProfile
 
@@ -13,5 +14,7 @@ data class HomeUiState(
     val latestMessages: Map<String, ChatMessage> = emptyMap(),
     val selectedTab: HomeTab = HomeTab.CHATS,
     val showProfileDialog: Boolean = false,
-    val searchQuery: String = ""
+    val searchQuery: String = "",
+    val updateInfo: AppUpdateInfo? = null,
+    val isDownloadingUpdate: Boolean = false
 )

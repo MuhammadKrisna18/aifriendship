@@ -6,27 +6,31 @@ import androidx.lifecycle.viewModelScope
 import androidx.lifecycle.viewmodel.initializer
 import androidx.lifecycle.viewmodel.viewModelFactory
 import com.example.aifriendship.AiFriendshipApplication
-import com.example.aifriendship.domain.model.CommunicationVibe
+import com.example.aifriendship.domain.model.AppUpdateInfo
 import com.example.aifriendship.domain.repository.ChatRepository
 import com.example.aifriendship.domain.repository.UserRepository
+import com.example.aifriendship.domain.service.AppUpdateService
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.stateIn
-import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
 class HomeViewModel(
     private val userRepository: UserRepository,
-    private val chatRepository: ChatRepository
+    private val chatRepository: ChatRepository,
+    private val appUpdateService: AppUpdateService
 ) : ViewModel() {
 
     private val _selectedTab = MutableStateFlow(HomeTab.CHATS)
     private val _showProfileDialog = MutableStateFlow(false)
     private val _searchQuery = MutableStateFlow("")
+    private val _updateInfo = MutableStateFlow<AppUpdateInfo?>(null)
+    private val _isDownloadingUpdate = MutableStateFlow(false)
 
-    val uiState: StateFlow<HomeUiState> = combine(
+    private val _homeState = combine(
         userRepository.observeUserProfile(),
         chatRepository.getLatestMessagesPerCompanion(),
         _selectedTab,
@@ -40,11 +44,49 @@ class HomeViewModel(
             showProfileDialog = showDialog,
             searchQuery = query
         )
+    }
+
+    val uiState: StateFlow<HomeUiState> = combine(
+        _homeState,
+        _updateInfo,
+        _isDownloadingUpdate
+    ) { baseState, update, isDownloading ->
+        baseState.copy(
+            updateInfo = update,
+            isDownloadingUpdate = isDownloading
+        )
     }.stateIn(
         scope = viewModelScope,
         started = SharingStarted.WhileSubscribed(5000),
         initialValue = HomeUiState()
     )
+
+    init {
+        checkForUpdates()
+    }
+
+    fun checkForUpdates() {
+        viewModelScope.launch {
+            appUpdateService.checkForUpdate().onSuccess { info ->
+                if (info.isUpdateAvailable) {
+                    _updateInfo.value = info
+                }
+            }
+        }
+    }
+
+    fun downloadAndInstallUpdate() {
+        val info = _updateInfo.value ?: return
+        viewModelScope.launch(Dispatchers.IO) {
+            _isDownloadingUpdate.value = true
+            appUpdateService.downloadAndInstallUpdate(info.downloadUrl, "update.apk")
+            _isDownloadingUpdate.value = false
+        }
+    }
+
+    fun dismissUpdateDialog() {
+        _updateInfo.value = null
+    }
 
     fun onTabSelected(tab: HomeTab) {
         _selectedTab.value = tab
@@ -62,10 +104,9 @@ class HomeViewModel(
         _showProfileDialog.value = false
     }
 
-    fun onSaveProfile(name: String, vibe: CommunicationVibe) {
+    fun onSaveProfile(name: String) {
         viewModelScope.launch {
             userRepository.updateName(name)
-            userRepository.updateVibe(vibe)
             _showProfileDialog.value = false
         }
     }
@@ -89,7 +130,8 @@ class HomeViewModel(
                 val application = (this[ViewModelProvider.AndroidViewModelFactory.APPLICATION_KEY] as AiFriendshipApplication)
                 HomeViewModel(
                     userRepository = application.container.userRepository,
-                    chatRepository = application.container.chatRepository
+                    chatRepository = application.container.chatRepository,
+                    appUpdateService = application.container.appUpdateService
                 )
             }
         }
