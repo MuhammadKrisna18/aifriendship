@@ -46,26 +46,6 @@ fun UserChatBubble(
         horizontalArrangement = Arrangement.End,
         verticalAlignment = Alignment.Bottom
     ) {
-        Row(
-            verticalAlignment = Alignment.CenterVertically,
-            modifier = Modifier.padding(end = 6.dp, bottom = 2.dp)
-        ) {
-            Text(
-                text = ChatTimeFormatter.format(message.timestamp),
-                color = ChatTimestampColor,
-                fontSize = 11.sp
-            )
-            if (message.status == MessageDeliveryStatus.READ || message.status == MessageDeliveryStatus.SENT) {
-                Spacer(modifier = Modifier.width(3.dp))
-                Icon(
-                    imageVector = Icons.Default.DoneAll,
-                    contentDescription = null,
-                    tint = UserBubbleColor,
-                    modifier = Modifier.size(13.dp)
-                )
-            }
-        }
-
         Box(
             modifier = Modifier
                 .widthIn(max = 270.dp)
@@ -96,6 +76,28 @@ fun UserChatBubble(
                     fontSize = 15.sp,
                     lineHeight = 21.sp
                 )
+
+                Row(
+                    modifier = Modifier
+                        .align(Alignment.End)
+                        .padding(top = 2.dp),
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Text(
+                        text = ChatTimeFormatter.format(message.timestamp),
+                        color = UserBubbleText.copy(alpha = 0.75f),
+                        fontSize = 11.sp
+                    )
+                    if (message.status == MessageDeliveryStatus.READ || message.status == MessageDeliveryStatus.SENT) {
+                        Spacer(modifier = Modifier.width(3.dp))
+                        Icon(
+                            imageVector = Icons.Default.DoneAll,
+                            contentDescription = null,
+                            tint = UserBubbleText.copy(alpha = 0.85f),
+                            modifier = Modifier.size(13.dp)
+                        )
+                    }
+                }
             }
         }
 

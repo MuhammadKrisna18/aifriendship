@@ -52,6 +52,8 @@ fun ChatBottomBar(
     placeholder: String = "Ketik pesan ke Lia...",
     replyingTo: ChatMessage? = null,
     onDismissReply: () -> Unit = {},
+    onEmojiClick: () -> Unit = {},
+    onMicClick: () -> Unit = {},
     modifier: Modifier = Modifier
 ) {
     Surface(
@@ -106,7 +108,7 @@ fun ChatBottomBar(
                     ) {
                         Icon(
                             imageVector = Icons.Default.Close,
-                            contentDescription = null,
+                            contentDescription = "Batalkan Balasan",
                             tint = Color(0xFF94A3B8),
                             modifier = Modifier.size(16.dp)
                         )
@@ -121,12 +123,12 @@ fun ChatBottomBar(
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 IconButton(
-                    onClick = { },
+                    onClick = onEmojiClick,
                     modifier = Modifier.size(38.dp)
                 ) {
                     Icon(
                         imageVector = Icons.Default.SentimentSatisfiedAlt,
-                        contentDescription = null,
+                        contentDescription = "Emoji",
                         tint = Color(0xFF64748B),
                         modifier = Modifier.size(24.dp)
                     )
@@ -183,19 +185,19 @@ fun ChatBottomBar(
                     ) {
                         Icon(
                             imageVector = Icons.AutoMirrored.Filled.Send,
-                            contentDescription = null,
+                            contentDescription = "Kirim Pesan",
                             tint = Color.White,
                             modifier = Modifier.size(18.dp)
                         )
                     }
                 } else {
                     IconButton(
-                        onClick = { },
+                        onClick = onMicClick,
                         modifier = Modifier.size(38.dp)
                     ) {
                         Icon(
                             imageVector = Icons.Default.Mic,
-                            contentDescription = null,
+                            contentDescription = "Pesan Suara",
                             tint = Color(0xFF64748B),
                             modifier = Modifier.size(24.dp)
                         )

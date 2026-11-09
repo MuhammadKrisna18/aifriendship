@@ -121,7 +121,10 @@ fun ChatTopBar(
                         text = companionName,
                         fontSize = 17.sp,
                         fontWeight = FontWeight.Bold,
-                        color = Color(0xFF0F172A)
+                        color = Color(0xFF0F172A),
+                        maxLines = 1,
+                        overflow = TextOverflow.Ellipsis,
+                        modifier = Modifier.weight(1f, fill = false)
                     )
 
                     Spacer(modifier = Modifier.width(4.dp))
@@ -163,17 +166,6 @@ fun ChatTopBar(
                     fontWeight = if (status.isTyping) FontWeight.SemiBold else FontWeight.Normal,
                     maxLines = 1,
                     overflow = TextOverflow.Ellipsis
-                )
-            }
-
-            IconButton(
-                onClick = onCheckUpdateClick,
-                modifier = Modifier.size(38.dp)
-            ) {
-                Icon(
-                    imageVector = Icons.Default.SystemUpdate,
-                    contentDescription = null,
-                    tint = Color(0xFF64748B)
                 )
             }
 
