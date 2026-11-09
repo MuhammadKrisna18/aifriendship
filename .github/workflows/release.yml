@@ -25,6 +25,8 @@ jobs:
 
       - name: Setup Gradle
         uses: gradle/actions/setup-gradle@v4
+        with:
+          gradle-version: '9.1.0'
 
       - name: Grant execute permission for gradlew
         run: chmod +x gradlew
@@ -32,11 +34,13 @@ jobs:
       - name: Build Debug APK
         run: |
           for i in 1 2 3; do
-            ./gradlew assembleDebug --no-daemon && break || {
-              echo "Attempt $i failed, retrying in 10s..."
-              sleep 10
-            }
+            if ./gradlew assembleDebug --no-daemon; then
+              exit 0
+            fi
+            echo "Attempt $i failed, retrying in 10s..."
+            sleep 10
           done
+          exit 1
 
       - name: Prepare APK Release Artifact
         run: |
@@ -53,10 +57,11 @@ jobs:
             Pembaruan rilis **AiFriendship ${{ github.ref_name }}** menghadirkan penyempurnaan besar pada keseimbangan ritme obrolan (*Chat Mirroring*) dan respon emosional AI yang jauh lebih seimbang dan manusiawi.
 
             ### 🚀 Apa Saja Pembaruan di Versi Ini?
+            - **Principles-Based Prompting (Bebas & Non-Template):** Seluruh contoh kalimat kaku di dalam tanda petik telah dihapus dari prompt. AI kini bebas mengekspresikan karakter uniknya secara alami dan organik tanpa terbelenggu template hafalan.
+            - **Ekspresi Tersipu Spontan:** Reaksi salting kini dibebaskan sepenuhnya agar menunjukkan rasa salah tingkah yang murni organik mengikuti topik pembicaraan.
+            - **Panjang Chat Dinamis Sesuai Topik:** AI menyesuaikan panjang pendeknya balasan dan jumlah bubble secara dinamis mengikuti kedalaman topik user.
             - **Kunci Keystore Terpadu (Solusi Permanen "App not installed"):** Seluruh rilis APK kini menggunakan `debug.keystore` terpadu, menjamin kompatibilitas tanda tangan untuk semua pembaruan aplikasi otomatis ke depannya tanpa ditolak sistem Android.
-            - **Dinamika Obrolan Luwes & Asik (Anti-Judes Berlebihan):** AI tidak lagi menyerang atau defensif judes secara monoton. AI kini lebih luwes, bisa ikut tertawa santai, kepo akrab (*"spill coba!"*), dan suportif layaknya sahabat tongkrongan nyata.
-            - **Eliminasi Spam "wkwk" & Tawa Alami:** Menghapus akhiran "wkwk" seragam dari setiap kalimat. Obrolan mengalir natural dan tidak kaku.
-            - **Chat Length Mirroring:** Menyesuaikan panjang respon secara seimbang dengan chat user (1 bubble untuk chat pendek).
+            - **Eliminasi Spam "wkwk":** Tawa buatan di setiap kalimat dihapus total, beralih ke gaya obrolan natural WhatsApp.
             - **Mood-Driven Dynamic Spam:** Frekuensi follow-up disesuaikan dengan suasana hati (Mood Manja, Kangen, Kepo, Ngambek dapat mengirim 2–3 chat berturut-turut; Mood Cuek/Biasa tetap kalem 1 chat).
             - **Auto-Cancel & Battery Guardrails:** Timer follow-up otomatis dibatalkan begitu Anda mengirim pesan baru. Jam tenang malam (00:00 – 07:00) tetap aktif.
 
