@@ -8,7 +8,8 @@ data class AiResponse(
     val statusSubtitle: String,
     val mood: String? = null,
     val activityUpdate: String? = null,
-    val relationshipUpdate: String? = null
+    val relationshipUpdate: String? = null,
+    val newFactLearned: String? = null
 ) {
     val parsedMood: CompanionMood?
         get() = mood?.let { m ->

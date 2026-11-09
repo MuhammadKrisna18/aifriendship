@@ -24,6 +24,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.Chat
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.AutoAwesome
+import androidx.compose.material.icons.filled.Bookmark
 import androidx.compose.material.icons.filled.DeleteOutline
 import androidx.compose.material.icons.filled.Person
 import androidx.compose.material3.AlertDialog
@@ -66,6 +67,7 @@ import com.example.aifriendship.domain.model.ChatTimeFormatter
 import com.example.aifriendship.domain.model.CompanionMood
 import com.example.aifriendship.domain.model.CompanionRelationship
 import com.example.aifriendship.presentation.chat.components.UserProfileDialog
+import com.example.aifriendship.presentation.components.CompanionMemoryDialog
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -186,7 +188,8 @@ fun HomeScreen(
                             onOpenChat(companionId)
                         },
                         onCreateCompanion = onCreateCompanion,
-                        onDeleteCompanion = { viewModel.onDeleteCompanion(it) }
+                        onDeleteCompanion = { viewModel.onDeleteCompanion(it) },
+                        onOpenMemory = { viewModel.onOpenMemoryDialog(it) }
                     )
                 }
             }
@@ -259,6 +262,16 @@ fun HomeScreen(
             currentProfile = uiState.userProfile,
             onDismiss = { viewModel.onDismissProfileDialog() },
             onSave = { name -> viewModel.onSaveProfile(name) }
+        )
+    }
+
+    uiState.selectedCompanionForMemory?.let { memoryCompanion ->
+        CompanionMemoryDialog(
+            companion = memoryCompanion,
+            userName = uiState.userProfile.name,
+            onDismiss = { viewModel.onDismissMemoryDialog() },
+            onDeleteFact = { fact -> viewModel.deleteUserFact(memoryCompanion.id, fact) },
+            onAddFact = { fact -> viewModel.addUserFact(memoryCompanion.id, fact) }
         )
     }
 }
@@ -438,7 +451,8 @@ private fun CompanionsTabContent(
     companions: List<AiCompanion>,
     onCompanionClick: (String) -> Unit,
     onCreateCompanion: () -> Unit,
-    onDeleteCompanion: (String) -> Unit
+    onDeleteCompanion: (String) -> Unit,
+    onOpenMemory: (AiCompanion) -> Unit
 ) {
     LazyColumn(
         modifier = Modifier.fillMaxSize(),
@@ -548,6 +562,20 @@ private fun CompanionsTabContent(
                                 Box(
                                     modifier = Modifier
                                         .clip(RoundedCornerShape(6.dp))
+                                        .background(Color(0xFFF1F5F9))
+                                        .padding(horizontal = 6.dp, vertical = 2.dp)
+                                ) {
+                                    Text(
+                                        text = companion.primaryTrait.title,
+                                        fontSize = 11.sp,
+                                        fontWeight = FontWeight.SemiBold,
+                                        color = Color(0xFF334155)
+                                    )
+                                }
+
+                                Box(
+                                    modifier = Modifier
+                                        .clip(RoundedCornerShape(6.dp))
                                         .background(avatarColor.copy(alpha = 0.12f))
                                         .padding(horizontal = 6.dp, vertical = 2.dp)
                                 ) {
@@ -599,8 +627,22 @@ private fun CompanionsTabContent(
 
                     Row(
                         modifier = Modifier.fillMaxWidth(),
-                        horizontalArrangement = Arrangement.End
+                        horizontalArrangement = Arrangement.SpaceBetween,
+                        verticalAlignment = Alignment.CenterVertically
                     ) {
+                        OutlinedButton(
+                            onClick = { onOpenMemory(companion) },
+                            shape = RoundedCornerShape(10.dp)
+                        ) {
+                            Icon(
+                                imageVector = Icons.Default.Bookmark,
+                                contentDescription = null,
+                                modifier = Modifier.size(16.dp)
+                            )
+                            Spacer(modifier = Modifier.width(6.dp))
+                            Text("Ingatan (${companion.memory.userFacts.size})")
+                        }
+
                         Button(
                             onClick = { onCompanionClick(companion.id) },
                             shape = RoundedCornerShape(10.dp)

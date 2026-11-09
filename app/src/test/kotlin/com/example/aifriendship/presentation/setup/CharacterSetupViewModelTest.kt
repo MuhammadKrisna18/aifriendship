@@ -4,6 +4,7 @@ import com.example.aifriendship.domain.model.AiCompanion
 import com.example.aifriendship.domain.model.ChatMessage
 import com.example.aifriendship.domain.model.CompanionMood
 import com.example.aifriendship.domain.model.CompanionRelationship
+import com.example.aifriendship.domain.model.CompanionTrait
 import com.example.aifriendship.domain.model.LiaStatus
 import com.example.aifriendship.domain.model.UserProfile
 import com.example.aifriendship.domain.repository.ChatRepository
@@ -79,6 +80,22 @@ class CharacterSetupViewModelTest {
         val state = viewModel.uiState.value
         assertTrue(state.companionName.isNotBlank())
         assertTrue(state.avatarColorHex.startsWith("#"))
+    }
+
+    @Test
+    fun onTraitSelected_updatesTraitDefaultsAndColor() = runTest {
+        viewModel.onTraitSelected(CompanionTrait.SOFT)
+        val state = viewModel.uiState.value
+        assertEquals(CompanionTrait.SOFT, state.selectedTrait)
+        assertEquals("Naya", state.companionName)
+        assertEquals("#EC4899", state.avatarColorHex)
+    }
+
+    @Test
+    fun onCustomTraitDescriptionChanged_updatesState() = runTest {
+        viewModel.onTraitSelected(CompanionTrait.CUSTOM)
+        viewModel.onCustomTraitDescriptionChanged("Tsundere wibu")
+        assertEquals("Tsundere wibu", viewModel.uiState.value.customTraitDescription)
     }
 
     @Test

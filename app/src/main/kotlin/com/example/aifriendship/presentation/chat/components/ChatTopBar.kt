@@ -16,6 +16,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.AutoAwesome
+import androidx.compose.material.icons.filled.Bookmark
 import androidx.compose.material.icons.filled.CheckCircle
 import androidx.compose.material.icons.filled.DeleteOutline
 import androidx.compose.material.icons.filled.MoreVert
@@ -58,6 +59,7 @@ fun ChatTopBar(
     onCheckUpdateClick: () -> Unit = {},
     onProfileClick: () -> Unit = {},
     onChangeCompanionClick: () -> Unit = {},
+    onMemoryClick: () -> Unit = {},
     modifier: Modifier = Modifier
 ) {
     var menuExpanded by remember { mutableStateOf(false) }
@@ -191,6 +193,20 @@ fun ChatTopBar(
                     expanded = menuExpanded,
                     onDismissRequest = { menuExpanded = false }
                 ) {
+                    DropdownMenuItem(
+                        text = { Text("Buku Ingatan Sahabat") },
+                        leadingIcon = {
+                            Icon(
+                                imageVector = Icons.Default.Bookmark,
+                                contentDescription = null,
+                                tint = primaryLight
+                            )
+                        },
+                        onClick = {
+                            menuExpanded = false
+                            onMemoryClick()
+                        }
+                    )
                     DropdownMenuItem(
                         text = { Text("Ubah Teman AI") },
                         leadingIcon = {

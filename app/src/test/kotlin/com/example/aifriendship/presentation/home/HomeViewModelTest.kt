@@ -128,6 +128,38 @@ class HomeViewModelTest {
     }
 
     @Test
+    fun memoryDialog_openAndDismiss_togglesCompanion() = runTest {
+        backgroundScope.launch(UnconfinedTestDispatcher(testScheduler)) {
+            viewModel.uiState.collect()
+        }
+        advanceUntilIdle()
+        val companion = fakeUserRepository.getUserProfile().activeCompanion
+
+        viewModel.onOpenMemoryDialog(companion)
+        advanceUntilIdle()
+        assertEquals(companion.id, viewModel.uiState.value.selectedCompanionForMemory?.id)
+
+        viewModel.onDismissMemoryDialog()
+        advanceUntilIdle()
+        assertEquals(null, viewModel.uiState.value.selectedCompanionForMemory)
+    }
+
+    @Test
+    fun addUserFact_and_deleteUserFact_managesCompanionFacts() = runTest {
+        val companion = fakeUserRepository.getUserProfile().activeCompanion
+
+        viewModel.addUserFact(companion.id, "Suka kopi robusta")
+        advanceUntilIdle()
+        var updated = fakeUserRepository.getUserProfile().allCompanions.find { it.id == companion.id }!!
+        assertTrue(updated.memory.userFacts.contains("Suka kopi robusta"))
+
+        viewModel.deleteUserFact(companion.id, "Suka kopi robusta")
+        advanceUntilIdle()
+        updated = fakeUserRepository.getUserProfile().allCompanions.find { it.id == companion.id }!!
+        assertFalse(updated.memory.userFacts.contains("Suka kopi robusta"))
+    }
+
+    @Test
     fun onSelectCompanion_setsActiveCompanionId() = runTest {
         backgroundScope.launch(UnconfinedTestDispatcher(testScheduler)) {
             viewModel.uiState.collect()
@@ -178,7 +210,17 @@ private class FakeUserRepository(
     }
 
     override suspend fun updateCompanion(companion: AiCompanion) {
-        profileFlow.value = profileFlow.value.copy(companion = companion)
+        val current = profileFlow.value
+        val existing = current.allCompanions
+        val updated = if (existing.any { it.id == companion.id }) {
+            existing.map { if (it.id == companion.id) companion else it }
+        } else {
+            existing + companion
+        }
+        profileFlow.value = current.copy(
+            companion = companion,
+            companions = updated
+        )
     }
 
     override suspend fun addCompanion(companion: AiCompanion) {

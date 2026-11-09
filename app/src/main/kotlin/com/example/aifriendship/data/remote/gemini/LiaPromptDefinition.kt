@@ -74,7 +74,12 @@ object LiaPromptDefinition {
         } else ""
 
         val factsContext = if (memory != null && memory.userFacts.isNotEmpty()) {
-            "- Fakta Penting tentang $userName yang Kamu Ingat: ${memory.userFacts.joinToString("; ")}"
+            val factList = memory.userFacts.joinToString("\n") { "  * $it" }
+            """
+            - Buku Ingatan Jangka Panjang tentang $userName (Fakta Penting yang Kamu Ketahui):
+            $factList
+            Instruksi Ingatan: Manfaatkan fakta-fakta di atas secara luwes jika relevan dengan obrolan, untuk membuktikan kamu benar-benar mengingat dan memperhatikannya.
+            """.trimIndent()
         } else ""
 
         val (timeDescription, clockStr) = formatTimeContext(currentTimeMillis)
@@ -149,8 +154,9 @@ object LiaPromptDefinition {
               ],
               "statusSubtitle": "status batin singkat natural (maksimal 35 karakter)",
               "mood": "NAMA_EMOSI (pilih salah satu: SENANG, BIASA, KEPO, SALTING, BAPER, MANJA, KANGEN, BANGGA, KHAWATIR, JAHIL, NGAMBEK, CEMBURU, CUEK, MELOW, MARAH)",
-              "activityUpdate": "kegiatan baru kamu jika kamu mulai melakukan sesuatu (opsional, kosongkan jika tidak ada)",
-              "relationshipUpdate": "status hubungan jika kedekatan kalian berkembang alami (opsional, kosongkan jika belum berubah)"
+              "activityUpdate": "kegiatan baru kamu jika kamu mulai melakukan sesuatu (opsional, null jika tidak ada)",
+              "relationshipUpdate": "status hubungan jika kedekatan kalian berkembang alami (opsional, null jika belum berubah)",
+              "newFactLearned": "fakta atau hal penting baru tentang $userName yang kamu pelajari dari chat ini (misal: makanan/minuman favorit, nama hewan peliharaan, hobi, rencana kegiatan, pekerjaan/kuliah, preferensi pribadi). Wajib NULL jika tidak ada fakta baru yang dipelajari."
             }
         """.trimIndent()
     }

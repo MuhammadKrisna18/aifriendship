@@ -23,5 +23,6 @@ data class ChatUiState(
     val downloadProgress: Int = 0,
     val userProfile: UserProfile = UserProfile(),
     val onboardingStep: OnboardingStep = OnboardingStep.COMPLETED,
-    val isUserProfileDialogVisible: Boolean = false
+    val isUserProfileDialogVisible: Boolean = false,
+    val isMemoryDialogVisible: Boolean = false
 )

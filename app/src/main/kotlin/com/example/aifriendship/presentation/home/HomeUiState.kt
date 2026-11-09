@@ -1,5 +1,6 @@
 package com.example.aifriendship.presentation.home
 
+import com.example.aifriendship.domain.model.AiCompanion
 import com.example.aifriendship.domain.model.AppUpdateInfo
 import com.example.aifriendship.domain.model.ChatMessage
 import com.example.aifriendship.domain.model.UserProfile
@@ -17,5 +18,6 @@ data class HomeUiState(
     val searchQuery: String = "",
     val updateInfo: AppUpdateInfo? = null,
     val isDownloadingUpdate: Boolean = false,
-    val downloadProgress: Int = 0
+    val downloadProgress: Int = 0,
+    val selectedCompanionForMemory: AiCompanion? = null
 )

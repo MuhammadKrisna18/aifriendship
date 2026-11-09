@@ -6,6 +6,7 @@ import androidx.lifecycle.viewModelScope
 import androidx.lifecycle.viewmodel.initializer
 import androidx.lifecycle.viewmodel.viewModelFactory
 import com.example.aifriendship.AiFriendshipApplication
+import com.example.aifriendship.domain.model.AiCompanion
 import com.example.aifriendship.domain.model.AppUpdateInfo
 import com.example.aifriendship.domain.repository.ChatRepository
 import com.example.aifriendship.domain.repository.UserRepository
@@ -26,23 +27,33 @@ class HomeViewModel(
 
     private val _selectedTab = MutableStateFlow(HomeTab.CHATS)
     private val _showProfileDialog = MutableStateFlow(false)
+    private val _selectedCompanionForMemory = MutableStateFlow<AiCompanion?>(null)
     private val _searchQuery = MutableStateFlow("")
     private val _updateInfo = MutableStateFlow<AppUpdateInfo?>(null)
     private val _isDownloadingUpdate = MutableStateFlow(false)
     private val _downloadProgress = MutableStateFlow(0)
 
     private val _homeState = combine(
-        userRepository.observeUserProfile(),
-        chatRepository.getLatestMessagesPerCompanion(),
-        _selectedTab,
+        combine(
+            userRepository.observeUserProfile(),
+            chatRepository.getLatestMessagesPerCompanion(),
+            _selectedTab
+        ) { profile, latestMessages, tab ->
+            Triple(profile, latestMessages, tab)
+        },
         _showProfileDialog,
+        _selectedCompanionForMemory,
         _searchQuery
-    ) { profile, latestMessages, tab, showDialog, query ->
+    ) { (profile, latestMessages, tab), showDialog, memoryCompanion, query ->
+        val updatedMemoryCompanion = memoryCompanion?.let { comp ->
+            profile.allCompanions.find { it.id == comp.id } ?: comp
+        }
         HomeUiState(
             userProfile = profile,
             latestMessages = latestMessages,
             selectedTab = tab,
             showProfileDialog = showDialog,
+            selectedCompanionForMemory = updatedMemoryCompanion,
             searchQuery = query
         )
     }
@@ -134,6 +145,42 @@ class HomeViewModel(
         viewModelScope.launch {
             userRepository.removeCompanion(companionId)
             chatRepository.clearMessagesByCompanion(companionId)
+        }
+    }
+
+    fun onOpenMemoryDialog(companion: AiCompanion) {
+        _selectedCompanionForMemory.value = companion
+    }
+
+    fun onDismissMemoryDialog() {
+        _selectedCompanionForMemory.value = null
+    }
+
+    fun addUserFact(companionId: String, fact: String) {
+        val clean = fact.trim()
+        if (clean.isBlank()) return
+        viewModelScope.launch {
+            val profile = userRepository.getUserProfile()
+            val companion = profile.allCompanions.find { it.id == companionId } ?: return@launch
+            if (companion.memory.userFacts.none { it.equals(clean, ignoreCase = true) }) {
+                val updatedFacts = (companion.memory.userFacts + clean).takeLast(30)
+                val updatedCompanion = companion.copy(
+                    memory = companion.memory.copy(userFacts = updatedFacts)
+                )
+                userRepository.updateCompanion(updatedCompanion)
+            }
+        }
+    }
+
+    fun deleteUserFact(companionId: String, fact: String) {
+        viewModelScope.launch {
+            val profile = userRepository.getUserProfile()
+            val companion = profile.allCompanions.find { it.id == companionId } ?: return@launch
+            val updatedFacts = companion.memory.userFacts.filterNot { it.equals(fact, ignoreCase = true) }
+            val updatedCompanion = companion.copy(
+                memory = companion.memory.copy(userFacts = updatedFacts)
+            )
+            userRepository.updateCompanion(updatedCompanion)
         }
     }
 

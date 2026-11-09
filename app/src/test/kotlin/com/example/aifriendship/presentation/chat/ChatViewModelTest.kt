@@ -34,6 +34,7 @@ import kotlinx.coroutines.test.runTest
 import kotlinx.coroutines.test.setMain
 import org.junit.After
 import org.junit.Assert.assertEquals
+import org.junit.Assert.assertFalse
 import org.junit.Assert.assertTrue
 import org.junit.Before
 import org.junit.Test
@@ -127,6 +128,55 @@ class ChatViewModelTest {
         assertEquals("Nonton anime di kamar", updatedCompanion.memory.lastActivity)
         assertEquals(CompanionMood.SALTING, updatedCompanion.currentMood)
         assertEquals(CompanionRelationship.GEBETAN, updatedCompanion.currentRelationship)
+    }
+
+    @Test
+    fun sendMessage_learnsNewFactAndUpdatesCompanionMemory() = runTest {
+        backgroundScope.launch(UnconfinedTestDispatcher(testScheduler)) {
+            viewModel.uiState.collect()
+        }
+
+        fakeAiService.customResponse = AiResponse(
+            bubbles = listOf("Oalah pantesan"),
+            statusSubtitle = "Mendengarkan",
+            newFactLearned = "Suka kopi latte dingin"
+        )
+        viewModel.onInputTextChanged("Gue tiap pagi minum latte dingin")
+        viewModel.sendMessage()
+        testDispatcher.scheduler.advanceUntilIdle()
+
+        val updatedCompanion = fakeUserRepository.getUserProfile().activeCompanion
+        assertTrue(updatedCompanion.memory.userFacts.contains("Suka kopi latte dingin"))
+    }
+
+    @Test
+    fun addUserFact_and_deleteUserFact_managesFactsCorrectly() = runTest {
+        viewModel.addUserFact("Alergi udang")
+        testDispatcher.scheduler.advanceUntilIdle()
+        var companion = fakeUserRepository.getUserProfile().activeCompanion
+        assertTrue(companion.memory.userFacts.contains("Alergi udang"))
+
+        viewModel.deleteUserFact("Alergi udang")
+        testDispatcher.scheduler.advanceUntilIdle()
+        companion = fakeUserRepository.getUserProfile().activeCompanion
+        assertFalse(companion.memory.userFacts.contains("Alergi udang"))
+    }
+
+    @Test
+    fun memoryDialog_toggleVisibility() = runTest {
+        backgroundScope.launch(UnconfinedTestDispatcher(testScheduler)) {
+            viewModel.uiState.collect()
+        }
+        testDispatcher.scheduler.advanceUntilIdle()
+        assertFalse(viewModel.uiState.value.isMemoryDialogVisible)
+
+        viewModel.showMemoryDialog()
+        testDispatcher.scheduler.advanceUntilIdle()
+        assertTrue(viewModel.uiState.value.isMemoryDialogVisible)
+
+        viewModel.hideMemoryDialog()
+        testDispatcher.scheduler.advanceUntilIdle()
+        assertFalse(viewModel.uiState.value.isMemoryDialogVisible)
     }
 
     @Test

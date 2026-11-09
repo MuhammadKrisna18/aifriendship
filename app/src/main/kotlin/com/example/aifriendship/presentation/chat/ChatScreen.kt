@@ -41,6 +41,7 @@ import com.example.aifriendship.presentation.chat.components.ChatTopBar
 import com.example.aifriendship.presentation.chat.components.TypingIndicator
 import com.example.aifriendship.presentation.chat.components.UserChatBubble
 import com.example.aifriendship.presentation.chat.components.UserProfileDialog
+import com.example.aifriendship.presentation.components.CompanionMemoryDialog
 import com.example.aifriendship.ui.theme.ChatCanvasBackground
 import com.example.aifriendship.ui.theme.ChatTimestampColor
 import com.example.aifriendship.ui.theme.UserBubbleColor
@@ -72,6 +73,16 @@ fun ChatScreen(
             currentProfile = uiState.userProfile,
             onDismiss = { viewModel.hideUserProfileDialog() },
             onSave = { name -> viewModel.updateUserProfile(name) }
+        )
+    }
+
+    if (uiState.isMemoryDialogVisible) {
+        CompanionMemoryDialog(
+            companion = companion,
+            userName = uiState.userProfile.name,
+            onDismiss = { viewModel.hideMemoryDialog() },
+            onDeleteFact = { fact -> viewModel.deleteUserFact(fact) },
+            onAddFact = { fact -> viewModel.addUserFact(fact) }
         )
     }
 
@@ -148,7 +159,8 @@ fun ChatScreen(
                 onClearChat = { viewModel.clearChat() },
                 onCheckUpdateClick = { viewModel.checkForUpdates(silent = false) },
                 onProfileClick = { viewModel.showUserProfileDialog() },
-                onChangeCompanionClick = onChangeCompanionClick
+                onChangeCompanionClick = onChangeCompanionClick,
+                onMemoryClick = { viewModel.showMemoryDialog() }
             )
         },
         bottomBar = {

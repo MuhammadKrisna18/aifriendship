@@ -50,9 +50,17 @@ class ChatViewModel(
     private val _isCheckingUpdate = MutableStateFlow(false)
     private val _onboardingStep = MutableStateFlow(OnboardingStep.COMPLETED)
     private val _isUserProfileDialogVisible = MutableStateFlow(false)
+    private val _isMemoryDialogVisible = MutableStateFlow(false)
     private val _isDownloadingUpdate = MutableStateFlow(false)
     private val _downloadProgress = MutableStateFlow(0)
     private var cooldownJob: Job? = null
+
+    private val _dialogState = combine(
+        _isUserProfileDialogVisible,
+        _isMemoryDialogVisible
+    ) { profileDialog, memoryDialog ->
+        Pair(profileDialog, memoryDialog)
+    }
 
     val uiState: StateFlow<ChatUiState> = combine(
         combine(
@@ -75,20 +83,21 @@ class ChatViewModel(
                 inputText = input,
                 replyingTo = _replyingTo.value,
                 isLoading = _isLoading.value,
-                errorMessage = _errorMessage.value,
-                isUserProfileDialogVisible = _isUserProfileDialogVisible.value
+                errorMessage = _errorMessage.value
             )
         },
+        _dialogState,
         _updateInfo,
         _isCheckingUpdate,
-        _isDownloadingUpdate,
-        _downloadProgress
-    ) { baseState, updateInfo, isChecking, isDownloading, progress ->
+        _isDownloadingUpdate
+    ) { baseState, (profileDialog, memoryDialog), updateInfo, isChecking, isDownloading ->
         baseState.copy(
+            isUserProfileDialogVisible = profileDialog,
+            isMemoryDialogVisible = memoryDialog,
             updateInfo = updateInfo,
             isCheckingUpdate = isChecking,
             isDownloadingUpdate = isDownloading,
-            downloadProgress = progress
+            downloadProgress = _downloadProgress.value
         )
     }.stateIn(
         scope = viewModelScope,
@@ -341,13 +350,24 @@ class ChatViewModel(
                 val hasNewActivity = !response.activityUpdate.isNullOrBlank()
                 val newMood = response.parsedMood
                 val newRelationship = response.parsedRelationship
+                val newFact = response.newFactLearned?.trim()?.takeIf {
+                    it.isNotBlank() && !it.equals("null", ignoreCase = true)
+                }
 
-                if (hasNewActivity || newMood != null || newRelationship != null) {
+                val updatedFacts = if (newFact != null && currentMemory.userFacts.none { it.equals(newFact, ignoreCase = true) }) {
+                    (currentMemory.userFacts + newFact).takeLast(30)
+                } else {
+                    currentMemory.userFacts
+                }
+                val hasFactsChanged = updatedFacts.size != currentMemory.userFacts.size
+
+                if (hasNewActivity || newMood != null || newRelationship != null || hasFactsChanged) {
                     val updatedMemory = currentMemory.copy(
                         lastActivity = if (hasNewActivity) response.activityUpdate else currentMemory.lastActivity,
                         activityTimestamp = if (hasNewActivity) System.currentTimeMillis() else currentMemory.activityTimestamp,
                         currentMood = newMood ?: currentMemory.currentMood,
-                        currentRelationship = newRelationship ?: currentMemory.currentRelationship
+                        currentRelationship = newRelationship ?: currentMemory.currentRelationship,
+                        userFacts = updatedFacts
                     )
                     val updatedCompanion = activeCompanion.copy(memory = updatedMemory)
                     userRepository.updateCompanion(updatedCompanion)
@@ -480,6 +500,42 @@ class ChatViewModel(
         viewModelScope.launch {
             userRepository.updateName(name.trim())
             _isUserProfileDialogVisible.value = false
+        }
+    }
+
+    fun showMemoryDialog() {
+        _isMemoryDialogVisible.value = true
+    }
+
+    fun hideMemoryDialog() {
+        _isMemoryDialogVisible.value = false
+    }
+
+    fun addUserFact(fact: String) {
+        val clean = fact.trim()
+        if (clean.isBlank()) return
+        viewModelScope.launch {
+            val profile = userRepository.getUserProfile()
+            val companion = profile.activeCompanion
+            if (companion.memory.userFacts.none { it.equals(clean, ignoreCase = true) }) {
+                val updatedFacts = (companion.memory.userFacts + clean).takeLast(30)
+                val updatedCompanion = companion.copy(
+                    memory = companion.memory.copy(userFacts = updatedFacts)
+                )
+                userRepository.updateCompanion(updatedCompanion)
+            }
+        }
+    }
+
+    fun deleteUserFact(fact: String) {
+        viewModelScope.launch {
+            val profile = userRepository.getUserProfile()
+            val companion = profile.activeCompanion
+            val updatedFacts = companion.memory.userFacts.filterNot { it.equals(fact, ignoreCase = true) }
+            val updatedCompanion = companion.copy(
+                memory = companion.memory.copy(userFacts = updatedFacts)
+            )
+            userRepository.updateCompanion(updatedCompanion)
         }
     }
 

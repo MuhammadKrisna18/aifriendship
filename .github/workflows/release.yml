@@ -54,16 +54,16 @@ jobs:
           body: |
             ## Pembaruan AiFriendship ${{ github.ref_name }} 💬✨
 
-            Pembaruan rilis **AiFriendship ${{ github.ref_name }}** menghadirkan penyempurnaan besar pada keseimbangan ritme obrolan (*Chat Mirroring*) dan respon emosional AI yang jauh lebih seimbang dan manusiawi.
+            Pembaruan rilis besar **AiFriendship ${{ github.ref_name }}** menghadirkan dukungan penuh **Multiple Companions** dengan 12 karakter kepribadian unik serta **Sistem Ingatan Jangka Panjang (Memory System)** yang membuat AI mengingat kehidupan dan preferensi Anda secara permanen.
 
             ### 🚀 Apa Saja Pembaruan di Versi Ini?
-            - **Principles-Based Prompting (Bebas & Non-Template):** Seluruh contoh kalimat kaku di dalam tanda petik telah dihapus dari prompt. AI kini bebas mengekspresikan karakter uniknya secara alami dan organik tanpa terbelenggu template hafalan.
-            - **Ekspresi Tersipu Spontan:** Reaksi salting kini dibebaskan sepenuhnya agar menunjukkan rasa salah tingkah yang murni organik mengikuti topik pembicaraan.
-            - **Panjang Chat Dinamis Sesuai Topik:** AI menyesuaikan panjang pendeknya balasan dan jumlah bubble secara dinamis mengikuti kedalaman topik user.
-            - **Kunci Keystore Terpadu (Solusi Permanen "App not installed"):** Seluruh rilis APK kini menggunakan `debug.keystore` terpadu, menjamin kompatibilitas tanda tangan untuk semua pembaruan aplikasi otomatis ke depannya tanpa ditolak sistem Android.
-            - **Eliminasi Spam "wkwk":** Tawa buatan di setiap kalimat dihapus total, beralih ke gaya obrolan natural WhatsApp.
-            - **Mood-Driven Dynamic Spam:** Frekuensi follow-up disesuaikan dengan suasana hati (Mood Manja, Kangen, Kepo, Ngambek dapat mengirim 2–3 chat berturut-turut; Mood Cuek/Biasa tetap kalem 1 chat).
-            - **Auto-Cancel & Battery Guardrails:** Timer follow-up otomatis dibatalkan begitu Anda mengirim pesan baru. Jam tenang malam (00:00 – 07:00) tetap aktif.
+            - **Multiple Companions & Trait Selector:** Buat sahabat AI baru dengan memilih kepribadian yang Anda sukai dari 12 karakter unik (Barbar, Chill, Soft-Spoken, Tsundere, Cerdas, Absurd, dsb.) dalam kategori Santai, Hangat, Spicy, dan Cerdas, lengkap dengan rekomendasi nama dan avatar.
+            - **Auto-Fact Extraction (Ingatan Jangka Panjang):** AI kini otomatis menyerap dan mencatat fakta-fakta penting tentang Anda (makanan favorit, hobi, hewan peliharaan, pekerjaan/kuliah, rencana penting) dari percakapan dan mengingatnya secara permanen.
+            - **Buku Ingatan Sahabat (Memory Dialog):** Anda dapat melihat, menghapus, atau menambahkan fakta baru secara manual langsung dari chat atau dari tab Sahabat AI.
+            - **Principles-Based Prompting (Bebas & Non-Template):** Seluruh contoh kalimat kaku telah dihapus dari prompt, membebaskan AI untuk berekspresi alami.
+            - **Ekspresi Tersipu Spontan & Organik:** Reaksi salting organik mengikuti alur topik pembicaraan.
+            - **Panjang Chat Dinamis Sesuai Topik:** AI menyesuaikan panjang respon secara seimbang mengikuti bobot topik user.
+            - **Kunci Keystore Terpadu:** Seluruh rilis APK menggunakan keystore seragam, memastikan update otomatis berjalan mulus tanpa masalah instalasi.
 
             ---
 
