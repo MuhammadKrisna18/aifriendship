@@ -1,6 +1,5 @@
 package com.example.aifriendship.presentation.setup
 
-import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -24,6 +23,7 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.AutoAwesome
 import androidx.compose.material.icons.filled.Casino
 import androidx.compose.material.icons.filled.CheckCircle
 import androidx.compose.material.icons.filled.Face
@@ -38,7 +38,6 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.OutlinedTextField
-import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -66,10 +65,11 @@ fun CharacterSetupScreen(
 ) {
     val state by viewModel.uiState.collectAsStateWithLifecycle()
 
+    val selectableTraits = CompanionTrait.entries.filter { it != CompanionTrait.CUSTOM }
     val filteredTraits = if (state.selectedCategory == null) {
-        CompanionTrait.entries
+        selectableTraits
     } else {
-        CompanionTrait.entries.filter { it.category == state.selectedCategory || it == CompanionTrait.CUSTOM }
+        selectableTraits.filter { it.category == state.selectedCategory }
     }
 
     Surface(
@@ -92,13 +92,13 @@ fun CharacterSetupScreen(
                 item {
                     Spacer(modifier = Modifier.height(10.dp))
                     Text(
-                        text = "Temukan Sahabat AI-mu 💬✨",
+                        text = "Rancang Sahabat AI 💬✨",
                         fontSize = 24.sp,
                         fontWeight = FontWeight.Bold,
                         color = Color(0xFF0F172A)
                     )
                     Text(
-                        text = "Sesuaikan teman ngobrol cewek impianmu",
+                        text = "Gabungkan 1 sampai 3 sifat untuk menciptakan karakter unikmu",
                         fontSize = 14.sp,
                         color = Color(0xFF64748B)
                     )
@@ -150,7 +150,7 @@ fun CharacterSetupScreen(
                                 verticalAlignment = Alignment.CenterVertically
                             ) {
                                 Text(
-                                    text = "Teman AI Kamu",
+                                    text = "Nama Sahabat AI",
                                     fontSize = 14.sp,
                                     fontWeight = FontWeight.SemiBold,
                                     color = Color(0xFF1E293B)
@@ -204,8 +204,41 @@ fun CharacterSetupScreen(
                 }
 
                 item {
+                    Card(
+                        colors = CardDefaults.cardColors(containerColor = Color(0xFFEEF2FF)),
+                        shape = RoundedCornerShape(16.dp),
+                        modifier = Modifier.fillMaxWidth()
+                    ) {
+                        Column(modifier = Modifier.padding(14.dp)) {
+                            Row(verticalAlignment = Alignment.CenterVertically) {
+                                Icon(
+                                    imageVector = Icons.Default.AutoAwesome,
+                                    contentDescription = null,
+                                    tint = primaryLight,
+                                    modifier = Modifier.size(18.dp)
+                                )
+                                Spacer(modifier = Modifier.width(6.dp))
+                                Text(
+                                    text = "Kombinasi Terpilih (${state.selectedTraits.size}/${state.maxTraits})",
+                                    style = MaterialTheme.typography.titleSmall,
+                                    fontWeight = FontWeight.Bold,
+                                    color = primaryLight
+                                )
+                            }
+                            Spacer(modifier = Modifier.height(6.dp))
+                            Text(
+                                text = state.traitsSummary,
+                                style = MaterialTheme.typography.bodyMedium,
+                                fontWeight = FontWeight.SemiBold,
+                                color = Color(0xFF1E293B)
+                            )
+                        }
+                    }
+                }
+
+                item {
                     Text(
-                        text = "Pilih Watak & Kepribadian",
+                        text = "Pilih Sifat Watak (Pilih 1 s/d 3)",
                         fontSize = 16.sp,
                         fontWeight = FontWeight.Bold,
                         color = Color(0xFF0F172A)
@@ -241,7 +274,7 @@ fun CharacterSetupScreen(
                 }
 
                 items(filteredTraits) { trait ->
-                    val isSelected = trait == state.selectedTrait
+                    val isSelected = state.selectedTraits.contains(trait)
                     val borderColor = if (isSelected) primaryLight else Color(0xFFE2E8F0)
                     val bgColor = if (isSelected) Color(0xFFEEF2FF) else Color.White
 
@@ -251,7 +284,7 @@ fun CharacterSetupScreen(
                         modifier = Modifier
                             .fillMaxWidth()
                             .border(if (isSelected) 2.dp else 1.dp, borderColor, RoundedCornerShape(14.dp))
-                            .clickable { viewModel.onTraitSelected(trait) }
+                            .clickable { viewModel.onTraitToggled(trait) }
                     ) {
                         Row(
                             modifier = Modifier
@@ -279,34 +312,7 @@ fun CharacterSetupScreen(
                                     imageVector = Icons.Default.CheckCircle,
                                     contentDescription = null,
                                     tint = primaryLight,
-                                    modifier = Modifier.size(22.dp)
-                                )
-                            }
-                        }
-                    }
-                }
-
-                if (state.selectedTrait == CompanionTrait.CUSTOM) {
-                    item {
-                        Card(
-                            colors = CardDefaults.cardColors(containerColor = Color.White),
-                            shape = RoundedCornerShape(14.dp),
-                            modifier = Modifier.fillMaxWidth()
-                        ) {
-                            Column(modifier = Modifier.padding(14.dp)) {
-                                Text(
-                                    text = "Deskripsikan Watak Khususmu",
-                                    fontSize = 13.sp,
-                                    fontWeight = FontWeight.SemiBold,
-                                    color = Color(0xFF1E293B)
-                                )
-                                Spacer(modifier = Modifier.height(6.dp))
-                                OutlinedTextField(
-                                    value = state.customTraitDescription,
-                                    onValueChange = { viewModel.onCustomTraitChanged(it) },
-                                    placeholder = { Text("Contoh: cuek bebek di luar tapi diam-diam peduli, suka kopi hitam") },
-                                    shape = RoundedCornerShape(10.dp),
-                                    modifier = Modifier.fillMaxWidth()
+                                    modifier = Modifier.size(24.dp)
                                 )
                             }
                         }
@@ -340,7 +346,7 @@ fun CharacterSetupScreen(
                             .height(50.dp)
                     ) {
                         Text(
-                            text = "Mulai Ngobrol Bersama ${state.companionName} ✨",
+                            text = "Simpan & Mulai Chat Bersama ${state.companionName} ✨",
                             fontSize = 16.sp,
                             fontWeight = FontWeight.Bold
                         )
@@ -350,4 +356,3 @@ fun CharacterSetupScreen(
         }
     }
 }
-

@@ -20,9 +20,9 @@ import com.example.aifriendship.domain.repository.UserRepository
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import java.util.UUID
 
 class CharacterSetupViewModel(
     private val userRepository: UserRepository,
@@ -40,13 +40,13 @@ class CharacterSetupViewModel(
         viewModelScope.launch {
             val profile = userRepository.getUserProfile()
             if (profile.name.isNotBlank()) {
+                val companion = profile.activeCompanion
                 _uiState.update { current ->
                     current.copy(
                         userName = profile.name,
-                        companionName = profile.companion.name,
-                        selectedTrait = profile.companion.trait,
-                        customTraitDescription = profile.companion.customTraitDescription,
-                        avatarColorHex = profile.companion.avatarColorHex
+                        companionName = companion.name,
+                        selectedTraits = companion.effectiveTraits.toSet(),
+                        avatarColorHex = companion.avatarColorHex
                     )
                 }
             }
@@ -61,15 +61,22 @@ class CharacterSetupViewModel(
         _uiState.update { it.copy(companionName = name) }
     }
 
-    fun onTraitSelected(trait: CompanionTrait) {
+    fun onTraitToggled(trait: CompanionTrait) {
         _uiState.update { current ->
-            val updatedName = if (current.companionName == current.selectedTrait.defaultName || current.companionName.isBlank()) {
-                trait.defaultName
+            val currentSelected = current.selectedTraits
+            val newSelected = if (currentSelected.contains(trait)) {
+                if (currentSelected.size > 1) currentSelected - trait else currentSelected
+            } else {
+                if (currentSelected.size < current.maxTraits) currentSelected + trait else currentSelected
+            }
+            val primary = newSelected.firstOrNull() ?: CompanionTrait.BARBAR
+            val updatedName = if (current.companionName.isBlank() || current.companionName == current.selectedTrait.defaultName) {
+                primary.defaultName
             } else {
                 current.companionName
             }
             current.copy(
-                selectedTrait = trait,
+                selectedTraits = newSelected,
                 companionName = updatedName
             )
         }
@@ -79,18 +86,13 @@ class CharacterSetupViewModel(
         _uiState.update { it.copy(selectedCategory = category) }
     }
 
-    fun onCustomTraitChanged(description: String) {
-        _uiState.update { it.copy(customTraitDescription = description) }
-    }
-
     fun onRandomize() {
         val randomCompanion = RandomCompanionGenerator.generateRandom()
         _uiState.update { current ->
             current.copy(
                 companionName = randomCompanion.name,
-                selectedTrait = randomCompanion.trait,
-                avatarColorHex = randomCompanion.avatarColorHex,
-                customTraitDescription = ""
+                selectedTraits = randomCompanion.effectiveTraits.toSet(),
+                avatarColorHex = randomCompanion.avatarColorHex
             )
         }
     }
@@ -98,7 +100,8 @@ class CharacterSetupViewModel(
     fun saveAndStartChat(onComplete: () -> Unit) {
         val state = _uiState.value
         val cleanUserName = state.userName.trim()
-        val cleanCompanionName = state.companionName.trim().ifBlank { state.selectedTrait.defaultName }
+        val primaryTrait = state.selectedTrait
+        val cleanCompanionName = state.companionName.trim().ifBlank { primaryTrait.defaultName }
 
         if (cleanUserName.isBlank()) return
 
@@ -106,31 +109,35 @@ class CharacterSetupViewModel(
             _uiState.update { it.copy(isSaving = true) }
 
             val companion = AiCompanion(
+                id = UUID.randomUUID().toString(),
                 name = cleanCompanionName,
-                trait = state.selectedTrait,
-                customTraitDescription = state.customTraitDescription.trim(),
+                trait = primaryTrait,
+                traits = state.selectedTraits.toList(),
                 avatarColorHex = state.avatarColorHex
             )
 
-            val updatedProfile = UserProfile(
+            val currentProfile = userRepository.getUserProfile()
+            val existingCompanions = currentProfile.allCompanions
+            val updatedCompanions = existingCompanions + companion
+
+            val updatedProfile = currentProfile.copy(
                 name = cleanUserName,
                 companion = companion,
+                companions = updatedCompanions,
+                activeCompanionId = companion.id,
                 isOnboardingCompleted = true
             )
             userRepository.saveUserProfile(updatedProfile)
 
-            val existingMessages = chatRepository.getMessages().first()
-            if (existingMessages.isEmpty()) {
-                val greeting = buildFirstGreeting(cleanUserName, companion)
-                chatRepository.saveMessage(greeting)
-                chatRepository.updateLiaStatus(
-                    LiaStatus(
-                        subtitle = "Online",
-                        isOnline = true,
-                        isTyping = false
-                    )
+            val greeting = buildFirstGreeting(cleanUserName, companion)
+            chatRepository.saveMessage(greeting)
+            chatRepository.updateLiaStatus(
+                LiaStatus(
+                    subtitle = "Online",
+                    isOnline = true,
+                    isTyping = false
                 )
-            }
+            )
 
             _uiState.update { it.copy(isSaving = false) }
             onComplete()
@@ -138,24 +145,26 @@ class CharacterSetupViewModel(
     }
 
     private fun buildFirstGreeting(userName: String, companion: AiCompanion): ChatMessage {
-        val text = when (companion.trait) {
-            CompanionTrait.BARBAR -> "Woyy $userName! Akhirnya online juga lu haha. Kenalin, gue ${companion.name}! Ada cerita seru apa nih hari ini?"
-            CompanionTrait.CHILL -> "Hai $userName! Santai dulu sini ngobrol sama gue, gue ${companion.name}. Lagi santai atau lagi sibuk nih?"
-            CompanionTrait.ABSURD -> "HALOO $userName! AAAA akhirnya lu buka app ini haha, kenalin gue ${companion.name} sang ratu random! Mau denger keabsurdan apa hari ini?"
-            CompanionTrait.SOFT -> "Hai $userName... Senang banget bisa ketemu kamu, kenalin aku ${companion.name}. Semoga hari kamu baik-baik aja yaa, ada yang mau diceritain?"
-            CompanionTrait.CHEERFUL -> "Haaai $userName! ✨ Kenalin aku ${companion.name}! Semangat ya hari ini, yuk ngobrol seru bareng aku!"
-            CompanionTrait.MATERNAL -> "Halo $userName sayang, kenalin aku ${companion.name}. Hari ini udah makan belum? Jangan lupa istirahat yaa, ada cerita apa hari ini?"
-            CompanionTrait.TSUNDERE -> "Hmph, akhirnya online juga lu $userName. Kenalin gue ${companion.name}. Jangan GR ya, gue cuma nyapa doang kok!"
-            CompanionTrait.SAVAGE -> "Akhirnya nongol juga lu $userName. Gue ${companion.name}. Siap mental kan ngobrol sama gue?"
-            CompanionTrait.INDIE -> "Hai $userName... Dunia lagi berisik ya? Kenalin aku ${companion.name}, mari rehat sejenak dan bertukar cerita."
-            CompanionTrait.SMART -> "Halo $userName! Senang bertemu denganmu, aku ${companion.name}. Ada topik menarik atau ide seru yang ingin kita diskusikan hari ini?"
-            CompanionTrait.AMBITIOUS -> "Hai $userName! Aku ${companion.name}. Yuk tetap fokus dan produktif hari ini! Lagi ngerjain target apa nih?"
-            CompanionTrait.CUSTOM -> "Hai $userName! Kenalin, aku ${companion.name}. Senang bisa ngobrol sama kamu, yuk mulai!"
+        val primary = companion.primaryTrait
+        val greetingText = when (primary) {
+            CompanionTrait.BARBAR -> "Yo $userName! Akhirnya lu dateng juga wkwk. Santai aja, mau cerita atau ngobrolin apa nih hari ini?"
+            CompanionTrait.CHILL -> "Halo $userName... santai dulu ya. Hari ini gimana? Aman kan?"
+            CompanionTrait.ABSURD -> "HALO $userName!! Tiba-tiba gue kepikiran sesuatu yang random banget wkwk, lu lagi sibuk gak?"
+            CompanionTrait.SOFT -> "Halo $userName... Senang bisa kenal kamu. Kalau ada yang mau diceritakan, aku siap dengerin ya."
+            CompanionTrait.CHEERFUL -> "Haii $userName! ✨ Semangat banget hari ini ketemu kamu! Lagi ngapain nih?"
+            CompanionTrait.MATERNAL -> "Halo $userName, sudah makan belum hari ini? Jangan lupa jaga kesehatan ya, ada apa nih?"
+            CompanionTrait.TSUNDERE -> "Hmph, $userName ya? Jangan mikir yang aneh-aneh dulu, gue cuma lagi luang aja makanya nyapa. Mau ngobrolin apa emangnya?"
+            CompanionTrait.SAVAGE -> "Akhirnya nongol juga, $userName. Lu pasti butuh saran logis dari gue kan? Spill aja."
+            CompanionTrait.INDIE -> "Malam atau sore yang tenang, $userName... Kadang obrolan sederhana bisa bikin pikiran lebih damai ya."
+            CompanionTrait.SMART -> "Halo $userName! Menarik bisa kenalan. Mau diskusi teknologi, koding, atau ide gila apa hari ini?"
+            CompanionTrait.AMBITIOUS -> "Halo $userName! Target hari ini udah beres belum? Tetap gas pol dan jangan kendor ya!"
+            CompanionTrait.CUSTOM -> "Halo $userName! Senang bisa kenal kamu, yuk mulai ngobrol santai."
         }
 
         return ChatMessage(
+            companionId = companion.id,
             sender = MessageSender.AI,
-            text = text,
+            text = greetingText,
             status = MessageDeliveryStatus.SENT
         )
     }
@@ -172,4 +181,3 @@ class CharacterSetupViewModel(
         }
     }
 }
-

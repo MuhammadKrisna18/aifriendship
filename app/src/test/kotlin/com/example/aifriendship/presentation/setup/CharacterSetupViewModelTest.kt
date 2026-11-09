@@ -69,11 +69,19 @@ class CharacterSetupViewModelTest {
     }
 
     @Test
-    fun onTraitSelected_updatesTraitAndCompanionName() = runTest {
-        viewModel.onTraitSelected(CompanionTrait.SOFT)
-        val state = viewModel.uiState.value
-        assertEquals(CompanionTrait.SOFT, state.selectedTrait)
-        assertEquals("Naya", state.companionName)
+    fun onTraitToggled_addsAndRemovesTraitsUpToMax() = runTest {
+        viewModel.onTraitToggled(CompanionTrait.TSUNDERE)
+        assertTrue(viewModel.uiState.value.selectedTraits.contains(CompanionTrait.TSUNDERE))
+
+        viewModel.onTraitToggled(CompanionTrait.MATERNAL)
+        assertTrue(viewModel.uiState.value.selectedTraits.contains(CompanionTrait.MATERNAL))
+        assertEquals(3, viewModel.uiState.value.selectedTraits.size)
+
+        viewModel.onTraitToggled(CompanionTrait.CHEERFUL)
+        assertEquals(3, viewModel.uiState.value.selectedTraits.size)
+
+        viewModel.onTraitToggled(CompanionTrait.BARBAR)
+        assertEquals(2, viewModel.uiState.value.selectedTraits.size)
     }
 
     @Test
@@ -92,17 +100,11 @@ class CharacterSetupViewModelTest {
     }
 
     @Test
-    fun onCustomTraitChanged_updatesDescription() = runTest {
-        viewModel.onCustomTraitChanged("suka begadang dan ngopi")
-        assertEquals("suka begadang dan ngopi", viewModel.uiState.value.customTraitDescription)
-    }
-
-    @Test
     fun saveAndStartChat_savesProfileAndCreatesFirstGreeting() = runTest {
         var completed = false
         viewModel.onUserNameChanged("Krisna")
         viewModel.onCompanionNameChanged("Clara")
-        viewModel.onTraitSelected(CompanionTrait.TSUNDERE)
+        viewModel.onTraitToggled(CompanionTrait.TSUNDERE)
 
         viewModel.saveAndStartChat {
             completed = true
@@ -112,14 +114,13 @@ class CharacterSetupViewModelTest {
         assertTrue(completed)
         val profile = fakeUserRepository.getUserProfile()
         assertEquals("Krisna", profile.name)
-        assertEquals("Clara", profile.companion.name)
-        assertEquals(CompanionTrait.TSUNDERE, profile.companion.trait)
+        assertEquals("Clara", profile.activeCompanion.name)
         assertTrue(profile.isOnboardingCompleted)
 
         val messages = fakeChatRepository.getMessages().first()
         assertEquals(1, messages.size)
         assertTrue(messages.first().text.contains("Krisna"))
-        assertTrue(messages.first().text.contains("Clara"))
+        assertEquals(profile.activeCompanion.id, messages.first().companionId)
     }
 }
 
