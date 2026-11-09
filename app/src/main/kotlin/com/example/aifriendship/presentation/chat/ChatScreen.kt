@@ -62,6 +62,7 @@ import com.example.aifriendship.presentation.chat.components.ChatTopBar
 import com.example.aifriendship.presentation.chat.components.TypingIndicator
 import com.example.aifriendship.presentation.chat.components.UserChatBubble
 import com.example.aifriendship.presentation.chat.components.UserProfileDialog
+import com.example.aifriendship.presentation.components.AppUpdateDialog
 import com.example.aifriendship.presentation.components.CompanionMemoryDialog
 import com.example.aifriendship.ui.theme.ChatCanvasBackground
 import com.example.aifriendship.ui.theme.ChatTimestampColor
@@ -219,66 +220,13 @@ fun ChatScreen(
         }
     }
 
-    uiState.updateInfo?.let { update ->
-        if (update.isUpdateAvailable) {
-            AlertDialog(
-                onDismissRequest = {
-                    if (!uiState.isDownloadingUpdate) {
-                        viewModel.dismissUpdateDialog()
-                    }
-                },
-                title = { Text("Update Baru Tersedia! 🚀") },
-                text = {
-                    Column {
-                        Text(
-                            text = "Versi terbaru (${update.latestVersion}) sudah siap dipasang.",
-                            fontSize = 14.sp
-                        )
-                        if (update.releaseNotes.isNotBlank()) {
-                            Spacer(modifier = Modifier.height(8.dp))
-                            Text(
-                                text = "Catatan Pembaruan:\n${update.releaseNotes}",
-                                fontSize = 12.sp,
-                                color = ChatTimestampColor
-                            )
-                        }
-                        if (uiState.isDownloadingUpdate) {
-                            Spacer(modifier = Modifier.height(16.dp))
-                            LinearProgressIndicator(
-                                progress = { uiState.downloadProgress / 100f },
-                                modifier = Modifier.fillMaxWidth()
-                            )
-                            Spacer(modifier = Modifier.height(8.dp))
-                            Text(
-                                text = "Mengunduh pembaruan (${uiState.downloadProgress}%)... Harap tunggu sebentar.",
-                                fontSize = 12.sp,
-                                fontWeight = FontWeight.Medium,
-                                color = MaterialTheme.colorScheme.primary
-                            )
-                        }
-                    }
-                },
-                confirmButton = {
-                    Button(
-                        onClick = { viewModel.downloadAndInstallUpdate() },
-                        enabled = !uiState.isDownloadingUpdate
-                    ) {
-                        Text(
-                            if (uiState.isDownloadingUpdate) "Mengunduh..." else "Install versi terbaru"
-                        )
-                    }
-                },
-                dismissButton = {
-                    TextButton(
-                        onClick = { viewModel.dismissUpdateDialog() },
-                        enabled = !uiState.isDownloadingUpdate
-                    ) {
-                        Text("Nanti Saja")
-                    }
-                }
-            )
-        }
-    }
+    AppUpdateDialog(
+        updateInfo = uiState.updateInfo,
+        isDownloading = uiState.isDownloadingUpdate,
+        downloadProgress = uiState.downloadProgress,
+        onDownloadAndInstall = { viewModel.downloadAndInstallUpdate() },
+        onDismiss = { viewModel.dismissUpdateDialog() }
+    )
 
     Scaffold(
         topBar = {

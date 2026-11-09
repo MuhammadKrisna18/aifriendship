@@ -54,16 +54,18 @@ jobs:
           body: |
             ## Pembaruan AiFriendship ${{ github.ref_name }} 💬✨
 
-            Pembaruan rilis besar **AiFriendship ${{ github.ref_name }}** menghadirkan dukungan penuh **Multiple Companions** dengan 12 karakter kepribadian unik serta **Sistem Ingatan Jangka Panjang (Memory System)** yang membuat AI mengingat kehidupan dan preferensi Anda secara permanen.
+            Pembaruan rilis besar **AiFriendship ${{ github.ref_name }}** menghadirkan pembenahan dan optimalisasi menyeluruh pada antarmuka pengguna (Frontend/UI), interaktivitas pesan yang lebih kaya, peningkatan performa Jetpack Compose, serta proteksi data pengguna.
 
             ### 🚀 Apa Saja Pembaruan di Versi Ini?
-            - **Multiple Companions & Trait Selector:** Buat sahabat AI baru dengan memilih kepribadian yang Anda sukai dari 12 karakter unik (Barbar, Chill, Soft-Spoken, Tsundere, Cerdas, Absurd, dsb.) dalam kategori Santai, Hangat, Spicy, dan Cerdas, lengkap dengan rekomendasi nama dan avatar.
-            - **Auto-Fact Extraction (Ingatan Jangka Panjang):** AI kini otomatis menyerap dan mencatat fakta-fakta penting tentang Anda (makanan favorit, hobi, hewan peliharaan, pekerjaan/kuliah, rencana penting) dari percakapan dan mengingatnya secara permanen.
-            - **Buku Ingatan Sahabat (Memory Dialog):** Anda dapat melihat, menghapus, atau menambahkan fakta baru secara manual langsung dari chat atau dari tab Sahabat AI.
-            - **Principles-Based Prompting (Bebas & Non-Template):** Seluruh contoh kalimat kaku telah dihapus dari prompt, membebaskan AI untuk berekspresi alami.
-            - **Ekspresi Tersipu Spontan & Organik:** Reaksi salting organik mengikuti alur topik pembicaraan.
-            - **Panjang Chat Dinamis Sesuai Topik:** AI menyesuaikan panjang respon secara seimbang mengikuti bobot topik user.
-            - **Kunci Keystore Terpadu:** Seluruh rilis APK menggunakan keystore seragam, memastikan update otomatis berjalan mulus tanpa masalah instalasi.
+            - **Menu Aksi Pesan (Modal Bottom Sheet):** Tahan lama (*long press*) pesan mana saja untuk menyalin teks ke papan klip (*copy*) atau membalas pesan (*reply*) secara instan.
+            - **Penyelarasan Desain Bubble Chat:** Penempatan timestamp dan centang pengiriman kini menyatu di sudut kanan bawah dalam bubble, menghadirkan estetika chat yang simetris, modern, dan padat.
+            - **Proteksi Keamanan Data Pengguna:** Dilengkapi dialog konfirmasi sebelum melakukan aksi destruktif ("Hapus Sahabat AI" dan "Reset Obrolan") guna mencegah terhapusnya riwayat obrolan atau profil secara tidak sengaja.
+            - **Optimasi Performa Jetpack Compose:** Animasi indikator mengetik kini berjalan di layout phase (bebas recomposition per-frame), proses filter watak ter-memoize, dan parsing warna avatar ter-cache sehingga obrolan lebih halus dan hemat baterai.
+            - **Header Obrolan Bersih & Input Interaktif:** Header chat lebih lega dan tombol emoji/mic pada input bar memberikan respons panduan langsung.
+            - **Keyboard Navigation pada Form Setup:** Tombol keyboard Next dan Done otomatis memindahkan fokus antar input dan menyimpan form tanpa harus menutup keyboard.
+            - **Lebar Bubble Adaptif Responsif:** Lebar maksimal bubble chat kini dinamis mengikuti persentase layar, tampil ideal di layar ponsel kecil, layar standar, hingga tablet.
+            - **Konsistensi Visual Indikator Mengetik:** Avatar dan warna karakter yang sedang mengetik selalu sinkron dengan sahabat AI aktif yang sedang diajak mengobrol.
+            - **Arsitektur Bersih (DRY):** Komponen dialog pembaruan diekstraksi menjadi `AppUpdateDialog` yang seragam.
 
             ---
 

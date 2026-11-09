@@ -23,6 +23,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Brush
+import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.aifriendship.domain.model.ChatMessage
@@ -46,9 +47,11 @@ fun UserChatBubble(
         horizontalArrangement = Arrangement.End,
         verticalAlignment = Alignment.Bottom
     ) {
+        val maxBubbleWidth = minOf((LocalConfiguration.current.screenWidthDp * 0.80f).dp, 400.dp)
+
         Box(
             modifier = Modifier
-                .widthIn(max = 270.dp)
+                .widthIn(max = maxBubbleWidth)
                 .clip(RoundedCornerShape(topStart = 18.dp, topEnd = 18.dp, bottomStart = 18.dp, bottomEnd = 4.dp))
                 .background(
                     Brush.horizontalGradient(

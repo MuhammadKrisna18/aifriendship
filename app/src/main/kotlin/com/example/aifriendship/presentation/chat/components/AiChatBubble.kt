@@ -19,6 +19,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.aifriendship.domain.model.ChatMessage
@@ -54,9 +55,11 @@ fun AiChatBubble(
 
         Spacer(modifier = Modifier.width(8.dp))
 
+        val maxBubbleWidth = minOf((LocalConfiguration.current.screenWidthDp * 0.80f).dp, 400.dp)
+
         Box(
             modifier = Modifier
-                .widthIn(max = 265.dp)
+                .widthIn(max = maxBubbleWidth)
                 .clip(RoundedCornerShape(topStart = 18.dp, topEnd = 18.dp, bottomStart = 4.dp, bottomEnd = 18.dp))
                 .background(AiBubbleBackground)
                 .border(1.dp, AiBubbleBorder, RoundedCornerShape(topStart = 18.dp, topEnd = 18.dp, bottomStart = 4.dp, bottomEnd = 18.dp))
