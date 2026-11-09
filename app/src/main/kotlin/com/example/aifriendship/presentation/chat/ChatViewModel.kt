@@ -297,6 +297,23 @@ class ChatViewModel(
                     delay(250L)
                 }
 
+                val activeCompanion = profile.activeCompanion
+                val currentMemory = activeCompanion.memory
+                val hasNewActivity = !response.activityUpdate.isNullOrBlank()
+                val newMood = response.parsedMood
+                val newRelationship = response.parsedRelationship
+
+                if (hasNewActivity || newMood != null || newRelationship != null) {
+                    val updatedMemory = currentMemory.copy(
+                        lastActivity = if (hasNewActivity) response.activityUpdate else currentMemory.lastActivity,
+                        activityTimestamp = if (hasNewActivity) System.currentTimeMillis() else currentMemory.activityTimestamp,
+                        currentMood = newMood ?: currentMemory.currentMood,
+                        currentRelationship = newRelationship ?: currentMemory.currentRelationship
+                    )
+                    val updatedCompanion = activeCompanion.copy(memory = updatedMemory)
+                    userRepository.updateCompanion(updatedCompanion)
+                }
+
                 chatRepository.updateLiaStatus(
                     currentStatus.copy(
                         subtitle = response.statusSubtitle,

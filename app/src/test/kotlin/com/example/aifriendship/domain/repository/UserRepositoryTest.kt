@@ -4,6 +4,9 @@ import com.example.aifriendship.data.local.UserLocalDataSource
 import com.example.aifriendship.data.remote.gemini.LiaPromptDefinition
 import com.example.aifriendship.data.repository.DefaultUserRepository
 import com.example.aifriendship.domain.model.AiCompanion
+import com.example.aifriendship.domain.model.CompanionMemory
+import com.example.aifriendship.domain.model.CompanionMood
+import com.example.aifriendship.domain.model.CompanionRelationship
 import com.example.aifriendship.domain.model.CompanionTrait
 import com.example.aifriendship.domain.model.RandomCompanionGenerator
 import com.example.aifriendship.domain.model.UserProfile
@@ -124,6 +127,47 @@ class UserRepositoryTest {
         assertTrue(instruction.contains("Kombinasi Karakter Gabungan"))
         assertTrue(instruction.contains("tsundere"))
         assertTrue(instruction.contains("keibuan"))
+    }
+
+    @Test
+    fun buildSystemInstruction_withRelationshipAndMood_injectsContext() {
+        val companion = AiCompanion(
+            name = "Rina",
+            memory = CompanionMemory(
+                currentRelationship = CompanionRelationship.PACAR,
+                currentMood = CompanionMood.SALTING
+            )
+        )
+        val profile = UserProfile(name = "Xavi", companion = companion)
+        val instruction = LiaPromptDefinition.buildSystemInstruction(profile)
+        assertTrue(instruction.contains("Pacar / Kekasih"))
+        assertTrue(instruction.contains("Salting"))
+    }
+
+    @Test
+    fun buildSystemInstruction_withActivityMemoryAndFacts_injectsMemory() {
+        val companion = AiCompanion(
+            name = "Rina",
+            memory = CompanionMemory(
+                lastActivity = "Lagi kuis kalkulus",
+                activityTimestamp = 1762646400000L,
+                userFacts = listOf("Suka kopi latte", "Lagi skripsi")
+            )
+        )
+        val profile = UserProfile(name = "Xavi", companion = companion)
+        val instruction = LiaPromptDefinition.buildSystemInstruction(profile)
+        assertTrue(instruction.contains("Lagi kuis kalkulus"))
+        assertTrue(instruction.contains("Suka kopi latte"))
+        assertTrue(instruction.contains("Lagi skripsi"))
+    }
+
+    @Test
+    fun buildSystemInstruction_injectsAntiNgegasAndEmpathyRules() {
+        val instruction = LiaPromptDefinition.buildSystemInstruction(null)
+        assertTrue(instruction.contains("Anti-Ngegas"))
+        assertTrue(instruction.contains("Playful, Not Hostile"))
+        assertTrue(instruction.contains("Reciprocity"))
+        assertTrue(instruction.contains("EMPATHY OVERRIDE"))
     }
 
     @Test

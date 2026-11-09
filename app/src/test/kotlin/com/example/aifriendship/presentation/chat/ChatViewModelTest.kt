@@ -5,6 +5,8 @@ import com.example.aifriendship.domain.model.AiCompanion
 import com.example.aifriendship.domain.model.AiResponse
 import com.example.aifriendship.domain.model.AppUpdateInfo
 import com.example.aifriendship.domain.model.ChatMessage
+import com.example.aifriendship.domain.model.CompanionMood
+import com.example.aifriendship.domain.model.CompanionRelationship
 import com.example.aifriendship.domain.model.LiaStatus
 import com.example.aifriendship.domain.model.MessageDeliveryStatus
 import com.example.aifriendship.domain.model.MessageSender
@@ -104,6 +106,29 @@ class ChatViewModelTest {
     }
 
     @Test
+    fun sendMessage_updatesCompanionMemoryFromAiResponse() = runTest {
+        backgroundScope.launch(UnconfinedTestDispatcher(testScheduler)) {
+            viewModel.uiState.collect()
+        }
+
+        fakeAiService.customResponse = AiResponse(
+            bubbles = listOf("Sip kelar nugas"),
+            statusSubtitle = "Lagi santai di kamar",
+            mood = "SALTING",
+            activityUpdate = "Nonton anime di kamar",
+            relationshipUpdate = "GEBETAN"
+        )
+        viewModel.onInputTextChanged("Kamu lagi apa?")
+        viewModel.sendMessage()
+        testDispatcher.scheduler.advanceUntilIdle()
+
+        val updatedCompanion = fakeUserRepository.getUserProfile().activeCompanion
+        assertEquals("Nonton anime di kamar", updatedCompanion.memory.lastActivity)
+        assertEquals(CompanionMood.SALTING, updatedCompanion.currentMood)
+        assertEquals(CompanionRelationship.GEBETAN, updatedCompanion.currentRelationship)
+    }
+
+    @Test
     fun onQuotaExceeded_triggersRoleplayExcuseAndCooldown() = runTest {
         backgroundScope.launch(UnconfinedTestDispatcher(testScheduler)) {
             viewModel.uiState.collect()
@@ -200,6 +225,7 @@ private class FakeApiKeyProvider : ApiKeyProvider {
 private class FakeAiService : AiService {
     private var model = "gemini-2.5-flash"
     var shouldFailWithQuota = false
+    var customResponse: AiResponse? = null
 
     override fun getActiveModel(): String = model
 
@@ -215,12 +241,11 @@ private class FakeAiService : AiService {
         if (shouldFailWithQuota) {
             return Result.failure(AllModelsQuotaExceededException())
         }
-        return Result.success(
-            AiResponse(
-                bubbles = listOf("wah rajin banget", "pointer itu alamat memori"),
-                statusSubtitle = "gemas juga ngajarin dia ngoding"
-            )
+        val response = customResponse ?: AiResponse(
+            bubbles = listOf("wah rajin banget", "pointer itu alamat memori"),
+            statusSubtitle = "gemas juga ngajarin dia ngoding"
         )
+        return Result.success(response)
     }
 }
 

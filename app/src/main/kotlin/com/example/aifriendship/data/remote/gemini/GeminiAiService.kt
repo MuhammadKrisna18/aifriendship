@@ -147,16 +147,26 @@ class GeminiAiService(
             )
         }.toMutableList()
 
-        if (quotedMessage != null) {
-            val lastUserIndex = contents.indexOfLast { it.role == "user" }
-            if (lastUserIndex != -1) {
-                val originalText = contents[lastUserIndex].parts.firstOrNull()?.text.orEmpty()
-                val quotedContext = "[Membalas ${quotedMessage.senderName}: \"${quotedMessage.text}\"]\n$originalText"
-                contents[lastUserIndex] = GeminiContent(
-                    role = "user",
-                    parts = listOf(GeminiPart(text = quotedContext))
-                )
+        val lastUserMsg = slidingHistory.lastOrNull { it.sender == MessageSender.USER }
+        val prevMsg = slidingHistory.dropLast(1).lastOrNull()
+        val timeGapContext = if (lastUserMsg != null && prevMsg != null) {
+            val gapMillis = lastUserMsg.timestamp - prevMsg.timestamp
+            formatTimeGap(gapMillis)
+        } else null
+
+        val lastUserIndex = contents.indexOfLast { it.role == "user" }
+        if (lastUserIndex != -1) {
+            var userText = contents[lastUserIndex].parts.firstOrNull()?.text.orEmpty()
+            if (timeGapContext != null) {
+                userText = "[Jeda Waktu: Obrolan berlanjut setelah jeda $timeGapContext dari pesan sebelumnya]\n$userText"
             }
+            if (quotedMessage != null) {
+                userText = "[Membalas ${quotedMessage.senderName}: \"${quotedMessage.text}\"]\n$userText"
+            }
+            contents[lastUserIndex] = GeminiContent(
+                role = "user",
+                parts = listOf(GeminiPart(text = userText))
+            )
         }
 
         val requestBodyDto = GeminiRequestDto(
@@ -173,6 +183,18 @@ class GeminiAiService(
 
         val jsonString = json.encodeToString(requestBodyDto)
         return jsonString.toRequestBody("application/json".toMediaType())
+    }
+
+    private fun formatTimeGap(gapMillis: Long): String? {
+        val minutes = gapMillis / (60 * 1000L)
+        return when {
+            minutes < 45 -> null
+            minutes < 60 -> "sekitar 45 menit"
+            minutes < 120 -> "sekitar 1 jam"
+            minutes < 24 * 60 -> "sekitar ${minutes / 60} jam"
+            minutes < 48 * 60 -> "kemarin (sekitar 1 hari)"
+            else -> "beberapa hari"
+        }
     }
 
     private fun sanitizeBubbles(bubbles: List<String>): List<String> {
