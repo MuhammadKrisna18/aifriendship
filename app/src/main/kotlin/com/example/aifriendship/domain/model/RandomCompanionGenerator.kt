@@ -1,5 +1,6 @@
 package com.example.aifriendship.domain.model
 
+import java.util.UUID
 import kotlin.random.Random
 
 object RandomCompanionGenerator {
@@ -36,17 +37,20 @@ object RandomCompanionGenerator {
 
     fun generateRandom(random: Random = Random.Default): AiCompanion {
         val selectableTraits = CompanionTrait.entries.filter { it != CompanionTrait.CUSTOM }
-        val randomTrait = selectableTraits[random.nextInt(selectableTraits.size)]
-        val namePool = listOf(randomTrait.defaultName) + FEMALE_NAMES
+        val numTraits = if (random.nextBoolean()) 2 else 1
+        val pickedTraits = selectableTraits.shuffled(random).take(numTraits)
+        val primaryTrait = pickedTraits.first()
+        val namePool = listOf(primaryTrait.defaultName) + FEMALE_NAMES
         val randomName = namePool[random.nextInt(namePool.size)]
         val randomColor = AVATAR_COLORS[random.nextInt(AVATAR_COLORS.size)]
 
         return AiCompanion(
+            id = UUID.randomUUID().toString(),
             name = randomName,
-            trait = randomTrait,
+            trait = primaryTrait,
+            traits = pickedTraits,
             customTraitDescription = "",
             avatarColorHex = randomColor
         )
     }
 }
-

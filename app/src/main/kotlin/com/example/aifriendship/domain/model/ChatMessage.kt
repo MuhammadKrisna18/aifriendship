@@ -26,10 +26,10 @@ data class QuotedMessage(
 @Serializable
 data class ChatMessage(
     val id: String = UUID.randomUUID().toString(),
+    val companionId: String = "default-companion-lia",
     val sender: MessageSender,
     val text: String,
     val timestamp: Long = System.currentTimeMillis(),
     val quotedMessage: QuotedMessage? = null,
     val status: MessageDeliveryStatus = MessageDeliveryStatus.SENT
 )
-

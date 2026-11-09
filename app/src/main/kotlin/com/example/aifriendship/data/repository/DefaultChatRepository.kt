@@ -14,6 +14,14 @@ class DefaultChatRepository(
         return localDataSource.getMessages()
     }
 
+    override fun getMessagesByCompanion(companionId: String): Flow<List<ChatMessage>> {
+        return localDataSource.getMessagesByCompanion(companionId)
+    }
+
+    override fun getLatestMessagesPerCompanion(): Flow<Map<String, ChatMessage>> {
+        return localDataSource.getLatestMessagesPerCompanion()
+    }
+
     override suspend fun saveMessage(message: ChatMessage) {
         localDataSource.saveMessage(message)
     }
@@ -28,6 +36,10 @@ class DefaultChatRepository(
 
     override suspend fun clearMessages() {
         localDataSource.clearMessages()
+    }
+
+    override suspend fun clearMessagesByCompanion(companionId: String) {
+        localDataSource.clearMessagesByCompanion(companionId)
     }
 
     override fun getLiaStatus(): Flow<LiaStatus> {

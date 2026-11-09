@@ -12,5 +12,8 @@ interface UserRepository {
     suspend fun updateName(name: String)
     suspend fun updateVibe(vibe: CommunicationVibe)
     suspend fun updateCompanion(companion: AiCompanion)
+    suspend fun addCompanion(companion: AiCompanion)
+    suspend fun setActiveCompanion(companionId: String)
+    suspend fun removeCompanion(companionId: String)
     suspend fun completeOnboarding()
 }

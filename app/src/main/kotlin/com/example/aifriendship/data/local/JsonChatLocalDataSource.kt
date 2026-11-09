@@ -10,6 +10,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 import kotlinx.coroutines.withContext
@@ -47,6 +48,28 @@ class JsonChatLocalDataSource(
 
     override fun getMessages(): Flow<List<ChatMessage>> = _messagesFlow.asStateFlow()
 
+    override fun getMessagesByCompanion(companionId: String): Flow<List<ChatMessage>> {
+        return _messagesFlow.map { list ->
+            list.filter {
+                it.companionId == companionId || (companionId == "default-companion-lia" && it.companionId.isBlank())
+            }
+        }
+    }
+
+    override fun getLatestMessagesPerCompanion(): Flow<Map<String, ChatMessage>> {
+        return _messagesFlow.map { list ->
+            val result = mutableMapOf<String, ChatMessage>()
+            for (msg in list) {
+                val cId = msg.companionId.ifBlank { "default-companion-lia" }
+                val current = result[cId]
+                if (current == null || msg.timestamp > current.timestamp) {
+                    result[cId] = msg
+                }
+            }
+            result
+        }
+    }
+
     override suspend fun saveMessage(message: ChatMessage) {
         mutex.withLock {
             val updated = _messagesFlow.value + message
@@ -75,6 +98,16 @@ class JsonChatLocalDataSource(
         mutex.withLock {
             _messagesFlow.value = emptyList()
             writeMessagesToFile(emptyList())
+        }
+    }
+
+    override suspend fun clearMessagesByCompanion(companionId: String) {
+        mutex.withLock {
+            val updated = _messagesFlow.value.filterNot {
+                it.companionId == companionId || (companionId == "default-companion-lia" && it.companionId.isBlank())
+            }
+            _messagesFlow.value = updated
+            writeMessagesToFile(updated)
         }
     }
 

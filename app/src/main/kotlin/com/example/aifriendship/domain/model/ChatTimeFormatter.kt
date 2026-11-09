@@ -11,3 +11,4 @@ object ChatTimeFormatter {
         return timeFormat.format(Date(timestamp))
     }
 }
+

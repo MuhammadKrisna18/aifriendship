@@ -148,6 +148,25 @@ private class FakeUserRepository(
         profileFlow.value = profileFlow.value.copy(companion = companion)
     }
 
+    override suspend fun addCompanion(companion: AiCompanion) {
+        val current = profileFlow.value
+        profileFlow.value = current.copy(
+            companions = current.allCompanions + companion,
+            activeCompanionId = companion.id
+        )
+    }
+
+    override suspend fun setActiveCompanion(companionId: String) {
+        profileFlow.value = profileFlow.value.copy(activeCompanionId = companionId)
+    }
+
+    override suspend fun removeCompanion(companionId: String) {
+        val current = profileFlow.value
+        profileFlow.value = current.copy(
+            companions = current.allCompanions.filterNot { it.id == companionId }
+        )
+    }
+
     override suspend fun completeOnboarding() {
         profileFlow.value = profileFlow.value.copy(isOnboardingCompleted = true)
     }
@@ -158,6 +177,10 @@ private class FakeChatRepository : ChatRepository {
     private val statusFlow = MutableStateFlow(LiaStatus())
 
     override fun getMessages(): Flow<List<ChatMessage>> = messagesFlow.asStateFlow()
+
+    override fun getMessagesByCompanion(companionId: String): Flow<List<ChatMessage>> = messagesFlow.asStateFlow()
+
+    override fun getLatestMessagesPerCompanion(): Flow<Map<String, ChatMessage>> = MutableStateFlow(emptyMap())
 
     override suspend fun saveMessage(message: ChatMessage) {
         messagesFlow.value = messagesFlow.value + message
@@ -173,6 +196,10 @@ private class FakeChatRepository : ChatRepository {
 
     override suspend fun clearMessages() {
         messagesFlow.value = emptyList()
+    }
+
+    override suspend fun clearMessagesByCompanion(companionId: String) {
+        messagesFlow.value = messagesFlow.value.filterNot { it.companionId == companionId }
     }
 
     override fun getLiaStatus(): Flow<LiaStatus> = statusFlow.asStateFlow()

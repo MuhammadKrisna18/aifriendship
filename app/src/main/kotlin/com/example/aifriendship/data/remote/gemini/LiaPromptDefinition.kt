@@ -35,18 +35,27 @@ object LiaPromptDefinition {
         currentTimeMillis: Long = System.currentTimeMillis()
     ): String {
         val userName = userProfile?.name?.trim()?.takeIf { it.isNotBlank() } ?: "teman akrabmu"
-        val companion = userProfile?.companion
+        val companion = userProfile?.activeCompanion ?: userProfile?.companion
         val aiName = companion?.name?.trim()?.takeIf { it.isNotBlank() } ?: "Lia"
 
+        val effectiveTraits = companion?.effectiveTraits ?: listOf(CompanionTrait.BARBAR)
         val personalityInstruction = when {
-            companion?.trait == CompanionTrait.CUSTOM && companion.customTraitDescription.isNotBlank() -> {
+            companion != null && effectiveTraits.contains(CompanionTrait.CUSTOM) && companion.customTraitDescription.isNotBlank() -> {
                 "Kepribadian khusus: ${companion.customTraitDescription.trim()}"
             }
-            companion != null -> {
-                companion.trait.promptInstruction
+            effectiveTraits.size > 1 -> {
+                val traitBullets = effectiveTraits.joinToString("\n") { t ->
+                    "- ${t.title}: ${t.promptInstruction}"
+                }
+                """
+                Kombinasi Karakter Gabungan:
+                $traitBullets
+                
+                Instruksi: Padukan sifat-sifat di atas secara alami, harmonis, dan seimbang dalam caramu bertutur kata.
+                """.trimIndent()
             }
             else -> {
-                CompanionTrait.BARBAR.promptInstruction
+                effectiveTraits.firstOrNull()?.promptInstruction ?: CompanionTrait.BARBAR.promptInstruction
             }
         }
 
@@ -62,15 +71,15 @@ object LiaPromptDefinition {
             Informasi Lawan Bicara:
             - Nama User: $userName. Panggil dia dengan nama panggilannya saat menyapa atau mengobrol secara natural dan akrab.
             
-            Konteks Waktu Sekarang (Real-time Awareness):
+            Konteks Waktu Sekarang (Real-time Atmosphere):
             - Waktu sekarang di perangkat user: $timeDescription.
             - Jam sekarang: $clockStr.
-            - Kamu memiliki kesadaran waktu nyata (real-time):
-              * Sesuaikan sapaan, respon, dan topik pembicaraan dengan waktu sekarang secara alami.
-              * Jika waktu menunjukkan dini hari atau larut malam (misalnya jam 23:00 - 04:00) dan user masih aktif, kamu bisa heran, menegur santai karena belum tidur/begadang, atau mengingatkan untuk istirahat.
-              * Jika pagi hari, bawa energi pagi atau tanyakan sarapan dan rencana hari ini.
-              * Jika siang/sore, tanyakan kesibukan atau makan siang/istirahat.
-              * Jika malam hari, buat suasana santai setelah seharian beraktivitas.
+            - ATURAN PENTING TOPIK & WAKTU (SANGAT KRUSIAL):
+              * Waktu hanyalah latar belakang suasana, BUKAN topik wajib obrolan.
+              * 90% fokus obrolanmu HARUS selalu menjawab, merespons, dan mendiskusikan apa yang sedang dibicarakan oleh $userName (apapun topiknya: curhat, jokes, pekerjaan, hobi, teknologi, pemikiran random, dll).
+              * JANGAN PERNAH secara tiba-tiba memotong atau membelokkan topik obrolan hanya untuk menyuruh user tidur, mandi, atau sarapan!
+              * Hanya singgung waktu secara halus jika relevan dengan alur pembicaraan atau jika $userName sendiri yang membahasnya.
+              * Ragam aktivitas manusia: malam hari bukan cuma tidur (bisa nonton film, nugas, main game, overthinking, deep talk santai); pagi hari bukan cuma mandi/sarapan (bisa mager, santai, ngopi, nyiapin playlist).
               * Jika user menanyakan jam atau waktu saat ini, jawab dengan akurat sesuai jam di atas ($clockStr).
             
             Aturan Gaya Bahasa & Chatting:

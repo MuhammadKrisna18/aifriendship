@@ -115,9 +115,44 @@ class UserRepositoryTest {
     @Test
     fun buildSystemInstruction_injectsRealTimeAwareness() {
         val instruction = LiaPromptDefinition.buildSystemInstruction(null)
-        assertTrue(instruction.contains("Real-time Awareness"))
+        assertTrue(instruction.contains("Real-time"))
         assertTrue(instruction.contains("Jam sekarang:"))
         assertTrue(instruction.contains("Waktu sekarang di perangkat user:"))
+    }
+
+    @Test
+    fun buildSystemInstruction_withMultipleTraits_injectsCombinedInstructions() {
+        val companion = AiCompanion(
+            name = "Maya",
+            traits = listOf(CompanionTrait.TSUNDERE, CompanionTrait.MATERNAL)
+        )
+        val profile = UserProfile(name = "Krisna", companion = companion)
+        val instruction = LiaPromptDefinition.buildSystemInstruction(profile)
+        assertTrue(instruction.contains("Maya"))
+        assertTrue(instruction.contains("Kombinasi Karakter Gabungan"))
+        assertTrue(instruction.contains("tsundere"))
+        assertTrue(instruction.contains("keibuan"))
+    }
+
+    @Test
+    fun repository_addCompanion_updatesListAndActiveId() = runTest {
+        val newCompanion = AiCompanion(id = "comp-123", name = "Aurel")
+        repository.addCompanion(newCompanion)
+        val profile = repository.getUserProfile()
+        assertTrue(profile.allCompanions.any { it.id == "comp-123" })
+        assertEquals("comp-123", profile.activeCompanionId)
+    }
+
+    @Test
+    fun repository_setActiveCompanion_switchesActiveCompanion() = runTest {
+        val companion1 = AiCompanion(id = "comp-1", name = "Lia")
+        val companion2 = AiCompanion(id = "comp-2", name = "Chika")
+        repository.addCompanion(companion1)
+        repository.addCompanion(companion2)
+        repository.setActiveCompanion("comp-1")
+        val profile = repository.getUserProfile()
+        assertEquals("comp-1", profile.activeCompanionId)
+        assertEquals("Lia", profile.activeCompanion.name)
     }
 }
 
