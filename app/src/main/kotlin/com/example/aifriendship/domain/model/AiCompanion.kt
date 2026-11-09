@@ -10,6 +10,8 @@ data class AiCompanion(
     val traits: List<CompanionTrait> = emptyList(),
     val customTraitDescription: String = "",
     val avatarColorHex: String = "#6366F1",
+    val relationship: CompanionRelationship = CompanionRelationship.TEMAN_BIASA,
+    val memory: CompanionMemory = CompanionMemory(),
     val createdAt: Long = System.currentTimeMillis()
 ) {
     val effectiveTraits: List<CompanionTrait>
@@ -25,4 +27,10 @@ data class AiCompanion(
         get() = effectiveTraits.joinToString(", ") {
             it.title.replace(Regex("^[\\p{So}\\p{Sk}\\p{Sm}\\p{Sc}]+\\s*"), "")
         }
+
+    val currentRelationship: CompanionRelationship
+        get() = memory.currentRelationship
+
+    val currentMood: CompanionMood
+        get() = memory.currentMood
 }

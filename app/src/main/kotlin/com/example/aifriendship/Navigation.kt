@@ -18,11 +18,7 @@ fun MainNavigation() {
     val profileStateFlow = container.userRepository.observeUserProfile()
     val userProfile by profileStateFlow.collectAsStateWithLifecycle()
 
-    val hasCreatedCharacter = profileStateFlow.value.isOnboardingCompleted ||
-            profileStateFlow.value.companions.isNotEmpty() ||
-            profileStateFlow.value.name.isNotBlank()
-
-    val initialKey = if (hasCreatedCharacter) Home else Setup
+    val initialKey = Home
     val backStack = rememberNavBackStack(initialKey)
 
     NavDisplay(
@@ -45,9 +41,7 @@ fun MainNavigation() {
                         backStack.clear()
                         backStack.add(Home)
                     },
-                    onBackClick = if (hasCreatedCharacter && backStack.size > 1) {
-                        { backStack.removeLastOrNull() }
-                    } else null
+                    onBackClick = { backStack.removeLastOrNull() }
                 )
             }
             entry<Chat> {

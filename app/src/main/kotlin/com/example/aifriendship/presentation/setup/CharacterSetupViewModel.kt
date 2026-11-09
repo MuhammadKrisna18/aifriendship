@@ -8,6 +8,9 @@ import androidx.lifecycle.viewmodel.viewModelFactory
 import com.example.aifriendship.AiFriendshipApplication
 import com.example.aifriendship.domain.model.AiCompanion
 import com.example.aifriendship.domain.model.ChatMessage
+import com.example.aifriendship.domain.model.CompanionMemory
+import com.example.aifriendship.domain.model.CompanionMood
+import com.example.aifriendship.domain.model.CompanionRelationship
 import com.example.aifriendship.domain.model.CompanionTrait
 import com.example.aifriendship.domain.model.CompanionTraitCategory
 import com.example.aifriendship.domain.model.LiaStatus
@@ -113,7 +116,12 @@ class CharacterSetupViewModel(
                 name = cleanCompanionName,
                 trait = primaryTrait,
                 traits = state.selectedTraits.toList(),
-                avatarColorHex = state.avatarColorHex
+                avatarColorHex = state.avatarColorHex,
+                relationship = CompanionRelationship.TEMAN_BIASA,
+                memory = CompanionMemory(
+                    currentRelationship = CompanionRelationship.TEMAN_BIASA,
+                    currentMood = CompanionMood.BIASA
+                )
             )
 
             val currentProfile = userRepository.getUserProfile()
