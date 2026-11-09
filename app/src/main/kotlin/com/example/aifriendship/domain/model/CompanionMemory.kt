@@ -10,5 +10,7 @@ data class CompanionMemory(
     val currentMood: CompanionMood = CompanionMood.BIASA,
     val affinityScore: Int = 20,
     val userFacts: List<String> = emptyList(),
-    val lastProactiveMessageTimestamp: Long? = null
+    val lastProactiveMessageTimestamp: Long? = null,
+    val consecutiveProactiveCount: Int = 0,
+    val pendingFarewellActivity: String? = null
 )

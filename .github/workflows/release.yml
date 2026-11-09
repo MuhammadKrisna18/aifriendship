@@ -42,13 +42,14 @@ jobs:
           body: |
             ## Pembaruan AiFriendship ${{ github.ref_name }} 💬✨
 
-            Pembaruan rilis **AiFriendship ${{ github.ref_name }}** menyempurnakan alur instalasi in-app update dan menghadirkan pengalaman pembaruan aplikasi yang mulus dan transparan.
+            Pembaruan rilis **AiFriendship ${{ github.ref_name }}** menghadirkan penyempurnaan besar pada respon emosional AI dan sistem perpesanan proaktif instan yang jauh lebih manusiawi.
 
-            ### 🚀 Apa Saja Perbaikan di Versi Ini?
-            - **Dialog Update Ringkas (2 Tombol):** Dialog pembaruan kini hanya memiliki 2 tombol yang jelas: **"Install versi terbaru"** dan **"Nanti Saja"** (menghilangkan tombol perantara browser).
-            - **Indikator Kemajuan Unduhan Real-Time:** Menampilkan progress bar dan persentase unduhan (0% – 100%) langsung di dalam dialog, sehingga pengguna tahu proses unduh sedang berjalan aktif.
-            - **Perbaikan Alur Package Installer:** Mengunduh file APK secara tuntas terlebih dahulu, menyelesaikan izin sumber tidak dikenal (*Unknown Sources*) secara tepat, dan mendaftarkan izin URI langsung ke Android Package Installer tanpa *silent failure*.
-            - **AI Chat Proaktif Berbasis Konteks:** Sahabat AI tetap aktif menyapa duluan saat Anda lupa membalas chat, menanyakan kelanjutan topik sebelumnya, atau membagikan aktivitas terbarunya via push notification.
+            ### 🚀 Apa Saja Pembaruan di Versi Ini?
+            - **Reaksi Salting Super Dinamis (Anti-Template):** AI kini mengekspresikan rasa tersipu/salting dengan ragam reaksi alami: denial canggung (*pura-pura haus/kipas angin rusak*), panik lucu/speechless (*otak nge-blank*), tsundere sok galak (*"jangan bikin orang geer napa"*), ngetes ketulusan, meleleh jujur, hingga respon fisik realistis (*"refleks nutup muka pake bantal"*).
+            - **Rapid Silence Follow-up (1–5 Menit):** Jika Anda tiba-tiba menghilang di tengah obrolan, AI akan menyapa santai dalam rentang acak 1–5 menit (*"Woy kok ngilang?", "Dih di-read doang wkwk"*).
+            - **Deteksi Pamit Otomatis (10–60 Menit):** Jika Anda pamit (mandi, makan, otw, nugas, tidur), AI tidak mengganggu dan akan mengecek kembali kabar Anda setelah 10–60 menit (*"Udah kelar mandinya belum?", "Udah nyampe mana?"*).
+            - **Mood-Driven Dynamic Spam:** Frekuensi follow-up disesuaikan dengan suasana hati (Mood Manja, Kangen, Kepo, Ngambek dapat mengirim 2–3 chat berturut-turut; Mood Cuek/Biasa tetap kalem 1 chat).
+            - **Auto-Cancel & Battery Guardrails:** Timer follow-up otomatis dibatalkan begitu Anda mengirim pesan baru. Jam tenang malam (00:00 – 07:00) tetap aktif.
 
             ---
 

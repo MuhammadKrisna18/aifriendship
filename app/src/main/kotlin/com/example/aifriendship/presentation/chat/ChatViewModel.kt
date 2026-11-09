@@ -19,6 +19,8 @@ import com.example.aifriendship.domain.repository.UserRepository
 import com.example.aifriendship.domain.service.AiService
 import com.example.aifriendship.domain.service.AllModelsQuotaExceededException
 import com.example.aifriendship.domain.service.AppUpdateService
+import com.example.aifriendship.domain.service.CompanionScheduler
+import com.example.aifriendship.domain.service.FarewellDetector
 import com.example.aifriendship.domain.service.QuotaExceededException
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
@@ -36,7 +38,8 @@ class ChatViewModel(
     private val userRepository: UserRepository,
     private val aiService: AiService,
     val apiKeyProvider: ApiKeyProvider,
-    private val appUpdateService: AppUpdateService
+    private val appUpdateService: AppUpdateService,
+    private val companionScheduler: CompanionScheduler? = null
 ) : ViewModel() {
 
     private val _inputText = MutableStateFlow("")
@@ -273,8 +276,19 @@ class ChatViewModel(
         _inputText.value = ""
         _replyingTo.value = null
 
+        val detectedFarewell = FarewellDetector.detectFarewell(textToSend)
+
         viewModelScope.launch {
             chatRepository.saveMessage(userMessage)
+            companionScheduler?.cancelFollowUp(companionId)
+
+            val activeCompanion = profile.activeCompanion
+            val updatedMemory = activeCompanion.memory.copy(
+                consecutiveProactiveCount = 0,
+                pendingFarewellActivity = detectedFarewell ?: activeCompanion.memory.pendingFarewellActivity
+            )
+            userRepository.updateCompanion(activeCompanion.copy(memory = updatedMemory))
+
             processAiReply(quoted)
         }
     }
@@ -345,6 +359,16 @@ class ChatViewModel(
                         isTyping = false
                     )
                 )
+
+                val latestProfile = userRepository.getUserProfile()
+                val latestCompanion = latestProfile.activeCompanion
+                val pendingFarewell = latestCompanion.memory.pendingFarewellActivity
+                val delayMinutes = if (pendingFarewell != null) {
+                    FarewellDetector.suggestDelayMinutes(pendingFarewell)
+                } else {
+                    FarewellDetector.suggestRapidDelayMinutes()
+                }
+                companionScheduler?.scheduleFollowUp(companionId, delayMinutes)
             },
             onFailure = { error ->
                 chatRepository.updateLiaStatus(currentStatus.copy(isTyping = false))
@@ -472,7 +496,8 @@ class ChatViewModel(
                     userRepository = application.container.userRepository,
                     aiService = application.container.aiService,
                     apiKeyProvider = application.container.apiKeyProvider,
-                    appUpdateService = application.container.appUpdateService
+                    appUpdateService = application.container.appUpdateService,
+                    companionScheduler = application.container.companionScheduler
                 )
             }
         }

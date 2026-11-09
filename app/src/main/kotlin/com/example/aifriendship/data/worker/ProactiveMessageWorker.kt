@@ -7,6 +7,8 @@ import com.example.aifriendship.AiFriendshipApplication
 import com.example.aifriendship.domain.model.ChatMessage
 import com.example.aifriendship.domain.model.MessageDeliveryStatus
 import com.example.aifriendship.domain.model.MessageSender
+import com.example.aifriendship.domain.model.ProactiveTriggerReason
+import com.example.aifriendship.domain.service.FarewellDetector
 import com.example.aifriendship.domain.service.ProactiveMessageEvaluator
 import com.example.aifriendship.presentation.notification.ProactiveNotificationHelper
 import kotlinx.coroutines.flow.first
@@ -48,8 +50,17 @@ class ProactiveMessageWorker(
                 )
                 chatRepository.saveMessage(chatMessage)
 
+                val newCount = activeCompanion.memory.consecutiveProactiveCount + 1
+                val updatedFarewell = if (triggerReason == ProactiveTriggerReason.USER_FAREWELL_FOLLOWUP) {
+                    null
+                } else {
+                    activeCompanion.memory.pendingFarewellActivity
+                }
+
                 val updatedMemory = activeCompanion.memory.copy(
-                    lastProactiveMessageTimestamp = now
+                    lastProactiveMessageTimestamp = now,
+                    consecutiveProactiveCount = newCount,
+                    pendingFarewellActivity = updatedFarewell
                 )
                 val updatedCompanion = activeCompanion.copy(memory = updatedMemory)
                 userRepository.updateCompanion(updatedCompanion)
@@ -60,6 +71,15 @@ class ProactiveMessageWorker(
                     messageText = proactiveText
                 )
 
+                if (newCount < activeCompanion.currentMood.maxProactiveSpamCount) {
+                    val nextDelay = FarewellDetector.suggestRapidDelayMinutes()
+                    ProactiveScheduler.scheduleFollowUp(
+                        context = applicationContext,
+                        companionId = activeCompanion.id,
+                        delayMinutes = nextDelay
+                    )
+                }
+
                 Result.success()
             },
             onFailure = {
@@ -68,4 +88,3 @@ class ProactiveMessageWorker(
         )
     }
 }
-

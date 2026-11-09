@@ -11,10 +11,12 @@ import com.example.aifriendship.data.remote.gemini.GeminiAiService
 import com.example.aifriendship.data.remote.update.GitHubUpdateService
 import com.example.aifriendship.data.repository.DefaultChatRepository
 import com.example.aifriendship.data.repository.DefaultUserRepository
+import com.example.aifriendship.data.worker.WorkManagerCompanionScheduler
 import com.example.aifriendship.domain.repository.ChatRepository
 import com.example.aifriendship.domain.repository.UserRepository
 import com.example.aifriendship.domain.service.AiService
 import com.example.aifriendship.domain.service.AppUpdateService
+import com.example.aifriendship.domain.service.CompanionScheduler
 
 interface AppContainer {
     val chatRepository: ChatRepository
@@ -22,6 +24,7 @@ interface AppContainer {
     val apiKeyProvider: ApiKeyProvider
     val aiService: AiService
     val appUpdateService: AppUpdateService
+    val companionScheduler: CompanionScheduler
 }
 
 class DefaultAppContainer(private val context: Context) : AppContainer {
@@ -52,5 +55,9 @@ class DefaultAppContainer(private val context: Context) : AppContainer {
 
     override val appUpdateService: AppUpdateService by lazy {
         GitHubUpdateService(context)
+    }
+
+    override val companionScheduler: CompanionScheduler by lazy {
+        WorkManagerCompanionScheduler(context)
     }
 }

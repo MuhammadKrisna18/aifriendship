@@ -29,4 +29,11 @@ enum class CompanionMood(
 
     val title: String
         get() = label
+
+    val maxProactiveSpamCount: Int
+        get() = when (this) {
+            MANJA, KANGEN, KEPO, NGAMBEK, CEMBURU, KHAWATIR -> 3
+            JAHIL, SALTING, SENANG, BAPER, MELOW, BANGGA -> 2
+            BIASA, CUEK, MARAH -> 1
+        }
 }
