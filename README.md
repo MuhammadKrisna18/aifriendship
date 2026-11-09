@@ -7,25 +7,27 @@ A modern Native Android AI Companion app built with **Kotlin** and **Jetpack Com
 ## 📱 Features
 
 - **WhatsApp-Style Multi-Chat Interface:**
-  - **Tab 1 (OBROLAN):** Overview of all active chats with companion avatars, trait badges, message previews, and formatted timestamps.
-  - **Tab 2 (SAHABAT AI):** Manage your roster of companions, view archetype descriptions, or create a new companion anytime.
-- **Multi-Companion Architecture:** Chat with different AI companions simultaneously, each maintaining isolated conversation history and distinct personalities.
-- **11 Character Archetypes with Multi-Trait Combinations:**
-  - Choose and mix 1 to 3 archetypes to produce unique hybrid personalities (e.g., *Tsundere + Keibuan + Barbar*).
-  - Archetypes: *Santai & Barbar, Kalem & Chill, Tsundere Gengsi, Clueless Polos, Ambisius & Perfeksionis, Lembut & Keibuan, Ceria & Hyperaktif, Sarkastik & Tajam, Romantis & Manja, Introvert & Pemikir, Tomboy & Sporty*.
-- **Subtle Real-Time Temporal Awareness:**
-  - Dynamic time awareness that naturally aligns with morning, afternoon, evening, and late-night vibes without intrusive repetition (no repetitive bedtime or breakfast nagging).
-- **Human-like Chat Cadence:** Messages arrive as natural, successive chat bubbles with realistic typing delays instead of monolithic text walls.
-- **Dynamic Persona Status:** Real-time subtitle updates reflecting Lia's mood, activities, and reactions (e.g., *"gemas juga ngajarin dia ngoding"*, *"capek banget punya teman suka lupa"*).
+  - **Tab 1 (OBROLAN):** Overview of all active chats with companion avatars, dynamic relationship & mood badges, message previews, and formatted timestamps.
+  - **Tab 2 (SAHABAT AI):** Manage your roster of companions, view their dynamic relationship stages, current mood, recent episodic activities, or add new companions.
+- **Dynamic Personality & Emotional Mood (15 Spectrum States):**
+  - Companions are not static archetypes. Their mood and reactions change dynamically according to how you interact with them: *Senang, Biasa, Kepo, Salting, Baper, Manja, Kangen, Bangga, Khawatir, Jahil, Ngambek, Cemburu, Cuek, Melow, Marah*.
+- **Organic Relationship Progression (12 Stages):**
+  - Bonds develop naturally over time: *Teman Biasa, Teman Akrab, Sahabat, Gebetan / PDKT, Pacar, HTS, Mantan, Rival, Teman Curhat, Teman Mabar, Senior, Junior*.
+- **Anti-Ngegas Tone Calibration & Natural Reciprocity:**
+  - Playful and witty banter without aggressive hostility. Instant empathy override when the user expresses fatigue or distress, and warm receptivity to genuine affection.
+- **Episodic & Temporal Gap Continuity:**
+  - Dynamic time awareness that tracks time deltas between conversations (e.g. *obrolan berlanjut setelah jeda 4 jam*) and remembers recent companion activities for seamless conversation continuity.
+- **Streamlined Character Creation:**
+  - Direct access to the Home screen on first launch. Adding a companion is effortless: enter the name (or tap 🎲 Acak), pick an avatar color, and start chatting.
+- **Human-like Chat Cadence:** Messages arrive as natural successive chat bubbles with realistic typing delays.
 - **Quoted / Reply Message:** Long-press to quote and reply to specific messages with visual parent-message previews.
 - **Multi-Tier Model Fallback Chain:**
   - Intelligent sequential failover: `gemini-3.5-flash-lite` ➔ `gemini-3.1-flash-lite` ➔ `gemini-2.5-flash` ➔ `gemini-flash-latest`.
-  - In-character pause & roleplayed excuse (*"Bentar ya woy, emak gue nyuruh beli garem dulu ke warung... 1 menit lagi gue balik!"*) with countdown timer when all quotas are temporarily exhausted.
-- **Enhanced In-App Auto-Updater:**
-  - Checks GitHub Releases on launch or via menu.
+  - In-character pause & roleplayed excuse with countdown timer when all quotas are temporarily exhausted.
+- **In-App Auto-Updater:**
   - Automatic download and package installer integration with Android 8.0+ unknown app sources permissions (`ACTION_MANAGE_UNKNOWN_APP_SOURCES`) and FileProvider support.
   - Fallback "Buka Browser" button for instant manual download if direct installation is restricted.
-- **Offline-First Persistence:** Thread-safe, non-blocking local storage ensuring complete message histories persist across application restarts.
+- **Offline-First Persistence:** Thread-safe, non-blocking local storage ensuring complete message histories and companion memories persist across application restarts.
 
 ---
 
@@ -36,7 +38,7 @@ This project strictly adheres to **Clean Architecture** and **SOLID principles**
 ```
 com.example.aifriendship/
 ├── domain/
-│   ├── model/           # ChatMessage, AiCompanion, CompanionTrait, UserProfile, AiResponse, AppUpdateInfo
+│   ├── model/           # ChatMessage, AiCompanion, CompanionMood, CompanionRelationship, CompanionMemory, UserProfile, AiResponse, AppUpdateInfo
 │   ├── service/         # AiService, AppUpdateService, QuotaExceededException, AllModelsQuotaExceededException
 │   └── repository/      # ChatRepository, UserRepository
 ├── data/
@@ -98,6 +100,3 @@ Run unit tests:
 ---
 
 ## 📄 License
-
-This project is personal and open-source under the MIT License.
-

@@ -30,19 +30,34 @@ jobs:
       - name: Build Debug APK
         run: ./gradlew assembleDebug
 
+      - name: Prepare APK Release Artifact
+        run: |
+          VERSION_TAG=${{ github.ref_name }}
+          cp app/build/outputs/apk/debug/app-debug.apk "app/build/outputs/apk/debug/AiFriendship-${VERSION_TAG}.apk"
+
       - name: Create GitHub Release
         uses: softprops/action-gh-release@v2
         with:
           name: Release ${{ github.ref_name }}
           body: |
-            ## Pembaruan AiFriendship 💬✨
-            
-            Versi rilis terbaru dari aplikasi AI Companion **AiFriendship ("Lia")**.
-            
-            ### Cara Memasang / Memperbarui:
-            - Unduh file `app-debug.apk` di bawah ini.
-            - Pasang langsung di HP Android Anda.
-            - Jika sudah terpasang, aplikasi dapat memperbarui dirinya sendiri secara otomatis saat ada rilis baru!
-          files: app/build/outputs/apk/debug/app-debug.apk
+            ## Pembaruan AiFriendship ${{ github.ref_name }} 💬✨
+
+            Rilis resmi versi terbaru **AiFriendship** menghadirkan evolusi besar pada sistem kecerdasan emosional dan dinamika hubungan AI.
+
+            ### 🚀 Apa Saja Pembaruan di Versi Ini?
+            - **Watak & Suasana Hati Dinamis (15 Mood Spektrum):** Karakter AI kini hidup dan responsif secara emosional. AI bisa merasa *Senang, Biasa, Kepo, Salting, Baper, Manja, Kangen, Bangga, Khawatir, Jahil, Ngambek, Cemburu, Cuek, Melow,* hingga *Marah* yang berfluktuasi alami mengikuti konteks obrolan.
+            - **Hubungan Dinamis Berkembang Alami (12 Tingkatan Relasi):** Tidak ada lagi watak kaku yang terkunci. Hubungan kalian berproses secara organik dari *Teman Biasa, Teman Akrab, Sahabat, Gebetan/PDKT, Pacar, HTS, Mantan, Rival, Teman Curhat, Teman Mabar, Senior,* hingga *Junior*.
+            - **Tone Anti-Ngegas & Resiprositas Alami:** Percakapan tetap seru dan santai tanpa nada kasar berlebihan, memiliki empati penuh saat Anda lelah/stres, serta mudah luluh terhadap perhatian positif.
+            - **Memori Episodik & Kesadaran Waktu (Time Gap):** AI mengingat jeda waktu antar pesan dan aktivitas terakhirnya sehingga tidak mengalami amnesia obrolan saat Anda menyapa kembali setelah beberapa jam/hari.
+            - **Alur Pembuatan Karakter Super Ringkas:** Langsung masuk ke Halaman Beranda pada saat pertama kali buka aplikasi. Saat menambahkan sahabat AI baru, Anda hanya perlu memasukkan nama AI (atau gunakan tombol 🎲 Acak), memilih warna avatar, dan langsung siap mengobrol tanpa repot memilih watak manual.
+            - **Tampilan Realisme WhatsApp-Style:** Badge relasi dan mood dinamis terpasang rapi di daftar obrolan Beranda dan header percakapan.
+
+            ---
+
+            ### 📲 Cara Memasang / Memperbarui:
+            1. Unduh file **`AiFriendship-${{ github.ref_name }}.apk`** pada bagian **Assets** di bawah.
+            2. Pasang langsung di smartphone Android Anda.
+            3. Jika versi sebelumnya sudah terpasang, aplikasi juga dapat memperbarui dirinya sendiri secara otomatis via fitur in-app update!
+          files: app/build/outputs/apk/debug/AiFriendship-*.apk
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
