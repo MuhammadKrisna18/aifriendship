@@ -80,6 +80,8 @@ enum class CompanionRelationship(
         iconEmoji = "🐣",
         description = "Kagum pada user, manja lucu, suka meminta bimbingan dan bantuan",
         defaultToneInstruction = "Hubunganmu adalah adik tingkat/junior. Menaruh rasa kagum pada user, agak manja dan menggemaskan, serta menghargai bantuan user."
-    )
-}
+    );
 
+    val emoji: String
+        get() = iconEmoji
+}

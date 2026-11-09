@@ -62,6 +62,8 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.aifriendship.domain.model.AiCompanion
 import com.example.aifriendship.domain.model.ChatMessage
 import com.example.aifriendship.domain.model.ChatTimeFormatter
+import com.example.aifriendship.domain.model.CompanionMood
+import com.example.aifriendship.domain.model.CompanionRelationship
 import com.example.aifriendship.presentation.chat.components.UserProfileDialog
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -153,11 +155,7 @@ fun HomeScreen(
                                     fontWeight = if (uiState.selectedTab == tab) FontWeight.Bold else FontWeight.Medium
                                 )
                                 Spacer(modifier = Modifier.width(6.dp))
-                                val badgeCount = if (tab == HomeTab.CHATS) {
-                                    uiState.userProfile.allCompanions.size
-                                } else {
-                                    uiState.userProfile.allCompanions.size
-                                }
+                                val badgeCount = uiState.userProfile.allCompanions.size
                                 Badge {
                                     Text(text = badgeCount.toString())
                                 }
@@ -380,19 +378,42 @@ private fun CompanionChatRow(
                 }
             }
 
-            Spacer(modifier = Modifier.height(2.dp))
+            Spacer(modifier = Modifier.height(3.dp))
 
-            Text(
-                text = companion.traitsSummary,
-                style = MaterialTheme.typography.labelSmall.copy(
-                    color = avatarColor,
-                    fontWeight = FontWeight.SemiBold
-                ),
-                maxLines = 1,
-                overflow = TextOverflow.Ellipsis
-            )
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.spacedBy(6.dp)
+            ) {
+                Box(
+                    modifier = Modifier
+                        .clip(RoundedCornerShape(6.dp))
+                        .background(avatarColor.copy(alpha = 0.12f))
+                        .padding(horizontal = 6.dp, vertical = 2.dp)
+                ) {
+                    Text(
+                        text = "${companion.currentRelationship.emoji} ${companion.currentRelationship.title}",
+                        fontSize = 11.sp,
+                        fontWeight = FontWeight.SemiBold,
+                        color = avatarColor
+                    )
+                }
 
-            Spacer(modifier = Modifier.height(2.dp))
+                Box(
+                    modifier = Modifier
+                        .clip(RoundedCornerShape(6.dp))
+                        .background(Color(0xFFF1F5F9))
+                        .padding(horizontal = 6.dp, vertical = 2.dp)
+                ) {
+                    Text(
+                        text = "${companion.currentMood.emoji} ${companion.currentMood.title}",
+                        fontSize = 11.sp,
+                        fontWeight = FontWeight.Medium,
+                        color = Color(0xFF475569)
+                    )
+                }
+            }
+
+            Spacer(modifier = Modifier.height(3.dp))
 
             Text(
                 text = lastMessage?.text ?: "Ketuk untuk mulai obrolan...",
@@ -453,7 +474,7 @@ private fun CompanionsTabContent(
                             color = MaterialTheme.colorScheme.onPrimaryContainer
                         )
                         Text(
-                            text = "Rancang karakter dan gabungkan sifat unik",
+                            text = "Beri nama, watak dan relasi berkembang dinamis dari obrolan",
                             style = MaterialTheme.typography.bodySmall,
                             color = MaterialTheme.colorScheme.onPrimaryContainer.copy(alpha = 0.8f)
                         )
@@ -512,12 +533,39 @@ private fun CompanionsTabContent(
                                     modifier = Modifier.size(16.dp)
                                 )
                             }
-                            Text(
-                                text = companion.traitsSummary,
-                                style = MaterialTheme.typography.bodySmall,
-                                color = avatarColor,
-                                fontWeight = FontWeight.SemiBold
-                            )
+                            Spacer(modifier = Modifier.height(3.dp))
+                            Row(
+                                verticalAlignment = Alignment.CenterVertically,
+                                horizontalArrangement = Arrangement.spacedBy(6.dp)
+                            ) {
+                                Box(
+                                    modifier = Modifier
+                                        .clip(RoundedCornerShape(6.dp))
+                                        .background(avatarColor.copy(alpha = 0.12f))
+                                        .padding(horizontal = 6.dp, vertical = 2.dp)
+                                ) {
+                                    Text(
+                                        text = "${companion.currentRelationship.emoji} ${companion.currentRelationship.title}",
+                                        fontSize = 11.sp,
+                                        fontWeight = FontWeight.SemiBold,
+                                        color = avatarColor
+                                    )
+                                }
+
+                                Box(
+                                    modifier = Modifier
+                                        .clip(RoundedCornerShape(6.dp))
+                                        .background(Color(0xFFF1F5F9))
+                                        .padding(horizontal = 6.dp, vertical = 2.dp)
+                                ) {
+                                    Text(
+                                        text = "${companion.currentMood.emoji} ${companion.currentMood.title}",
+                                        fontSize = 11.sp,
+                                        fontWeight = FontWeight.Medium,
+                                        color = Color(0xFF475569)
+                                    )
+                                }
+                            }
                         }
 
                         if (companions.size > 1) {
@@ -529,6 +577,15 @@ private fun CompanionsTabContent(
                                 )
                             }
                         }
+                    }
+
+                    if (!companion.memory.lastActivity.isNullOrBlank()) {
+                        Spacer(modifier = Modifier.height(8.dp))
+                        Text(
+                            text = "Aktivitas terakhir: ${companion.memory.lastActivity}",
+                            style = MaterialTheme.typography.bodySmall,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant
+                        )
                     }
 
                     Spacer(modifier = Modifier.height(12.dp))

@@ -131,6 +131,8 @@ fun ChatScreen(
                 status = uiState.liaStatus,
                 companionName = companionName,
                 avatarColorHex = avatarColorHex,
+                relationship = companion.currentRelationship,
+                mood = companion.currentMood,
                 onBackClick = onBackClick,
                 onClearChat = { viewModel.clearChat() },
                 onCheckUpdateClick = { viewModel.checkForUpdates(silent = false) },

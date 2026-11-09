@@ -22,6 +22,11 @@ enum class CompanionMood(
     CEMBURU("Cemburu", "😒", "Dih... sono sama dia aja"),
     CUEK("Cuek", "🧊", "Mager bales"),
     MELOW("Melow", "🌙", "Lagi butuh teman cerita"),
-    MARAH("Marah", "😡", "Lagi kesel banget")
-}
+    MARAH("Marah", "😡", "Lagi kesel banget");
 
+    val emoji: String
+        get() = iconEmoji
+
+    val title: String
+        get() = label
+}

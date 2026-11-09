@@ -40,6 +40,8 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.example.aifriendship.domain.model.CompanionMood
+import com.example.aifriendship.domain.model.CompanionRelationship
 import com.example.aifriendship.domain.model.LiaStatus
 import com.example.aifriendship.ui.theme.OnlineBadgeGreen
 import com.example.aifriendship.ui.theme.primaryLight
@@ -49,6 +51,8 @@ fun ChatTopBar(
     status: LiaStatus,
     companionName: String = "Lia",
     avatarColorHex: String = "#6366F1",
+    relationship: CompanionRelationship = CompanionRelationship.TEMAN_BIASA,
+    mood: CompanionMood = CompanionMood.BIASA,
     onBackClick: () -> Unit = {},
     onClearChat: () -> Unit = {},
     onCheckUpdateClick: () -> Unit = {},
@@ -136,7 +140,7 @@ fun ChatTopBar(
                             .padding(horizontal = 7.dp, vertical = 2.dp)
                     ) {
                         Text(
-                            text = "AI Companion",
+                            text = "${relationship.emoji} ${relationship.title}",
                             fontSize = 10.sp,
                             fontWeight = FontWeight.SemiBold,
                             color = primaryLight
@@ -144,10 +148,17 @@ fun ChatTopBar(
                     }
                 }
 
+                val subtitleText = when {
+                    status.isTyping -> "Sedang mengetik..."
+                    status.subtitle.isNotBlank() && status.subtitle != "Online" -> status.subtitle
+                    else -> "Online • ${mood.emoji} ${mood.title}"
+                }
+
                 Text(
-                    text = status.subtitle,
+                    text = subtitleText,
                     fontSize = 12.sp,
-                    color = Color(0xFF64748B),
+                    color = if (status.isTyping) primaryLight else Color(0xFF64748B),
+                    fontWeight = if (status.isTyping) FontWeight.SemiBold else FontWeight.Normal,
                     maxLines = 1,
                     overflow = TextOverflow.Ellipsis
                 )
