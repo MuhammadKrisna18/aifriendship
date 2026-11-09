@@ -31,6 +31,7 @@ import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Badge
 import androidx.compose.material3.BadgedBox
 import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -50,6 +51,9 @@ import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -78,6 +82,7 @@ fun HomeScreen(
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
     val context = LocalContext.current
+    var companionToDelete by remember { mutableStateOf<AiCompanion?>(null) }
 
     Scaffold(
         topBar = {
@@ -157,10 +162,27 @@ fun HomeScreen(
                                     text = tab.title,
                                     fontWeight = if (uiState.selectedTab == tab) FontWeight.Bold else FontWeight.Medium
                                 )
-                                Spacer(modifier = Modifier.width(6.dp))
-                                val badgeCount = uiState.userProfile.allCompanions.size
-                                Badge {
-                                    Text(text = badgeCount.toString())
+                                when (tab) {
+                                    HomeTab.CHATS -> {
+                                        val activeChatsCount = uiState.userProfile.allCompanions.count { companion ->
+                                            uiState.latestMessages.containsKey(companion.id)
+                                        }
+                                        if (activeChatsCount > 0) {
+                                            Spacer(modifier = Modifier.width(6.dp))
+                                            Badge {
+                                                Text(text = activeChatsCount.toString())
+                                            }
+                                        }
+                                    }
+                                    HomeTab.COMPANIONS -> {
+                                        val totalCompanions = uiState.userProfile.allCompanions.size
+                                        if (totalCompanions > 0) {
+                                            Spacer(modifier = Modifier.width(6.dp))
+                                            Badge {
+                                                Text(text = totalCompanions.toString())
+                                            }
+                                        }
+                                    }
                                 }
                             }
                         }
@@ -188,7 +210,7 @@ fun HomeScreen(
                             onOpenChat(companionId)
                         },
                         onCreateCompanion = onCreateCompanion,
-                        onDeleteCompanion = { viewModel.onDeleteCompanion(it) },
+                        onDeleteCompanion = { companionToDelete = it },
                         onOpenMemory = { viewModel.onOpenMemoryDialog(it) }
                     )
                 }
@@ -272,6 +294,32 @@ fun HomeScreen(
             onDismiss = { viewModel.onDismissMemoryDialog() },
             onDeleteFact = { fact -> viewModel.deleteUserFact(memoryCompanion.id, fact) },
             onAddFact = { fact -> viewModel.addUserFact(memoryCompanion.id, fact) }
+        )
+    }
+
+    companionToDelete?.let { companion ->
+        AlertDialog(
+            onDismissRequest = { companionToDelete = null },
+            title = { Text("Hapus Sahabat AI?") },
+            text = { Text("Apakah kamu yakin ingin menghapus ${companion.name}? Seluruh riwayat percakapan, perkembangan relasi, dan ingatan akan terhapus secara permanen.") },
+            confirmButton = {
+                Button(
+                    onClick = {
+                        viewModel.onDeleteCompanion(companion.id)
+                        companionToDelete = null
+                    },
+                    colors = ButtonDefaults.buttonColors(
+                        containerColor = MaterialTheme.colorScheme.error
+                    )
+                ) {
+                    Text("Hapus")
+                }
+            },
+            dismissButton = {
+                TextButton(onClick = { companionToDelete = null }) {
+                    Text("Batal")
+                }
+            }
         )
     }
 }
@@ -451,7 +499,7 @@ private fun CompanionsTabContent(
     companions: List<AiCompanion>,
     onCompanionClick: (String) -> Unit,
     onCreateCompanion: () -> Unit,
-    onDeleteCompanion: (String) -> Unit,
+    onDeleteCompanion: (AiCompanion) -> Unit,
     onOpenMemory: (AiCompanion) -> Unit
 ) {
     LazyColumn(
@@ -604,7 +652,7 @@ private fun CompanionsTabContent(
                         }
 
                         if (companions.size > 1) {
-                            IconButton(onClick = { onDeleteCompanion(companion.id) }) {
+                            IconButton(onClick = { onDeleteCompanion(companion) }) {
                                 Icon(
                                     imageVector = Icons.Default.DeleteOutline,
                                     contentDescription = "Hapus",

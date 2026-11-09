@@ -48,6 +48,7 @@ fun ChatBottomBar(
     inputText: String,
     onInputChanged: (String) -> Unit,
     onSendMessage: () -> Unit,
+    companionName: String = "Lia",
     placeholder: String = "Ketik pesan ke Lia...",
     replyingTo: ChatMessage? = null,
     onDismissReply: () -> Unit = {},
@@ -85,7 +86,7 @@ fun ChatBottomBar(
                         modifier = Modifier.weight(1f)
                     ) {
                         Text(
-                            text = if (reply.sender == MessageSender.USER) "Membalas pesan kamu" else "Membalas Lia",
+                            text = if (reply.sender == MessageSender.USER) "Membalas pesan kamu" else "Membalas $companionName",
                             fontSize = 11.sp,
                             fontWeight = FontWeight.Bold,
                             color = UserBubbleColor

@@ -18,6 +18,7 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
@@ -26,6 +27,9 @@ import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
@@ -56,6 +60,7 @@ fun ChatScreen(
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
     val listState = rememberLazyListState()
     val context = LocalContext.current
+    var showClearChatDialog by remember { mutableStateOf(false) }
 
     val companion = uiState.userProfile.activeCompanion
     val companionName = companion.name.ifBlank { "Lia" }
@@ -83,6 +88,32 @@ fun ChatScreen(
             onDismiss = { viewModel.hideMemoryDialog() },
             onDeleteFact = { fact -> viewModel.deleteUserFact(fact) },
             onAddFact = { fact -> viewModel.addUserFact(fact) }
+        )
+    }
+
+    if (showClearChatDialog) {
+        AlertDialog(
+            onDismissRequest = { showClearChatDialog = false },
+            title = { Text("Reset Obrolan?") },
+            text = { Text("Semua riwayat obrolan dengan $companionName akan dihapus. Tindakan ini tidak dapat dibatalkan.") },
+            confirmButton = {
+                Button(
+                    onClick = {
+                        showClearChatDialog = false
+                        viewModel.clearChat()
+                    },
+                    colors = ButtonDefaults.buttonColors(
+                        containerColor = MaterialTheme.colorScheme.error
+                    )
+                ) {
+                    Text("Hapus Riwayat")
+                }
+            },
+            dismissButton = {
+                TextButton(onClick = { showClearChatDialog = false }) {
+                    Text("Batal")
+                }
+            }
         )
     }
 
@@ -156,7 +187,7 @@ fun ChatScreen(
                 relationship = companion.currentRelationship,
                 mood = companion.currentMood,
                 onBackClick = onBackClick,
-                onClearChat = { viewModel.clearChat() },
+                onClearChat = { showClearChatDialog = true },
                 onCheckUpdateClick = { viewModel.checkForUpdates(silent = false) },
                 onProfileClick = { viewModel.showUserProfileDialog() },
                 onChangeCompanionClick = onChangeCompanionClick,
@@ -168,6 +199,7 @@ fun ChatScreen(
                 inputText = uiState.inputText,
                 onInputChanged = { viewModel.onInputTextChanged(it) },
                 onSendMessage = { viewModel.sendMessage() },
+                companionName = companionName,
                 placeholder = if (uiState.onboardingStep == OnboardingStep.ASK_NAME) "Ketik nama panggilanmu..." else "Ketik pesan ke $companionName...",
                 replyingTo = uiState.replyingTo,
                 onDismissReply = { viewModel.onReplyMessage(null) }
@@ -220,7 +252,10 @@ fun ChatScreen(
 
                     if (uiState.liaStatus.isTyping) {
                         item(key = "typing_indicator") {
-                            TypingIndicator()
+                            TypingIndicator(
+                                companionName = companionName,
+                                avatarColorHex = avatarColorHex
+                            )
                         }
                     }
                 }

@@ -32,6 +32,8 @@ import kotlinx.coroutines.delay
 
 @Composable
 fun TypingIndicator(
+    companionName: String = "Lia",
+    avatarColorHex: String = "#6366F1",
     avatarUrl: String = "",
     modifier: Modifier = Modifier
 ) {
@@ -68,6 +70,8 @@ fun TypingIndicator(
         verticalAlignment = Alignment.Bottom
     ) {
         LiaAvatar(
+            name = companionName,
+            avatarColorHex = avatarColorHex,
             imageUrl = avatarUrl,
             size = 34.dp,
             modifier = Modifier.align(Alignment.Bottom)
