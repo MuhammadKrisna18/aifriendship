@@ -9,6 +9,7 @@ import androidx.navigation3.runtime.rememberNavBackStack
 import androidx.navigation3.ui.NavDisplay
 import com.example.aifriendship.domain.model.UserProfile
 import com.example.aifriendship.presentation.chat.ChatScreen
+import com.example.aifriendship.presentation.home.HomeScreen
 import com.example.aifriendship.presentation.setup.CharacterSetupScreen
 
 @Composable
@@ -19,18 +20,28 @@ fun MainNavigation() {
         initialValue = UserProfile()
     )
 
-    val initialKey = if (userProfile.isOnboardingCompleted) Chat else Setup
+    val initialKey = if (userProfile.isOnboardingCompleted) Home else Setup
     val backStack = rememberNavBackStack(initialKey)
 
     NavDisplay(
         backStack = backStack,
         onBack = { backStack.removeLastOrNull() },
         entryProvider = entryProvider {
+            entry<Home> {
+                HomeScreen(
+                    onOpenChat = { companionId ->
+                        backStack.add(Chat(companionId))
+                    },
+                    onCreateCompanion = {
+                        backStack.add(Setup)
+                    }
+                )
+            }
             entry<Setup> {
                 CharacterSetupScreen(
                     onComplete = {
                         backStack.clear()
-                        backStack.add(Chat)
+                        backStack.add(Home)
                     }
                 )
             }

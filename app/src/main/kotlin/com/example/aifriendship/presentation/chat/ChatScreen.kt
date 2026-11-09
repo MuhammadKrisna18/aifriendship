@@ -46,8 +46,9 @@ fun ChatScreen(
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
     val listState = rememberLazyListState()
 
-    val companionName = uiState.userProfile.companion.name.ifBlank { "Lia" }
-    val avatarColorHex = uiState.userProfile.companion.avatarColorHex
+    val companion = uiState.userProfile.activeCompanion
+    val companionName = companion.name.ifBlank { "Lia" }
+    val avatarColorHex = companion.avatarColorHex
 
     LaunchedEffect(uiState.messages.size, uiState.liaStatus.isTyping) {
         val totalItems = uiState.messages.size + if (uiState.liaStatus.isTyping) 1 else 0
@@ -111,7 +112,7 @@ fun ChatScreen(
                 companionName = companionName,
                 avatarColorHex = avatarColorHex,
                 onBackClick = onBackClick,
-                onClearChat = { viewModel.resetChat() },
+                onClearChat = { viewModel.clearChat() },
                 onCheckUpdateClick = { viewModel.checkForUpdates(silent = false) },
                 onProfileClick = { viewModel.showUserProfileDialog() },
                 onChangeCompanionClick = onChangeCompanionClick

@@ -51,14 +51,19 @@ class ChatViewModel(
     private var cooldownJob: Job? = null
 
     val uiState: StateFlow<ChatUiState> = combine(
+        userRepository.observeUserProfile(),
         chatRepository.getMessages(),
         chatRepository.getLiaStatus(),
-        userRepository.observeUserProfile(),
         _onboardingStep,
         _inputText
-    ) { messages, status, userProfile, step, input ->
+    ) { userProfile, allMessages, status, step, input ->
+        val activeCompanion = userProfile.activeCompanion
+        val activeId = activeCompanion.id
+        val filteredMessages = allMessages.filter {
+            it.companionId == activeId || (activeId == "default-companion-lia" && it.companionId.isBlank())
+        }
         ChatUiState(
-            messages = messages,
+            messages = filteredMessages,
             liaStatus = status,
             userProfile = userProfile,
             onboardingStep = step,
@@ -269,14 +274,17 @@ class ChatViewModel(
     }
 
     private fun sendNormalMessage(textToSend: String) {
+        val profile = uiState.value.userProfile
+        val companionId = profile.activeCompanion.id
         val quoted = _replyingTo.value?.let {
             QuotedMessage(
-                senderName = if (it.sender == MessageSender.USER) "Gue" else "Lia",
+                senderName = if (it.sender == MessageSender.USER) "Gue" else profile.activeCompanion.name,
                 text = it.text
             )
         }
 
         val userMessage = ChatMessage(
+            companionId = companionId,
             sender = MessageSender.USER,
             text = textToSend,
             quotedMessage = quoted,
@@ -294,8 +302,11 @@ class ChatViewModel(
 
     private suspend fun processAiReply(quoted: QuotedMessage?) {
         val currentStatus = chatRepository.getLiaStatus().first()
+        val profile = userRepository.getUserProfile()
+        val companionId = profile.activeCompanion.id
         if (currentStatus.isCooldown) {
             val cooldownNotice = ChatMessage(
+                companionId = companionId,
                 sender = MessageSender.AI,
                 text = "Sabar napa, gue masih di warung nih! Tunggu bentar lagi ya.",
                 status = MessageDeliveryStatus.SENT
@@ -306,8 +317,7 @@ class ChatViewModel(
 
         chatRepository.updateLiaStatus(currentStatus.copy(isTyping = true))
 
-        val history = chatRepository.getMessages().first()
-        val profile = userRepository.getUserProfile()
+        val history = chatRepository.getMessagesByCompanion(companionId).first()
         val result = aiService.generateReply(history, quoted, profile)
 
         result.fold(
@@ -324,6 +334,7 @@ class ChatViewModel(
                     delay(typingDelay)
 
                     val aiMessage = ChatMessage(
+                        companionId = companionId,
                         sender = MessageSender.AI,
                         text = bubble,
                         status = MessageDeliveryStatus.SENT
@@ -417,7 +428,10 @@ class ChatViewModel(
     }
 
     fun clearChat() {
-        resetChat()
+        viewModelScope.launch {
+            val profile = userRepository.getUserProfile()
+            chatRepository.clearMessagesByCompanion(profile.activeCompanion.id)
+        }
     }
 
     fun resetChat() {
