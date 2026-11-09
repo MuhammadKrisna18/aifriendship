@@ -232,7 +232,7 @@ class GeminiAiService(
 
         val wordCount = lastUserMsg?.text?.trim()?.split("\\s+".toRegex())?.filter { it.isNotBlank() }?.size ?: 0
         val mirroringInstruction = when {
-            wordCount in 1..5 -> "[Keseimbangan Chat: Pesan terakhir user sangat singkat ($wordCount kata). Balas HANYA 1 bubble pendek (5-12 kata), padat, santai, ceplas-ceplos, dan jangan selalu nanya balik!]"
+            wordCount in 1..5 -> "[Keseimbangan Chat: Pesan terakhir user sangat singkat ($wordCount kata). Balas HANYA 1 bubble pendek (5-12 kata), padat, santai, ceplas-ceplos, jangan menempelkan 'wkwk', dan jangan nanya balik!]"
             wordCount in 6..20 -> "[Keseimbangan Chat: Pesan user sedang. Balas 1 atau maksimal 2 bubble santai yang proporsional.]"
             wordCount > 20 -> "[Keseimbangan Chat: User sedang bercerita/curhat panjang. Tanggapi dengan 2-3 bubble hangat dan empati.]"
             else -> null
