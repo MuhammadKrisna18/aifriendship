@@ -47,32 +47,45 @@ class ChatViewModel(
     private val _isCheckingUpdate = MutableStateFlow(false)
     private val _onboardingStep = MutableStateFlow(OnboardingStep.COMPLETED)
     private val _isUserProfileDialogVisible = MutableStateFlow(false)
+    private val _isDownloadingUpdate = MutableStateFlow(false)
+    private val _downloadProgress = MutableStateFlow(0)
     private var cooldownJob: Job? = null
 
     val uiState: StateFlow<ChatUiState> = combine(
-        userRepository.observeUserProfile(),
-        chatRepository.getMessages(),
-        chatRepository.getLiaStatus(),
-        _onboardingStep,
-        _inputText
-    ) { userProfile, allMessages, status, step, input ->
-        val activeCompanion = userProfile.activeCompanion
-        val activeId = activeCompanion.id
-        val filteredMessages = allMessages.filter {
-            it.companionId == activeId || (activeId == "default-companion-lia" && it.companionId.isBlank())
-        }
-        ChatUiState(
-            messages = filteredMessages,
-            liaStatus = status,
-            userProfile = userProfile,
-            onboardingStep = step,
-            inputText = input,
-            replyingTo = _replyingTo.value,
-            isLoading = _isLoading.value,
-            errorMessage = _errorMessage.value,
-            updateInfo = _updateInfo.value,
-            isCheckingUpdate = _isCheckingUpdate.value,
-            isUserProfileDialogVisible = _isUserProfileDialogVisible.value
+        combine(
+            userRepository.observeUserProfile(),
+            chatRepository.getMessages(),
+            chatRepository.getLiaStatus(),
+            _onboardingStep,
+            _inputText
+        ) { userProfile, allMessages, status, step, input ->
+            val activeCompanion = userProfile.activeCompanion
+            val activeId = activeCompanion.id
+            val filteredMessages = allMessages.filter {
+                it.companionId == activeId || (activeId == "default-companion-lia" && it.companionId.isBlank())
+            }
+            ChatUiState(
+                messages = filteredMessages,
+                liaStatus = status,
+                userProfile = userProfile,
+                onboardingStep = step,
+                inputText = input,
+                replyingTo = _replyingTo.value,
+                isLoading = _isLoading.value,
+                errorMessage = _errorMessage.value,
+                isUserProfileDialogVisible = _isUserProfileDialogVisible.value
+            )
+        },
+        _updateInfo,
+        _isCheckingUpdate,
+        _isDownloadingUpdate,
+        _downloadProgress
+    ) { baseState, updateInfo, isChecking, isDownloading, progress ->
+        baseState.copy(
+            updateInfo = updateInfo,
+            isCheckingUpdate = isChecking,
+            isDownloadingUpdate = isDownloading,
+            downloadProgress = progress
         )
     }.stateIn(
         scope = viewModelScope,
@@ -165,8 +178,20 @@ class ChatViewModel(
 
     fun downloadAndInstallUpdate() {
         val info = _updateInfo.value ?: return
-        viewModelScope.launch(Dispatchers.IO) {
-            appUpdateService.downloadAndInstallUpdate(info.downloadUrl, "update.apk")
+        viewModelScope.launch {
+            _isDownloadingUpdate.value = true
+            _downloadProgress.value = 0
+            val result = appUpdateService.downloadAndInstallUpdate(
+                downloadUrl = info.downloadUrl,
+                fileName = "update.apk",
+                onProgress = { progress ->
+                    _downloadProgress.value = progress
+                }
+            )
+            _isDownloadingUpdate.value = false
+            if (result.isSuccess) {
+                _updateInfo.value = null
+            }
         }
     }
 

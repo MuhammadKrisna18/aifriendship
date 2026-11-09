@@ -253,5 +253,12 @@ private class FakeAppUpdateService : AppUpdateService {
         )
     )
 
-    override fun downloadAndInstallUpdate(downloadUrl: String, fileName: String): Result<Unit> = Result.success(Unit)
+    override suspend fun downloadAndInstallUpdate(
+        downloadUrl: String,
+        fileName: String,
+        onProgress: (Int) -> Unit
+    ): Result<Unit> {
+        onProgress(100)
+        return Result.success(Unit)
+    }
 }

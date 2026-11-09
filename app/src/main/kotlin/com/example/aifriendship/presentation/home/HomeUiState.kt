@@ -16,5 +16,6 @@ data class HomeUiState(
     val showProfileDialog: Boolean = false,
     val searchQuery: String = "",
     val updateInfo: AppUpdateInfo? = null,
-    val isDownloadingUpdate: Boolean = false
+    val isDownloadingUpdate: Boolean = false,
+    val downloadProgress: Int = 0
 )

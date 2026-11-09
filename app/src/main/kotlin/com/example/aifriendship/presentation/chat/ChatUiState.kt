@@ -19,6 +19,8 @@ data class ChatUiState(
     val errorMessage: String? = null,
     val updateInfo: AppUpdateInfo? = null,
     val isCheckingUpdate: Boolean = false,
+    val isDownloadingUpdate: Boolean = false,
+    val downloadProgress: Int = 0,
     val userProfile: UserProfile = UserProfile(),
     val onboardingStep: OnboardingStep = OnboardingStep.COMPLETED,
     val isUserProfileDialogVisible: Boolean = false

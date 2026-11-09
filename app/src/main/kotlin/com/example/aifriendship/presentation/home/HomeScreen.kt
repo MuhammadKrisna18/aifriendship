@@ -37,6 +37,7 @@ import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.PrimaryTabRow
@@ -195,12 +196,16 @@ fun HomeScreen(
     uiState.updateInfo?.let { update ->
         if (update.isUpdateAvailable) {
             AlertDialog(
-                onDismissRequest = { viewModel.dismissUpdateDialog() },
+                onDismissRequest = {
+                    if (!uiState.isDownloadingUpdate) {
+                        viewModel.dismissUpdateDialog()
+                    }
+                },
                 title = { Text("Update Baru Tersedia! 🚀") },
                 text = {
                     Column {
                         Text(
-                            text = "Versi terbaru (${update.latestVersion}) sudah siap diunduh.",
+                            text = "Versi terbaru (${update.latestVersion}) sudah siap dipasang.",
                             fontSize = 14.sp
                         )
                         if (update.releaseNotes.isNotBlank()) {
@@ -211,35 +216,37 @@ fun HomeScreen(
                                 color = MaterialTheme.colorScheme.onSurfaceVariant
                             )
                         }
+                        if (uiState.isDownloadingUpdate) {
+                            Spacer(modifier = Modifier.height(16.dp))
+                            LinearProgressIndicator(
+                                progress = { uiState.downloadProgress / 100f },
+                                modifier = Modifier.fillMaxWidth()
+                            )
+                            Spacer(modifier = Modifier.height(8.dp))
+                            Text(
+                                text = "Mengunduh pembaruan (${uiState.downloadProgress}%)... Harap tunggu sebentar.",
+                                fontSize = 12.sp,
+                                fontWeight = FontWeight.Medium,
+                                color = MaterialTheme.colorScheme.primary
+                            )
+                        }
                     }
                 },
                 confirmButton = {
-                    Row {
-                        TextButton(
-                            onClick = {
-                                val intent = Intent(
-                                    Intent.ACTION_VIEW,
-                                    Uri.parse("https://github.com/MuhammadKrisna18/aifriendship/releases/latest")
-                                )
-                                context.startActivity(intent)
-                                viewModel.dismissUpdateDialog()
-                            }
-                        ) {
-                            Text("Buka Browser")
-                        }
-                        Spacer(modifier = Modifier.width(8.dp))
-                        Button(
-                            onClick = {
-                                viewModel.downloadAndInstallUpdate()
-                                viewModel.dismissUpdateDialog()
-                            }
-                        ) {
-                            Text("Pasang Otomatis")
-                        }
+                    Button(
+                        onClick = { viewModel.downloadAndInstallUpdate() },
+                        enabled = !uiState.isDownloadingUpdate
+                    ) {
+                        Text(
+                            if (uiState.isDownloadingUpdate) "Mengunduh..." else "Install versi terbaru"
+                        )
                     }
                 },
                 dismissButton = {
-                    TextButton(onClick = { viewModel.dismissUpdateDialog() }) {
+                    TextButton(
+                        onClick = { viewModel.dismissUpdateDialog() },
+                        enabled = !uiState.isDownloadingUpdate
+                    ) {
                         Text("Nanti Saja")
                     }
                 }

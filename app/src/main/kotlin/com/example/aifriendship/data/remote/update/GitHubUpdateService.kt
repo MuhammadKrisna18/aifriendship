@@ -67,8 +67,44 @@ class GitHubUpdateService(
         }
     }
 
-    override fun downloadAndInstallUpdate(downloadUrl: String, fileName: String): Result<Unit> {
-        return try {
+    override suspend fun downloadAndInstallUpdate(
+        downloadUrl: String,
+        fileName: String,
+        onProgress: (Int) -> Unit
+    ): Result<Unit> = withContext(Dispatchers.IO) {
+        try {
+            val targetDir = context.getExternalFilesDir(null) ?: context.filesDir
+            val apkFile = File(targetDir, fileName)
+            if (apkFile.exists()) {
+                apkFile.delete()
+            }
+
+            val request = Request.Builder().url(downloadUrl).build()
+            val response = client.newCall(request).execute()
+
+            if (!response.isSuccessful) {
+                return@withContext Result.failure(IOException("Failed to download APK: HTTP ${response.code}"))
+            }
+
+            val contentLength = response.body?.contentLength() ?: -1L
+            response.body?.byteStream()?.use { input ->
+                FileOutputStream(apkFile).use { output ->
+                    val buffer = ByteArray(8192)
+                    var bytesRead: Int
+                    var totalBytesRead = 0L
+                    while (input.read(buffer).also { bytesRead = it } != -1) {
+                        output.write(buffer, 0, bytesRead)
+                        totalBytesRead += bytesRead
+                        if (contentLength > 0) {
+                            val progress = ((totalBytesRead * 100) / contentLength).toInt()
+                            onProgress(progress.coerceIn(0, 100))
+                        }
+                    }
+                    output.flush()
+                }
+            }
+            onProgress(100)
+
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
                 if (!context.packageManager.canRequestPackageInstalls()) {
                     val settingsIntent = Intent(
@@ -78,24 +114,7 @@ class GitHubUpdateService(
                         flags = Intent.FLAG_ACTIVITY_NEW_TASK
                     }
                     context.startActivity(settingsIntent)
-                    return Result.failure(IllegalStateException("Izin instal aplikasi belum aktif"))
-                }
-            }
-
-            val request = Request.Builder().url(downloadUrl).build()
-            val response = client.newCall(request).execute()
-
-            if (!response.isSuccessful) {
-                return Result.failure(IOException("Failed to download APK: HTTP ${response.code}"))
-            }
-
-            val targetDir = context.getExternalFilesDir(null) ?: context.filesDir
-            val apkFile = File(targetDir, "update.apk")
-            if (apkFile.exists()) apkFile.delete()
-
-            response.body?.byteStream()?.use { input ->
-                FileOutputStream(apkFile).use { output ->
-                    input.copyTo(output)
+                    return@withContext Result.failure(IllegalStateException("Izin instal aplikasi belum aktif. Silakan aktifkan izin lalu tekan install kembali."))
                 }
             }
 
@@ -110,6 +129,12 @@ class GitHubUpdateService(
                 flags = Intent.FLAG_ACTIVITY_NEW_TASK or
                         Intent.FLAG_GRANT_READ_URI_PERMISSION or
                         Intent.FLAG_ACTIVITY_CLEAR_TOP
+            }
+
+            val resolveInfos = context.packageManager.queryIntentActivities(installIntent, 0)
+            for (resolveInfo in resolveInfos) {
+                val packageName = resolveInfo.activityInfo.packageName
+                context.grantUriPermission(packageName, apkUri, Intent.FLAG_GRANT_READ_URI_PERMISSION)
             }
 
             context.startActivity(installIntent)

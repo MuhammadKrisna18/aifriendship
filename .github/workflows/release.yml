@@ -42,30 +42,20 @@ jobs:
           body: |
             ## Pembaruan AiFriendship ${{ github.ref_name }} 💬✨
 
-            Rilis resmi **AiFriendship ${{ github.ref_name }}** menghadirkan fitur revolusioner: **Context-Driven Proactive Messaging (AI Chat Duluan Secara Alami)**! Sahabat AI kini tidak lagi pasif menunggu, melainkan memiliki inisiatif menyapa duluan dengan alasan yang masuk akal dan kontekstual.
+            Pembaruan rilis **AiFriendship ${{ github.ref_name }}** menyempurnakan alur instalasi in-app update dan menghadirkan pengalaman pembaruan aplikasi yang mulus dan transparan.
 
-            ### 🚀 Apa Saja Pembaruan di Versi 1.5.0?
-            - **Chat Proaktif Berbasis Konteks (AI Chat Tiba-Tiba Alami):**
-              - *Lupa Bales / Digantung:* Jika obrolan terakhir dari AI belum dibalas setelah beberapa jam, AI akan menyapa/menyindir santai sesuai relasi (misal gebetan yang salting atau sahabat yang usil).
-              - *Follow-Up Topik:* AI mengingat hal penting yang Anda ceritakan sebelumnya (misal: ujian, interview, sakit, meeting) dan menanyakan kabarnya kembali.
-              - *Melanjutkan Aktivitas:* AI kembali menyapa setelah menyelesaikan aktivitas pribadinya (misal: habis nonton drakor, makan, atau nugas).
-              - *Random Thought / Kepikiran:* Setelah seharian tidak mengobrol, AI menyapa santai atau berbagi hal menarik secara spontan.
-            - **Anti-Spam & Anti-Desperate Guardrails:**
-              - Maksimal 1 kali ping proaktif; AI tidak akan pernah membombardir pesan kedua jika user belum membalas pesan pertama.
-              - Jam tenang otomatis (*Quiet Hours*) di tengah malam (00:00 – 07:00) agar tidak mengganggu istirahat.
-              - Cooldown jeda minimal 3 – 4 jam antar aktivitas.
-            - **Notifikasi Push WhatsApp-Style:**
-              - Saat AI mengirim pesan di background, notifikasi push instan akan muncul di HP Android dengan nama sahabat dan pesan aslinya.
-              - Mengetuk notifikasi langsung membuka ruang obrolan dengan sahabat AI tersebut.
-            - **Orkestrasi Background Modern:** Didukung oleh Android Jetpack `WorkManager` yang hemat daya dan patuh pada Doze Mode.
-            - **Watak & Hubungan Dinamis (15 Mood & 12 Relasi):** Evolusi kepribadian, mood, dan anti-ngegas yang terus berkembang mengikuti obrolan.
+            ### 🚀 Apa Saja Perbaikan di Versi Ini?
+            - **Dialog Update Ringkas (2 Tombol):** Dialog pembaruan kini hanya memiliki 2 tombol yang jelas: **"Install versi terbaru"** dan **"Nanti Saja"** (menghilangkan tombol perantara browser).
+            - **Indikator Kemajuan Unduhan Real-Time:** Menampilkan progress bar dan persentase unduhan (0% – 100%) langsung di dalam dialog, sehingga pengguna tahu proses unduh sedang berjalan aktif.
+            - **Perbaikan Alur Package Installer:** Mengunduh file APK secara tuntas terlebih dahulu, menyelesaikan izin sumber tidak dikenal (*Unknown Sources*) secara tepat, dan mendaftarkan izin URI langsung ke Android Package Installer tanpa *silent failure*.
+            - **AI Chat Proaktif Berbasis Konteks:** Sahabat AI tetap aktif menyapa duluan saat Anda lupa membalas chat, menanyakan kelanjutan topik sebelumnya, atau membagikan aktivitas terbarunya via push notification.
 
             ---
 
             ### 📲 Cara Memasang / Memperbarui:
             1. Unduh file **`AiFriendship-${{ github.ref_name }}.apk`** pada bagian **Assets** di bawah.
             2. Pasang langsung di smartphone Android Anda.
-            3. Jika versi sebelumnya sudah terpasang, aplikasi juga dapat memperbarui dirinya sendiri secara otomatis via fitur in-app update!
+            3. Jika versi sebelumnya sudah terpasang, aplikasi juga dapat memperbarui dirinya sendiri secara otomatis via tombol "Install versi terbaru"!
           files: app/build/outputs/apk/debug/AiFriendship-*.apk
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

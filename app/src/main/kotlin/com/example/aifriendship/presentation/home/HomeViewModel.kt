@@ -29,6 +29,7 @@ class HomeViewModel(
     private val _searchQuery = MutableStateFlow("")
     private val _updateInfo = MutableStateFlow<AppUpdateInfo?>(null)
     private val _isDownloadingUpdate = MutableStateFlow(false)
+    private val _downloadProgress = MutableStateFlow(0)
 
     private val _homeState = combine(
         userRepository.observeUserProfile(),
@@ -49,11 +50,13 @@ class HomeViewModel(
     val uiState: StateFlow<HomeUiState> = combine(
         _homeState,
         _updateInfo,
-        _isDownloadingUpdate
-    ) { baseState, update, isDownloading ->
+        _isDownloadingUpdate,
+        _downloadProgress
+    ) { baseState, update, isDownloading, progress ->
         baseState.copy(
             updateInfo = update,
-            isDownloadingUpdate = isDownloading
+            isDownloadingUpdate = isDownloading,
+            downloadProgress = progress
         )
     }.stateIn(
         scope = viewModelScope,
@@ -77,10 +80,20 @@ class HomeViewModel(
 
     fun downloadAndInstallUpdate() {
         val info = _updateInfo.value ?: return
-        viewModelScope.launch(Dispatchers.IO) {
+        viewModelScope.launch {
             _isDownloadingUpdate.value = true
-            appUpdateService.downloadAndInstallUpdate(info.downloadUrl, "update.apk")
+            _downloadProgress.value = 0
+            val result = appUpdateService.downloadAndInstallUpdate(
+                downloadUrl = info.downloadUrl,
+                fileName = "update.apk",
+                onProgress = { progress ->
+                    _downloadProgress.value = progress
+                }
+            )
             _isDownloadingUpdate.value = false
+            if (result.isSuccess) {
+                _updateInfo.value = null
+            }
         }
     }
 

@@ -33,8 +33,8 @@ A modern Native Android AI Companion app built with **Kotlin** and **Jetpack Com
   - Intelligent sequential failover: `gemini-3.5-flash-lite` ➔ `gemini-3.1-flash-lite` ➔ `gemini-2.5-flash` ➔ `gemini-flash-latest`.
   - In-character pause & roleplayed excuse with countdown timer when all quotas are temporarily exhausted.
 - **In-App Auto-Updater:**
-  - Automatic download and package installer integration with Android 8.0+ unknown app sources permissions (`ACTION_MANAGE_UNKNOWN_APP_SOURCES`) and FileProvider support.
-  - Fallback "Buka Browser" button for instant manual download if direct installation is restricted.
+  - Streamlined 2-button update dialog ("Install versi terbaru" and "Nanti Saja") with live progress percentage indicator (0% – 100%).
+  - Smooth package installer flow with pre-downloading, explicit URI permissions, and Android 8.0+ unknown app sources permissions (`ACTION_MANAGE_UNKNOWN_APP_SOURCES`).
 - **Offline-First Persistence:** Thread-safe, non-blocking local storage ensuring complete message histories and companion memories persist across application restarts.
 
 ---
