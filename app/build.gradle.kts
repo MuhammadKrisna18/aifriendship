@@ -16,12 +16,22 @@ if (localPropertiesFile.exists()) {
 android {
   namespace = "com.example.aifriendship"
   compileSdk = 37
+
+  signingConfigs {
+    getByName("debug") {
+      storeFile = file("debug.keystore")
+      storePassword = "android"
+      keyAlias = "androiddebugkey"
+      keyPassword = "android"
+    }
+  }
+
   defaultConfig {
     applicationId = "com.example.aifriendship"
     minSdk = 24
     targetSdk = 37
-    versionCode = 13
-    versionName = "1.5.4"
+    versionCode = 14
+    versionName = "1.5.5"
 
     val geminiApiKey = localProperties.getProperty("GEMINI_API_KEY") ?: ""
     buildConfigField("String", "GEMINI_API_KEY", "\"$geminiApiKey\"")

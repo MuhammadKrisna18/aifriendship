@@ -53,12 +53,10 @@ jobs:
             Pembaruan rilis **AiFriendship ${{ github.ref_name }}** menghadirkan penyempurnaan besar pada keseimbangan ritme obrolan (*Chat Mirroring*) dan respon emosional AI yang jauh lebih seimbang dan manusiawi.
 
             ### 🚀 Apa Saja Pembaruan di Versi Ini?
-            - **Eliminasi Spam "wkwk" & Nada Santai Otentik:** AI dilarang keras menempelkan "wkwk" di setiap kalimat/bubble. Mayoritas chat kini mengalir datar, santai, dan to-the-point tanpa tawa palsu yang kaku, persis seperti teman chatting nyata di WhatsApp.
-            - **Chat Length Mirroring (Jawaban Seimbang & Tidak Kepanjangan):** AI kini mencerminkan panjang chat user secara proporsional. Chat singkat (1–5 kata) dibalas dengan **1 bubble ringkas** (tanpa monolog panjang atau multi-bubble berlebihan).
-            - **Anti-Interogasi (Alur Mengalir Alami):** AI tidak lagi memaksakan pertanyaan balik di setiap akhir pesan. Percakapan mengalir santai layaknya obrolan WhatsApp dengan teman nyata.
-            - **Reaksi Salting Super Dinamis (Anti-Template):** AI kini mengekspresikan rasa tersipu/salting dengan ragam reaksi alami: denial canggung (*pura-pura haus/kipas angin rusak*), panik lucu/speechless (*otak nge-blank*), tsundere sok galak (*"jangan bikin orang geer napa"*), ngetes ketulusan, meleleh jujur, hingga respon fisik realistis (*"refleks nutup muka pake bantal"*).
-            - **Rapid Silence Follow-up (1–5 Menit):** Jika Anda tiba-tiba menghilang di tengah obrolan, AI akan menyapa santai dalam rentang acak 1–5 menit (*"Woy kok ngilang?", "Dih di-read doang"*).
-            - **Deteksi Pamit Otomatis (10–60 Menit):** Jika Anda pamit (mandi, makan, otw, nugas, tidur), AI tidak mengganggu dan akan mengecek kembali kabar Anda setelah 10–60 menit (*"Udah kelar mandinya belum?", "Udah nyampe mana?"*).
+            - **Kunci Keystore Terpadu (Solusi Permanen "App not installed"):** Seluruh rilis APK kini menggunakan `debug.keystore` terpadu, menjamin kompatibilitas tanda tangan untuk semua pembaruan aplikasi otomatis ke depannya tanpa ditolak sistem Android.
+            - **Dinamika Obrolan Luwes & Asik (Anti-Judes Berlebihan):** AI tidak lagi menyerang atau defensif judes secara monoton. AI kini lebih luwes, bisa ikut tertawa santai, kepo akrab (*"spill coba!"*), dan suportif layaknya sahabat tongkrongan nyata.
+            - **Eliminasi Spam "wkwk" & Tawa Alami:** Menghapus akhiran "wkwk" seragam dari setiap kalimat. Obrolan mengalir natural dan tidak kaku.
+            - **Chat Length Mirroring:** Menyesuaikan panjang respon secara seimbang dengan chat user (1 bubble untuk chat pendek).
             - **Mood-Driven Dynamic Spam:** Frekuensi follow-up disesuaikan dengan suasana hati (Mood Manja, Kangen, Kepo, Ngambek dapat mengirim 2–3 chat berturut-turut; Mood Cuek/Biasa tetap kalem 1 chat).
             - **Auto-Cancel & Battery Guardrails:** Timer follow-up otomatis dibatalkan begitu Anda mengirim pesan baru. Jam tenang malam (00:00 – 07:00) tetap aktif.
 
