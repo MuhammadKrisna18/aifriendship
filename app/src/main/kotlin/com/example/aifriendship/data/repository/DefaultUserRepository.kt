@@ -4,13 +4,13 @@ import com.example.aifriendship.data.local.UserLocalDataSource
 import com.example.aifriendship.domain.model.AiCompanion
 import com.example.aifriendship.domain.model.UserProfile
 import com.example.aifriendship.domain.repository.UserRepository
-import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.StateFlow
 
 class DefaultUserRepository(
     private val localDataSource: UserLocalDataSource
 ) : UserRepository {
 
-    override fun observeUserProfile(): Flow<UserProfile> = localDataSource.observeUserProfile()
+    override fun observeUserProfile(): StateFlow<UserProfile> = localDataSource.observeUserProfile()
 
     override suspend fun getUserProfile(): UserProfile = localDataSource.getUserProfile()
 

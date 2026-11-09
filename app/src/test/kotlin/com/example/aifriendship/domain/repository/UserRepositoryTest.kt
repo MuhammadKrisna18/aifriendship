@@ -9,6 +9,7 @@ import com.example.aifriendship.domain.model.RandomCompanionGenerator
 import com.example.aifriendship.domain.model.UserProfile
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.test.runTest
@@ -150,7 +151,7 @@ class UserRepositoryTest {
 private class FakeUserLocalDataSource : UserLocalDataSource {
     private val flow = MutableStateFlow(UserProfile())
 
-    override fun observeUserProfile(): Flow<UserProfile> = flow.asStateFlow()
+    override fun observeUserProfile(): StateFlow<UserProfile> = flow.asStateFlow()
 
     override suspend fun getUserProfile(): UserProfile = flow.value
 

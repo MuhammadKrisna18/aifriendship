@@ -3,8 +3,8 @@ package com.example.aifriendship.data.local
 import android.content.Context
 import com.example.aifriendship.domain.model.UserProfile
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
@@ -35,7 +35,7 @@ class JsonUserLocalDataSource(
         _userProfileFlow.value = loaded
     }
 
-    override fun observeUserProfile(): Flow<UserProfile> = _userProfileFlow.asStateFlow()
+    override fun observeUserProfile(): StateFlow<UserProfile> = _userProfileFlow.asStateFlow()
 
     override suspend fun getUserProfile(): UserProfile = mutex.withLock {
         _userProfileFlow.value

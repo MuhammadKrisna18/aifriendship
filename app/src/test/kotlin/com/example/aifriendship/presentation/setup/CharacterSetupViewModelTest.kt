@@ -12,6 +12,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.test.StandardTestDispatcher
@@ -128,7 +129,7 @@ private class FakeUserRepository(
 ) : UserRepository {
     private val profileFlow = MutableStateFlow(initial)
 
-    override fun observeUserProfile(): Flow<UserProfile> = profileFlow.asStateFlow()
+    override fun observeUserProfile(): StateFlow<UserProfile> = profileFlow.asStateFlow()
 
     override suspend fun getUserProfile(): UserProfile = profileFlow.value
 

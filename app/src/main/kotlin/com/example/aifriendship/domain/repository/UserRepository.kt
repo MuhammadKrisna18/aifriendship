@@ -2,10 +2,10 @@ package com.example.aifriendship.domain.repository
 
 import com.example.aifriendship.domain.model.AiCompanion
 import com.example.aifriendship.domain.model.UserProfile
-import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.StateFlow
 
 interface UserRepository {
-    fun observeUserProfile(): Flow<UserProfile>
+    fun observeUserProfile(): StateFlow<UserProfile>
     suspend fun getUserProfile(): UserProfile
     suspend fun saveUserProfile(profile: UserProfile)
     suspend fun updateName(name: String)

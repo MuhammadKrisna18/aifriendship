@@ -23,6 +23,7 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.AutoAwesome
 import androidx.compose.material.icons.filled.Casino
 import androidx.compose.material.icons.filled.CheckCircle
@@ -35,6 +36,7 @@ import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.FilterChip
 import androidx.compose.material3.FilterChipDefaults
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.OutlinedTextField
@@ -61,6 +63,7 @@ import com.example.aifriendship.ui.theme.primaryLight
 fun CharacterSetupScreen(
     viewModel: CharacterSetupViewModel = viewModel(factory = CharacterSetupViewModel.Factory),
     onComplete: () -> Unit,
+    onBackClick: (() -> Unit)? = null,
     modifier: Modifier = Modifier
 ) {
     val state by viewModel.uiState.collectAsStateWithLifecycle()
@@ -91,17 +94,30 @@ fun CharacterSetupScreen(
             ) {
                 item {
                     Spacer(modifier = Modifier.height(10.dp))
-                    Text(
-                        text = "Rancang Sahabat AI 💬✨",
-                        fontSize = 24.sp,
-                        fontWeight = FontWeight.Bold,
-                        color = Color(0xFF0F172A)
-                    )
-                    Text(
-                        text = "Gabungkan 1 sampai 3 sifat untuk menciptakan karakter unikmu",
-                        fontSize = 14.sp,
-                        color = Color(0xFF64748B)
-                    )
+                    Row(verticalAlignment = Alignment.CenterVertically) {
+                        if (onBackClick != null) {
+                            IconButton(onClick = onBackClick) {
+                                Icon(
+                                    imageVector = Icons.AutoMirrored.Filled.ArrowBack,
+                                    contentDescription = "Kembali"
+                                )
+                            }
+                            Spacer(modifier = Modifier.width(4.dp))
+                        }
+                        Column {
+                            Text(
+                                text = "Rancang Sahabat AI 💬✨",
+                                fontSize = 24.sp,
+                                fontWeight = FontWeight.Bold,
+                                color = Color(0xFF0F172A)
+                            )
+                            Text(
+                                text = "Gabungkan 1 sampai 3 sifat untuk menciptakan karakter unikmu",
+                                fontSize = 14.sp,
+                                color = Color(0xFF64748B)
+                            )
+                        }
+                    }
                 }
 
                 item {

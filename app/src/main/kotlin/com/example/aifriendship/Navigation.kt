@@ -7,7 +7,6 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation3.runtime.entryProvider
 import androidx.navigation3.runtime.rememberNavBackStack
 import androidx.navigation3.ui.NavDisplay
-import com.example.aifriendship.domain.model.UserProfile
 import com.example.aifriendship.presentation.chat.ChatScreen
 import com.example.aifriendship.presentation.home.HomeScreen
 import com.example.aifriendship.presentation.setup.CharacterSetupScreen
@@ -16,11 +15,14 @@ import com.example.aifriendship.presentation.setup.CharacterSetupScreen
 fun MainNavigation() {
     val context = LocalContext.current
     val container = (context.applicationContext as AiFriendshipApplication).container
-    val userProfile by container.userRepository.observeUserProfile().collectAsStateWithLifecycle(
-        initialValue = UserProfile()
-    )
+    val profileStateFlow = container.userRepository.observeUserProfile()
+    val userProfile by profileStateFlow.collectAsStateWithLifecycle()
 
-    val initialKey = if (userProfile.isOnboardingCompleted) Home else Setup
+    val hasCreatedCharacter = profileStateFlow.value.isOnboardingCompleted ||
+            profileStateFlow.value.companions.isNotEmpty() ||
+            profileStateFlow.value.name.isNotBlank()
+
+    val initialKey = if (hasCreatedCharacter) Home else Setup
     val backStack = rememberNavBackStack(initialKey)
 
     NavDisplay(
@@ -42,7 +44,10 @@ fun MainNavigation() {
                     onComplete = {
                         backStack.clear()
                         backStack.add(Home)
-                    }
+                    },
+                    onBackClick = if (hasCreatedCharacter && backStack.size > 1) {
+                        { backStack.removeLastOrNull() }
+                    } else null
                 )
             }
             entry<Chat> {
