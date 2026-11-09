@@ -16,6 +16,7 @@ class CompanionMemoryTest {
         assertEquals(CompanionMood.BIASA, memory.currentMood)
         assertEquals(20, memory.affinityScore)
         assertEquals(0, memory.userFacts.size)
+        assertNull(memory.lastProactiveMessageTimestamp)
     }
 
     @Test

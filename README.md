@@ -6,6 +6,14 @@ A modern Native Android AI Companion app built with **Kotlin** and **Jetpack Com
 
 ## 📱 Features
 
+- **Context-Driven Proactive Messaging (AI Chat Duluan):**
+  - Companions take initiative to message you based on realistic conversational triggers:
+    - **Unanswered Pings:** Playfully calls you out if you left their question or greeting unread for hours (*"Dih diread doang... sibuk banget ya wkwk"*).
+    - **Follow-up Topic Callback:** Remembers when you mentioned an important event (meeting, exam, feeling unwell) and checks back in later.
+    - **Activity Return:** Reaches out when they finish an activity they mentioned previously (*"Drakornya nyesek banget wkwk, lu lagi ngapain?"*).
+    - **Random Thoughts:** Spontaneous, natural greetings or fun check-ins after a quiet day.
+  - **Anti-Spam & Anti-Desperate Guardrails:** Maximum 1 proactive ping until you reply, strict quiet hours (00:00 – 07:00), and healthy multi-hour cooldowns.
+  - **WhatsApp-Style Push Notifications:** Instant local notifications with companion name, avatar accent, and direct deep-linking to the chat room.
 - **WhatsApp-Style Multi-Chat Interface:**
   - **Tab 1 (OBROLAN):** Overview of all active chats with companion avatars, dynamic relationship & mood badges, message previews, and formatted timestamps.
   - **Tab 2 (SAHABAT AI):** Manage your roster of companions, view their dynamic relationship stages, current mood, recent episodic activities, or add new companions.
@@ -38,8 +46,8 @@ This project strictly adheres to **Clean Architecture** and **SOLID principles**
 ```
 com.example.aifriendship/
 ├── domain/
-│   ├── model/           # ChatMessage, AiCompanion, CompanionMood, CompanionRelationship, CompanionMemory, UserProfile, AiResponse, AppUpdateInfo
-│   ├── service/         # AiService, AppUpdateService, QuotaExceededException, AllModelsQuotaExceededException
+│   ├── model/           # ChatMessage, AiCompanion, CompanionMood, CompanionRelationship, CompanionMemory, ProactiveTriggerReason, UserProfile, AiResponse, AppUpdateInfo
+│   ├── service/         # AiService, ProactiveMessageEvaluator, AppUpdateService, QuotaExceededException, AllModelsQuotaExceededException
 │   └── repository/      # ChatRepository, UserRepository
 ├── data/
 │   ├── config/          # ApiKeyProvider & LocalApiKeyProvider
@@ -47,11 +55,13 @@ com.example.aifriendship/
 │   ├── remote/
 │   │   ├── gemini/      # GeminiAiService, DTOs & LiaPromptDefinition
 │   │   └── update/      # GitHubUpdateService & GitHubReleaseDto
+│   ├── worker/          # ProactiveMessageWorker, ProactiveScheduler (WorkManager)
 │   └── repository/      # DefaultChatRepository & DefaultUserRepository
 ├── presentation/
 │   ├── home/            # HomeScreen, HomeViewModel, HomeUiState
 │   ├── chat/            # ChatScreen, ChatViewModel, ChatUiState
 │   │   └── components/  # ChatTopBar, UserChatBubble, AiChatBubble, ChatBottomBar, TypingIndicator, UserProfileDialog
+│   ├── notification/    # ProactiveNotificationHelper
 │   ├── setup/           # CharacterSetupScreen, CharacterSetupViewModel, CharacterSetupUiState
 │   └── navigation/      # Navigation graph and destination routing
 ├── di/                  # AppContainer (Manual Dependency Injection)
@@ -64,6 +74,7 @@ com.example.aifriendship/
 - **UI Toolkit:** Jetpack Compose (Material 3)
 - **Architecture Pattern:** MVVM with reactive `StateFlow`
 - **Asynchronous:** Kotlin Coroutines & Flow
+- **Background Orchestration:** AndroidX WorkManager 2.10
 - **Navigation:** AndroidX Navigation 3
 - **Network & Serialization:** OkHttp, Kotlinx Serialization JSON
 - **Build System:** Gradle 9.x with Android Gradle Plugin 9.x

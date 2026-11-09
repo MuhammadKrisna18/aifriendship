@@ -7,14 +7,17 @@ import com.example.aifriendship.data.remote.gemini.dto.GeminiPart
 import com.example.aifriendship.data.remote.gemini.dto.GeminiRequestDto
 import com.example.aifriendship.data.remote.gemini.dto.GeminiResponseDto
 import com.example.aifriendship.data.remote.gemini.dto.GeminiSystemInstruction
+import com.example.aifriendship.domain.model.AiCompanion
 import com.example.aifriendship.domain.model.AiResponse
 import com.example.aifriendship.domain.model.ChatMessage
 import com.example.aifriendship.domain.model.ChatTimeFormatter
 import com.example.aifriendship.domain.model.MessageSender
+import com.example.aifriendship.domain.model.ProactiveTriggerReason
 import com.example.aifriendship.domain.model.QuotedMessage
 import com.example.aifriendship.domain.model.UserProfile
 import com.example.aifriendship.domain.service.AiService
 import com.example.aifriendship.domain.service.AllModelsQuotaExceededException
+import com.example.aifriendship.domain.service.QuotaExceededException
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import kotlinx.serialization.encodeToString
@@ -123,6 +126,79 @@ class GeminiAiService(
 
                     activeModelIndex = modelIdx
                     return@withContext Result.success(parsedAiResponse)
+                }
+            } catch (e: Exception) {
+                lastException = e
+            }
+        }
+
+        Result.failure(lastException ?: AllModelsQuotaExceededException())
+    }
+
+    override suspend fun generateProactiveMessage(
+        companion: AiCompanion,
+        userProfile: UserProfile,
+        history: List<ChatMessage>,
+        reason: ProactiveTriggerReason
+    ): Result<String> = withContext(Dispatchers.IO) {
+        val apiKey = apiKeyProvider.getApiKey()
+        if (apiKey.isBlank()) {
+            return@withContext Result.failure(IllegalStateException("API key tidak tersedia"))
+        }
+
+        val prompt = LiaPromptDefinition.buildProactivePrompt(companion, userProfile, reason)
+        val slidingHistory = history.takeLast(8)
+        val historyContext = if (slidingHistory.isNotEmpty()) {
+            val lines = slidingHistory.joinToString("\n") { msg ->
+                val senderName = if (msg.sender == MessageSender.USER) userProfile.name.ifBlank { "User" } else companion.name
+                "[$senderName]: ${msg.text}"
+            }
+            "\n[RINGKASAN PESAN SEBELUMNYA]\n$lines\n"
+        } else ""
+
+        val contents = listOf(
+            GeminiContent(
+                role = "user",
+                parts = listOf(GeminiPart(text = "$prompt\n$historyContext\nKirimkan 1 pesan chat pendek pembukamu:"))
+            )
+        )
+
+        val requestBodyDto = GeminiRequestDto(
+            contents = contents,
+            generationConfig = GeminiGenerationConfig(
+                temperature = 0.85f,
+                topP = 0.95f
+            )
+        )
+        val jsonString = json.encodeToString(requestBodyDto)
+        val requestBody = jsonString.toRequestBody("application/json".toMediaType())
+
+        var lastException: Exception? = null
+        for (i in fallbackModelChain.indices) {
+            val modelIdx = (activeModelIndex + i) % fallbackModelChain.size
+            val model = fallbackModelChain[modelIdx]
+            val url = "https://generativelanguage.googleapis.com/v1beta/models/$model:generateContent?key=$apiKey"
+            val request = Request.Builder().url(url).post(requestBody).build()
+
+            try {
+                client.newCall(request).execute().use { response ->
+                    if (!response.isSuccessful) {
+                        val code = response.code
+                        if (code == 429) {
+                            lastException = QuotaExceededException("Quota exceeded on $model")
+                            return@use
+                        }
+                        lastException = IOException("HTTP $code on $model")
+                        return@use
+                    }
+                    val bodyString = response.body?.string().orEmpty()
+                    val responseDto = json.decodeFromString<GeminiResponseDto>(bodyString)
+                    val rawText = responseDto.candidates.firstOrNull()?.content?.parts?.firstOrNull()?.text.orEmpty().trim()
+                    val cleanText = rawText.removeSurrounding("\"").trim()
+                    if (cleanText.isNotBlank()) {
+                        activeModelIndex = modelIdx
+                        return@withContext Result.success(cleanText)
+                    }
                 }
             } catch (e: Exception) {
                 lastException = e

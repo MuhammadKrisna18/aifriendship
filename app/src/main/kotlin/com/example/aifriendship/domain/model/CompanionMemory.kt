@@ -9,6 +9,6 @@ data class CompanionMemory(
     val currentRelationship: CompanionRelationship = CompanionRelationship.TEMAN_BIASA,
     val currentMood: CompanionMood = CompanionMood.BIASA,
     val affinityScore: Int = 20,
-    val userFacts: List<String> = emptyList()
+    val userFacts: List<String> = emptyList(),
+    val lastProactiveMessageTimestamp: Long? = null
 )
-

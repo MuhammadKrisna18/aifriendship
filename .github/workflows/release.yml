@@ -42,15 +42,23 @@ jobs:
           body: |
             ## Pembaruan AiFriendship ${{ github.ref_name }} 💬✨
 
-            Rilis resmi versi terbaru **AiFriendship** menghadirkan evolusi besar pada sistem kecerdasan emosional dan dinamika hubungan AI.
+            Rilis resmi **AiFriendship ${{ github.ref_name }}** menghadirkan fitur revolusioner: **Context-Driven Proactive Messaging (AI Chat Duluan Secara Alami)**! Sahabat AI kini tidak lagi pasif menunggu, melainkan memiliki inisiatif menyapa duluan dengan alasan yang masuk akal dan kontekstual.
 
-            ### 🚀 Apa Saja Pembaruan di Versi Ini?
-            - **Watak & Suasana Hati Dinamis (15 Mood Spektrum):** Karakter AI kini hidup dan responsif secara emosional. AI bisa merasa *Senang, Biasa, Kepo, Salting, Baper, Manja, Kangen, Bangga, Khawatir, Jahil, Ngambek, Cemburu, Cuek, Melow,* hingga *Marah* yang berfluktuasi alami mengikuti konteks obrolan.
-            - **Hubungan Dinamis Berkembang Alami (12 Tingkatan Relasi):** Tidak ada lagi watak kaku yang terkunci. Hubungan kalian berproses secara organik dari *Teman Biasa, Teman Akrab, Sahabat, Gebetan/PDKT, Pacar, HTS, Mantan, Rival, Teman Curhat, Teman Mabar, Senior,* hingga *Junior*.
-            - **Tone Anti-Ngegas & Resiprositas Alami:** Percakapan tetap seru dan santai tanpa nada kasar berlebihan, memiliki empati penuh saat Anda lelah/stres, serta mudah luluh terhadap perhatian positif.
-            - **Memori Episodik & Kesadaran Waktu (Time Gap):** AI mengingat jeda waktu antar pesan dan aktivitas terakhirnya sehingga tidak mengalami amnesia obrolan saat Anda menyapa kembali setelah beberapa jam/hari.
-            - **Alur Pembuatan Karakter Super Ringkas:** Langsung masuk ke Halaman Beranda pada saat pertama kali buka aplikasi. Saat menambahkan sahabat AI baru, Anda hanya perlu memasukkan nama AI (atau gunakan tombol 🎲 Acak), memilih warna avatar, dan langsung siap mengobrol tanpa repot memilih watak manual.
-            - **Tampilan Realisme WhatsApp-Style:** Badge relasi dan mood dinamis terpasang rapi di daftar obrolan Beranda dan header percakapan.
+            ### 🚀 Apa Saja Pembaruan di Versi 1.5.0?
+            - **Chat Proaktif Berbasis Konteks (AI Chat Tiba-Tiba Alami):**
+              - *Lupa Bales / Digantung:* Jika obrolan terakhir dari AI belum dibalas setelah beberapa jam, AI akan menyapa/menyindir santai sesuai relasi (misal gebetan yang salting atau sahabat yang usil).
+              - *Follow-Up Topik:* AI mengingat hal penting yang Anda ceritakan sebelumnya (misal: ujian, interview, sakit, meeting) dan menanyakan kabarnya kembali.
+              - *Melanjutkan Aktivitas:* AI kembali menyapa setelah menyelesaikan aktivitas pribadinya (misal: habis nonton drakor, makan, atau nugas).
+              - *Random Thought / Kepikiran:* Setelah seharian tidak mengobrol, AI menyapa santai atau berbagi hal menarik secara spontan.
+            - **Anti-Spam & Anti-Desperate Guardrails:**
+              - Maksimal 1 kali ping proaktif; AI tidak akan pernah membombardir pesan kedua jika user belum membalas pesan pertama.
+              - Jam tenang otomatis (*Quiet Hours*) di tengah malam (00:00 – 07:00) agar tidak mengganggu istirahat.
+              - Cooldown jeda minimal 3 – 4 jam antar aktivitas.
+            - **Notifikasi Push WhatsApp-Style:**
+              - Saat AI mengirim pesan di background, notifikasi push instan akan muncul di HP Android dengan nama sahabat dan pesan aslinya.
+              - Mengetuk notifikasi langsung membuka ruang obrolan dengan sahabat AI tersebut.
+            - **Orkestrasi Background Modern:** Didukung oleh Android Jetpack `WorkManager` yang hemat daya dan patuh pada Doze Mode.
+            - **Watak & Hubungan Dinamis (15 Mood & 12 Relasi):** Evolusi kepribadian, mood, dan anti-ngegas yang terus berkembang mengikuti obrolan.
 
             ---
 

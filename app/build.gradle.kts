@@ -20,8 +20,8 @@ android {
     applicationId = "com.example.aifriendship"
     minSdk = 24
     targetSdk = 37
-    versionCode = 8
-    versionName = "1.4.0"
+    versionCode = 9
+    versionName = "1.5.0"
 
     val geminiApiKey = localProperties.getProperty("GEMINI_API_KEY") ?: ""
     buildConfigField("String", "GEMINI_API_KEY", "\"$geminiApiKey\"")
@@ -85,6 +85,7 @@ dependencies {
   implementation(libs.androidx.navigation3.ui)
   implementation(libs.androidx.navigation3.runtime)
   implementation(libs.androidx.lifecycle.viewmodel.navigation3)
+  implementation(libs.androidx.work.runtime.ktx)
 
   implementation(libs.kotlinx.serialization.json)
   implementation(libs.okhttp)

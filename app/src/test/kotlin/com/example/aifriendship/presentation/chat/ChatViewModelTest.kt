@@ -10,6 +10,7 @@ import com.example.aifriendship.domain.model.CompanionRelationship
 import com.example.aifriendship.domain.model.LiaStatus
 import com.example.aifriendship.domain.model.MessageDeliveryStatus
 import com.example.aifriendship.domain.model.MessageSender
+import com.example.aifriendship.domain.model.ProactiveTriggerReason
 import com.example.aifriendship.domain.model.QuotedMessage
 import com.example.aifriendship.domain.model.UserProfile
 import com.example.aifriendship.domain.repository.ChatRepository
@@ -246,6 +247,15 @@ private class FakeAiService : AiService {
             statusSubtitle = "gemas juga ngajarin dia ngoding"
         )
         return Result.success(response)
+    }
+
+    override suspend fun generateProactiveMessage(
+        companion: AiCompanion,
+        userProfile: UserProfile,
+        history: List<ChatMessage>,
+        reason: ProactiveTriggerReason
+    ): Result<String> {
+        return Result.success("Halo! Lagi ngapain nih?")
     }
 }
 

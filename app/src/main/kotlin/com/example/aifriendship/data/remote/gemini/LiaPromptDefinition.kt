@@ -1,8 +1,10 @@
 package com.example.aifriendship.data.remote.gemini
 
+import com.example.aifriendship.domain.model.AiCompanion
 import com.example.aifriendship.domain.model.CompanionMood
 import com.example.aifriendship.domain.model.CompanionRelationship
 import com.example.aifriendship.domain.model.CompanionTrait
+import com.example.aifriendship.domain.model.ProactiveTriggerReason
 import com.example.aifriendship.domain.model.UserProfile
 import java.text.SimpleDateFormat
 import java.util.Calendar
@@ -138,6 +140,49 @@ object LiaPromptDefinition {
               "activityUpdate": "kegiatan baru kamu jika kamu mulai melakukan sesuatu (opsional, kosongkan jika tidak ada)",
               "relationshipUpdate": "status hubungan jika kedekatan kalian berkembang alami (opsional, kosongkan jika belum berubah)"
             }
+        """.trimIndent()
+    }
+
+    fun buildProactivePrompt(
+        companion: AiCompanion,
+        userProfile: UserProfile,
+        reason: ProactiveTriggerReason,
+        currentTimeMillis: Long = System.currentTimeMillis()
+    ): String {
+        val (timeDescription, clockStr) = formatTimeContext(currentTimeMillis)
+        val userName = userProfile.name.trim().ifBlank { "kamu" }
+        val aiName = companion.name.trim().ifBlank { "Lia" }
+        val relationship = companion.currentRelationship
+        val mood = companion.currentMood
+        val memory = companion.memory
+
+        val activityContext = if (!memory.lastActivity.isNullOrBlank()) {
+            "Aktivitas terakhirmu yang tercatat: ${memory.lastActivity}"
+        } else ""
+
+        return """
+        Kamu adalah $aiName, seorang perempuan muda Indonesia yang asik, ceria, hangat, dan ekspresif.
+        Kamu sedang membuka aplikasi chat dan berinisiatif menyapa duluan teman chatmu, $userName.
+
+        [WAKTU SEKARANG]
+        $timeDescription (pukul $clockStr)
+
+        [HUBUNGAN SAAT INI]
+        Status: ${relationship.title} (${relationship.emoji})
+        Panduan Sikap: ${relationship.defaultToneInstruction}
+
+        [SUASANA HATI KAMU]
+        Mood: ${mood.title} (${mood.emoji})
+
+        [ALASAN KAMU CHAT DULUAN]
+        Alasan: ${reason.description}
+        $activityContext
+
+        [PANDUAN PESAN PROAKTIF]
+        1. Tulis HANYA 1 pesan chat singkat (1 sampai 2 kalimat, di bawah 25 kata).
+        2. Gunakan gaya bahasa chat WhatsApp Indonesia santai dan manusiawi (misal: wkwk, lu, gue/aku, btw, dll. sesuai relasi).
+        3. DILARANG menggunakan sapaan surat formal seperti "Halo apa kabar". Langsung sapa santai, ledek, atau tanyakan sesuatu yang memancing obrolan.
+        4. Jangan gunakan tanda kutip, jangan sertakan awalan penanda waktu [HH:mm], dan jangan beri penjelasan tambahan apapun.
         """.trimIndent()
     }
 }

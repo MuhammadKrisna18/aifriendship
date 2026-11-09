@@ -1,6 +1,7 @@
 package com.example.aifriendship
 
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.platform.LocalContext
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -12,7 +13,7 @@ import com.example.aifriendship.presentation.home.HomeScreen
 import com.example.aifriendship.presentation.setup.CharacterSetupScreen
 
 @Composable
-fun MainNavigation() {
+fun MainNavigation(initialCompanionId: String? = null) {
     val context = LocalContext.current
     val container = (context.applicationContext as AiFriendshipApplication).container
     val profileStateFlow = container.userRepository.observeUserProfile()
@@ -20,6 +21,13 @@ fun MainNavigation() {
 
     val initialKey = Home
     val backStack = rememberNavBackStack(initialKey)
+
+    LaunchedEffect(initialCompanionId) {
+        if (!initialCompanionId.isNullOrBlank()) {
+            container.userRepository.setActiveCompanion(initialCompanionId)
+            backStack.add(Chat(initialCompanionId))
+        }
+    }
 
     NavDisplay(
         backStack = backStack,
