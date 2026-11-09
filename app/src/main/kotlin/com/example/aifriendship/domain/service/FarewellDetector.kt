@@ -35,3 +35,4 @@ object FarewellDetector {
         return Random.nextLong(1, 6)
     }
 }
+

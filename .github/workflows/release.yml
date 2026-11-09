@@ -42,9 +42,11 @@ jobs:
           body: |
             ## Pembaruan AiFriendship ${{ github.ref_name }} 💬✨
 
-            Pembaruan rilis **AiFriendship ${{ github.ref_name }}** menghadirkan penyempurnaan besar pada respon emosional AI dan sistem perpesanan proaktif instan yang jauh lebih manusiawi.
+            Pembaruan rilis **AiFriendship ${{ github.ref_name }}** menghadirkan penyempurnaan besar pada keseimbangan ritme obrolan (*Chat Mirroring*) dan respon emosional AI yang jauh lebih seimbang dan manusiawi.
 
             ### 🚀 Apa Saja Pembaruan di Versi Ini?
+            - **Chat Length Mirroring (Jawaban Seimbang & Tidak Kepanjangan):** AI kini mencerminkan panjang chat user secara proporsional. Chat singkat (1–5 kata) dibalas dengan **1 bubble ringkas** (tanpa monolog panjang atau multi-bubble berlebihan).
+            - **Anti-Interogasi (Alur Mengalir Alami):** AI tidak lagi memaksakan pertanyaan balik di setiap akhir pesan. Percakapan mengalir santai layaknya obrolan WhatsApp dengan teman nyata.
             - **Reaksi Salting Super Dinamis (Anti-Template):** AI kini mengekspresikan rasa tersipu/salting dengan ragam reaksi alami: denial canggung (*pura-pura haus/kipas angin rusak*), panik lucu/speechless (*otak nge-blank*), tsundere sok galak (*"jangan bikin orang geer napa"*), ngetes ketulusan, meleleh jujur, hingga respon fisik realistis (*"refleks nutup muka pake bantal"*).
             - **Rapid Silence Follow-up (1–5 Menit):** Jika Anda tiba-tiba menghilang di tengah obrolan, AI akan menyapa santai dalam rentang acak 1–5 menit (*"Woy kok ngilang?", "Dih di-read doang wkwk"*).
             - **Deteksi Pamit Otomatis (10–60 Menit):** Jika Anda pamit (mandi, makan, otw, nugas, tidur), AI tidak mengganggu dan akan mengecek kembali kabar Anda setelah 10–60 menit (*"Udah kelar mandinya belum?", "Udah nyampe mana?"*).

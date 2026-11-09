@@ -29,6 +29,11 @@ A modern Native Android AI Companion app built with **Kotlin** and **Jetpack Com
   - Dynamic time awareness that tracks time deltas between conversations (e.g. *obrolan berlanjut setelah jeda 4 jam*) and remembers recent companion activities for seamless conversation continuity.
 - **Streamlined Character Creation:**
   - Direct access to the Home screen on first launch. Adding a companion is effortless: enter the name (or tap 🎲 Acak), pick an avatar color, and start chatting.
+- **Chat Length Mirroring & Balanced Cadence:**
+  - AI secara cerdas mencerminkan (*mirroring*) panjang pesan dan jumlah bubble agar seimbang dengan chat user:
+    - Pesan user singkat (< 5 kata) dibalas dengan **1 bubble padat dan santai** tanpa monolog berlebihan.
+    - Anti-Interogasi: AI tidak selalu memaksakan pertanyaan balik di akhir chat, membiarkan alur obrolan mengalir santai seperti teman WhatsApp sungguhan.
+    - Curhat atau cerita panjang dibalas dengan tanggapan mendalam dan empati penuh (2–3 bubble).
 - **Human-like Chat Cadence:** Messages arrive as natural successive chat bubbles with realistic typing delays.
 - **Quoted / Reply Message:** Long-press to quote and reply to specific messages with visual parent-message previews.
 - **Multi-Tier Model Fallback Chain:**

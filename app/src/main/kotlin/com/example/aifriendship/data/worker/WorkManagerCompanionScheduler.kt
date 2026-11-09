@@ -13,3 +13,4 @@ class WorkManagerCompanionScheduler(private val context: Context) : CompanionSch
         ProactiveScheduler.cancelFollowUp(context, companionId)
     }
 }
+
