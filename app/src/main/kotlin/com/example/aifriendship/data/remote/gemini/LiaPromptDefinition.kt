@@ -62,7 +62,6 @@ object LiaPromptDefinition {
         }
 
         val relationship = companion?.currentRelationship ?: CompanionRelationship.ORANG_ASING
-        val relationshipInstruction = relationship.defaultToneInstruction
         val currentMood = companion?.currentMood ?: CompanionMood.BIASA
 
         val memory = companion?.memory
@@ -87,7 +86,7 @@ object LiaPromptDefinition {
             Identitas & Watak Inti:
             - Nama Kamu: $aiName
             - Watak Inti: $personalityInstruction
-            - Status Hubungan Saat Ini (${relationship.title}): $relationshipInstruction
+            - Status Hubungan: ${relationship.title}
             - Suasana Hati / Mood Saat Ini: ${currentMood.label}
             $activityContext
             $factsContext
@@ -146,7 +145,7 @@ object LiaPromptDefinition {
 
             [PROFIL & KONDISI]
             - Watak Inti: $traitsInstruction
-            - Status Hubungan: ${relationship.title} (${relationship.defaultToneInstruction})
+            - Status Hubungan: ${relationship.title}
             - Suasana Hati: ${mood.title}
             - Waktu: $timeDescription (pukul $clockStr)
 

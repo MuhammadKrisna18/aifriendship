@@ -145,7 +145,7 @@ fun ChatTopBar(
                             .padding(horizontal = 7.dp, vertical = 2.dp)
                     ) {
                         Text(
-                            text = "${relationship.emoji} ${relationship.title}",
+                            text = relationship.title,
                             fontSize = 10.sp,
                             fontWeight = FontWeight.SemiBold,
                             color = primaryLight

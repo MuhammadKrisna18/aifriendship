@@ -406,7 +406,7 @@ private fun CompanionChatRow(
                         .padding(horizontal = 6.dp, vertical = 2.dp)
                 ) {
                     Text(
-                        text = "${companion.currentRelationship.emoji} ${companion.currentRelationship.title}",
+                        text = companion.currentRelationship.title,
                         fontSize = 11.sp,
                         fontWeight = FontWeight.SemiBold,
                         color = avatarColor
@@ -573,7 +573,7 @@ private fun CompanionsTabContent(
                                         .padding(horizontal = 6.dp, vertical = 2.dp)
                                 ) {
                                     Text(
-                                        text = "${companion.currentRelationship.emoji} ${companion.currentRelationship.title}",
+                                        text = companion.currentRelationship.title,
                                         fontSize = 11.sp,
                                         fontWeight = FontWeight.SemiBold,
                                         color = avatarColor

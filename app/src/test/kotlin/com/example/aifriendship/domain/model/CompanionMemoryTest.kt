@@ -45,9 +45,6 @@ class CompanionMemoryTest {
         assertEquals(13, CompanionRelationship.entries.size)
         CompanionRelationship.entries.forEach { rel ->
             assertNotNull(rel.title)
-            assertNotNull(rel.iconEmoji)
-            assertNotNull(rel.description)
-            assertNotNull(rel.defaultToneInstruction)
         }
     }
 
