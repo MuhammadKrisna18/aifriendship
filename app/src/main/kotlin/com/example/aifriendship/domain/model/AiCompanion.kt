@@ -24,9 +24,7 @@ data class AiCompanion(
         get() = effectiveTraits.firstOrNull() ?: trait
 
     val traitsSummary: String
-        get() = effectiveTraits.joinToString(", ") {
-            it.title.replace(Regex("^[\\p{So}\\p{Sk}\\p{Sm}\\p{Sc}]+\\s*"), "")
-        }
+        get() = effectiveTraits.joinToString(", ") { it.cleanTitle }
 
     val currentRelationship: CompanionRelationship
         get() = memory.currentRelationship

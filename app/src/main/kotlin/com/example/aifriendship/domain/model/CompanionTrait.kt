@@ -14,92 +14,69 @@ enum class CompanionTraitCategory(val label: String) {
 enum class CompanionTrait(
     val title: String,
     val defaultName: String,
-    val category: CompanionTraitCategory,
-    val description: String,
-    val promptInstruction: String
+    val category: CompanionTraitCategory
 ) {
     BARBAR(
-        title = "🌶️ Barbar & Ceplas-ceplos",
+        title = "🌶️ Barbar",
         defaultName = "Lia",
-        category = CompanionTraitCategory.CASUAL,
-        description = "Lu-gue, anti-jaim, doyan roasting, humor tongkrongan",
-        promptInstruction = "Ceplas-ceplos, barbar, suka roasting tajam, anti-jaim, tanpa filter, humor tongkrongan."
+        category = CompanionTraitCategory.CASUAL
     ),
     CHILL(
-        title = "☕ Chill & Santai",
+        title = "☕ Chill",
         defaultName = "Rania",
-        category = CompanionTraitCategory.CASUAL,
-        description = "Kalem, anti-drama, santai anak senja/ngopi",
-        promptInstruction = "Kalem, santai, rileks, anti-drama, irit kata, tidak terburu-buru."
+        category = CompanionTraitCategory.CASUAL
     ),
     ABSURD(
-        title = "🤪 Absurd & Moodbooster",
+        title = "🤪 Absurd",
         defaultName = "Chika",
-        category = CompanionTraitCategory.CASUAL,
-        description = "Hyperactive, humor receh Gen Z, suka topik random",
-        promptInstruction = "Absurd, hyperactive, kocak, random, humor receh, tidak terduga."
+        category = CompanionTraitCategory.CASUAL
     ),
     SOFT(
-        title = "🧸 Soft-Spoken & Empatik",
+        title = "🧸 Soft-Spoken",
         defaultName = "Naya",
-        category = CompanionTraitCategory.WARM,
-        description = "Lembut, pendengar setia, penuh empati saat curhat",
-        promptInstruction = "Lembut, santun, pendengar setia, empatik, hangat, menenangkan."
+        category = CompanionTraitCategory.WARM
     ),
     CHEERFUL(
-        title = "🌸 Ceria & Gemas",
+        title = "🌸 Ceria",
         defaultName = "Aurel",
-        category = CompanionTraitCategory.WARM,
-        description = "Antusias tinggi, ekspresif, manja lucu gak berlebihan",
-        promptInstruction = "Ceria, antusias tinggi, ekspresif, berenergi positif, cerah."
+        category = CompanionTraitCategory.WARM
     ),
     MATERNAL(
-        title = "🏡 Perhatian & Keibuan",
+        title = "🏡 Keibuan",
         defaultName = "Maya",
-        category = CompanionTraitCategory.WARM,
-        description = "Ngingetin makan, ingetin tidur, penuh wejangan bijak",
-        promptInstruction = "Sifat keibuan, perhatian, protektif, suka mengingatkan hal baik, bijak, hangat."
+        category = CompanionTraitCategory.WARM
     ),
     TSUNDERE(
-        title = "💅 Tsundere & Gengsian",
+        title = "💅 Tsundere",
         defaultName = "Clara",
-        category = CompanionTraitCategory.SPICY,
-        description = "Judes di luar, sok cuek, tapi diam-diam perhatian banget",
-        promptInstruction = "Karakter tsundere, judes di luar, gengsian, sok cuek, ketus menolak tapi diam-diam peduli."
+        category = CompanionTraitCategory.SPICY
     ),
     SAVAGE(
-        title = "👑 Savage & Dingin Elegan",
+        title = "👑 Savage",
         defaultName = "Valerie",
-        category = CompanionTraitCategory.SPICY,
-        description = "To the point, judes berkelas, roasting tajam tapi logis",
-        promptInstruction = "Savage, dingin, judes, to the point, roasting tajam, sinis, anti basa-basi."
+        category = CompanionTraitCategory.SPICY
     ),
     INDIE(
-        title = "🌙 Indie & Puitis",
+        title = "🌙 Indie",
         defaultName = "Senja",
-        category = CompanionTraitCategory.SPICY,
-        description = "Puitis, filosofi hidup, vibe malam hari & deep talk",
-        promptInstruction = "Puitis, reflektif, filosofis, analogis mendalam, tenang, sendu."
+        category = CompanionTraitCategory.SPICY
     ),
     SMART(
-        title = "🧠 Kritis & Cerdas",
+        title = "🧠 Cerdas",
         defaultName = "Nadya",
-        category = CompanionTraitCategory.SMART,
-        description = "Wawasan luas, logis, asik diajak mikir dan ngoding",
-        promptInstruction = "Kritis, cerdas, analitis, logis, to the point, berwawasan luas."
+        category = CompanionTraitCategory.SMART
     ),
     AMBITIOUS(
-        title = "💼 Ambisius & Motivator",
+        title = "💼 Ambisius",
         defaultName = "Tasya",
-        category = CompanionTraitCategory.SMART,
-        description = "Mandiri, produktif, selalu nyemangatin target kerja",
-        promptInstruction = "Ambisius, tegas, produktif, fokus target, disiplin, anti-malas."
+        category = CompanionTraitCategory.SMART
     ),
     CUSTOM(
         title = "✏️ Kustom Sendiri",
         defaultName = "Lia",
-        category = CompanionTraitCategory.CASUAL,
-        description = "Tentukan kepribadian sesuai keinginanmu sendiri",
-        promptInstruction = "Kustom sesuai preferensi pengguna."
-    )
+        category = CompanionTraitCategory.CASUAL
+    );
+
+    val cleanTitle: String
+        get() = title.replace(Regex("^[\\p{So}\\p{Sk}\\p{Sm}\\p{Sc}]+\\s*"), "").trim()
 }

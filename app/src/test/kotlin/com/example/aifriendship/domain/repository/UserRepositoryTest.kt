@@ -84,7 +84,7 @@ class UserRepositoryTest {
         val instruction = LiaPromptDefinition.buildSystemInstruction(profile)
         assertTrue(instruction.contains("Clara"))
         assertTrue(instruction.contains("Krisna"))
-        assertTrue(instruction.contains("tsundere"))
+        assertTrue(instruction.contains("tsundere", ignoreCase = true))
     }
 
     @Test
@@ -125,8 +125,8 @@ class UserRepositoryTest {
         val instruction = LiaPromptDefinition.buildSystemInstruction(profile)
         assertTrue(instruction.contains("Maya"))
         assertTrue(instruction.contains("Kombinasi Karakter Gabungan"))
-        assertTrue(instruction.contains("tsundere"))
-        assertTrue(instruction.contains("keibuan"))
+        assertTrue(instruction.contains("tsundere", ignoreCase = true))
+        assertTrue(instruction.contains("keibuan", ignoreCase = true))
     }
 
     @Test

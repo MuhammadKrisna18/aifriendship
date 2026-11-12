@@ -312,20 +312,13 @@ fun CharacterSetupScreen(
                                                 .padding(12.dp),
                                             verticalAlignment = Alignment.CenterVertically
                                         ) {
-                                            Column(modifier = Modifier.weight(1f)) {
-                                                Text(
-                                                    text = trait.title,
-                                                    fontSize = 13.sp,
-                                                    fontWeight = if (isSelected) FontWeight.Bold else FontWeight.SemiBold,
-                                                    color = if (isSelected) primaryLight else Color(0xFF0F172A)
-                                                )
-                                                Spacer(modifier = Modifier.height(2.dp))
-                                                Text(
-                                                    text = trait.description,
-                                                    fontSize = 11.sp,
-                                                    color = Color(0xFF64748B)
-                                                )
-                                            }
+                                            Text(
+                                                text = trait.title,
+                                                fontSize = 14.sp,
+                                                fontWeight = if (isSelected) FontWeight.Bold else FontWeight.SemiBold,
+                                                color = if (isSelected) primaryLight else Color(0xFF0F172A),
+                                                modifier = Modifier.weight(1f)
+                                            )
                                             if (isSelected) {
                                                 Spacer(modifier = Modifier.width(8.dp))
                                                 Icon(

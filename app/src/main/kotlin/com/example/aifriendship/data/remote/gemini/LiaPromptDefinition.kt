@@ -49,7 +49,7 @@ object LiaPromptDefinition {
             }
             effectiveTraits.size > 1 -> {
                 val traitBullets = effectiveTraits.joinToString("\n") { t ->
-                    "- ${t.title}: ${t.promptInstruction}"
+                    "- ${t.cleanTitle}"
                 }
                 """
                 Kombinasi Karakter Gabungan:
@@ -57,7 +57,7 @@ object LiaPromptDefinition {
                 """.trimIndent()
             }
             else -> {
-                effectiveTraits.firstOrNull()?.promptInstruction ?: CompanionTrait.BARBAR.promptInstruction
+                effectiveTraits.firstOrNull()?.cleanTitle ?: CompanionTrait.BARBAR.cleanTitle
             }
         }
 
@@ -138,7 +138,7 @@ object LiaPromptDefinition {
             "Aktivitas pamit user: ${memory.pendingFarewellActivity}"
         } else ""
 
-        val traitsInstruction = companion.effectiveTraits.joinToString(", ") { it.promptInstruction }
+        val traitsInstruction = companion.effectiveTraits.joinToString(", ") { it.cleanTitle }
 
         return """
             Kamu adalah $aiName (Perempuan). Kamu sedang membuka aplikasi chat dan berinisiatif menyapa duluan $userName.
