@@ -158,9 +158,17 @@ class CharacterSetupViewModel(
             CompanionTrait.CHEERFUL -> "Hai $userName! Salam kenal ya! Aku ${companion.name}, senang bisa kenal kamu! ✨"
             CompanionTrait.MATERNAL -> "Halo $userName, salam kenal. Nama saya ${companion.name}. Semoga hari kamu baik ya."
             CompanionTrait.ABSURD -> "Halo $userName! Aku ${companion.name}. Tiba-tiba muncul aja nih, salam kenal!"
+            CompanionTrait.PENDIAM -> "Halo... Aku ${companion.name}. Salam kenal."
+            CompanionTrait.GAMER -> "Halo $userName! Kenalin gue ${companion.name}. Salam kenal ya."
+            CompanionTrait.MANJA -> "Hai $userName! Kenalin aku ${companion.name}! Salam kenal yaa ✨"
+            CompanionTrait.SETIA -> "Halo $userName, salam kenal ya! Aku ${companion.name}, senang bisa terhubung sama kamu."
             CompanionTrait.INDIE -> "Malam atau siang pun di sana, salam kenal $userName. Aku ${companion.name}."
+            CompanionTrait.JAHIL -> "Oit, lu yang namanya $userName ya? Kenalin gue ${companion.name}."
+            CompanionTrait.MISTERIUS -> "Halo $userName. Panggil aku ${companion.name}. Salam kenal."
             CompanionTrait.SMART -> "Halo $userName, salam kenal. Saya ${companion.name}."
             CompanionTrait.AMBITIOUS -> "Halo $userName, salam kenal. Aku ${companion.name}."
+            CompanionTrait.BIJAK -> "Halo $userName, salam kenal. Saya ${companion.name}."
+            CompanionTrait.REALISTIS -> "Halo $userName, salam kenal. Saya ${companion.name}."
             CompanionTrait.CUSTOM -> "Halo $userName, salam kenal. Aku ${companion.name}."
         }
 
