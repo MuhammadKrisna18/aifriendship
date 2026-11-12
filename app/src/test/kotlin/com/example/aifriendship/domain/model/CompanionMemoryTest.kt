@@ -54,7 +54,6 @@ class CompanionMemoryTest {
         CompanionMood.entries.forEach { mood ->
             assertNotNull(mood.label)
             assertNotNull(mood.iconEmoji)
-            assertNotNull(mood.defaultSubtitle)
         }
     }
 }

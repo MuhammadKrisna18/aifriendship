@@ -108,7 +108,7 @@ object LiaPromptDefinition {
               "bubbles": [
                 "bubble chat 1"
               ],
-              "statusSubtitle": "status batin singkat natural (maksimal 35 karakter)",
+              "statusSubtitle": "reaksi spontanmu terhadap apa yang sedang diobrolkan saat ini (maksimal 35 karakter)",
               "mood": "NAMA_EMOSI (pilih salah satu: SENANG, BIASA, KEPO, SALTING, BAPER, MANJA, KANGEN, BANGGA, KHAWATIR, JAHIL, NGAMBEK, CEMBURU, CUEK, MELOW, MARAH)",
               "activityUpdate": "kegiatan baru jika ada (opsional, null jika tidak ada)",
               "relationshipUpdate": "status hubungan jika kedekatan berkembang alami (opsional, null jika belum berubah)",

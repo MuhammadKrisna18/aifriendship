@@ -17,102 +17,102 @@ enum class CompanionTrait(
     val category: CompanionTraitCategory
 ) {
     BARBAR(
-        title = "🌶️ Ceplas-ceplos & Barbar",
+        title = "🌶️ Barbar",
         defaultName = "Lia",
         category = CompanionTraitCategory.CASUAL
     ),
     CHILL(
-        title = "☕ Kalem & Santai",
+        title = "☕ Chill",
         defaultName = "Rania",
         category = CompanionTraitCategory.CASUAL
     ),
     ABSURD(
-        title = "🤪 Kocak & Absurd",
+        title = "🤪 Absurd",
         defaultName = "Chika",
         category = CompanionTraitCategory.CASUAL
     ),
     PENDIAM(
-        title = "🤫 Pendiam & Irit Bicara",
+        title = "🤫 Pendiam",
         defaultName = "Dina",
         category = CompanionTraitCategory.CASUAL
     ),
     GAMER(
-        title = "🎮 Gamer & Pop Culture",
+        title = "🎮 Gamer",
         defaultName = "Gita",
         category = CompanionTraitCategory.CASUAL
     ),
     SOFT(
-        title = "🧸 Lembut & Empatis",
+        title = "🧸 Lembut",
         defaultName = "Naya",
         category = CompanionTraitCategory.WARM
     ),
     CHEERFUL(
-        title = "🌸 Ceria & Antusias",
+        title = "🌸 Ceria",
         defaultName = "Aurel",
         category = CompanionTraitCategory.WARM
     ),
     MATERNAL(
-        title = "🏡 Keibuan & Perhatian",
+        title = "🏡 Keibuan",
         defaultName = "Maya",
         category = CompanionTraitCategory.WARM
     ),
     MANJA(
-        title = "🐱 Manja & Gemas",
+        title = "🐱 Manja",
         defaultName = "Manda",
         category = CompanionTraitCategory.WARM
     ),
     SETIA(
-        title = "✨ Tulus & Suportif",
+        title = "✨ Tulus",
         defaultName = "Tiara",
         category = CompanionTraitCategory.WARM
     ),
     TSUNDERE(
-        title = "💅 Tsundere & Gengsian",
+        title = "💅 Tsundere",
         defaultName = "Clara",
         category = CompanionTraitCategory.SPICY
     ),
     SAVAGE(
-        title = "👑 Savage & Dingin",
+        title = "👑 Savage",
         defaultName = "Valerie",
         category = CompanionTraitCategory.SPICY
     ),
     INDIE(
-        title = "🌙 Puitis & Filosofis",
+        title = "🌙 Puitis",
         defaultName = "Senja",
         category = CompanionTraitCategory.SPICY
     ),
     JAHIL(
-        title = "😈 Jahil & Penggoda",
+        title = "😈 Jahil",
         defaultName = "Zoya",
         category = CompanionTraitCategory.SPICY
     ),
     MISTERIUS(
-        title = "🔮 Misterius & Tenang",
+        title = "🔮 Misterius",
         defaultName = "Luna",
         category = CompanionTraitCategory.SPICY
     ),
     SMART(
-        title = "🧠 Cerdas & Analitis",
+        title = "🧠 Cerdas",
         defaultName = "Nadya",
         category = CompanionTraitCategory.SMART
     ),
     AMBITIOUS(
-        title = "💼 Tegas & Ambisius",
+        title = "💼 Ambisius",
         defaultName = "Tasya",
         category = CompanionTraitCategory.SMART
     ),
     BIJAK(
-        title = "📚 Bijaksana & Dewasa",
+        title = "📚 Bijak",
         defaultName = "Hana",
         category = CompanionTraitCategory.SMART
     ),
     REALISTIS(
-        title = "📐 Kritis & Realistis",
+        title = "📐 Kritis",
         defaultName = "Sofi",
         category = CompanionTraitCategory.SMART
     ),
     CUSTOM(
-        title = "✏️ Kustom Sendiri",
+        title = "✏️ Kustom",
         defaultName = "Lia",
         category = CompanionTraitCategory.CASUAL
     );
