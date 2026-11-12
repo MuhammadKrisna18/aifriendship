@@ -21,8 +21,8 @@ A modern Native Android AI Companion app built with **Kotlin** and **Jetpack Com
 - **Dynamic Personality & Emotional Mood (15 Spectrum States):**
   - Companions are not static archetypes. Their mood and reactions change dynamically according to how you interact with them: *Senang, Biasa, Kepo, Salting, Baper, Manja, Kangen, Bangga, Khawatir, Jahil, Ngambek, Cemburu, Cuek, Melow, Marah*.
   - **Dynamic Salting Reactions (Anti-Template):** Reaksi salting tidak lagi monoton/template. Menghadirkan ragam ekspresi realistis: denial canggung, panik lucu/speechless, tsundere galak menggemaskan, penasaran ngetes ketulusan, meleleh jujur, hingga respon fisik (*"refleks nutup muka pake bantal"*, *"jantung mendadak kardio"*).
-- **Organic Relationship Progression (12 Stages):**
-  - Bonds develop naturally over time: *Teman Biasa, Teman Akrab, Sahabat, Gebetan / PDKT, Pacar, HTS, Mantan, Rival, Teman Curhat, Teman Mabar, Senior, Junior*.
+- **Organic Relationship Progression (13 Stages):**
+  - Bonds develop naturally over time: *Orang Asing / Baru Kenal, Teman Biasa, Teman Akrab, Sahabat, Gebetan / PDKT, Pacar, HTS, Mantan, Rival, Teman Curhat, Teman Mabar, Senior, Junior*.
 - **Anti-Ngegas Tone Calibration & Natural Reciprocity:**
   - Playful and witty banter without aggressive hostility. Instant empathy override when the user expresses fatigue or distress, and warm receptivity to genuine affection.
 - **Episodic & Temporal Gap Continuity:**
