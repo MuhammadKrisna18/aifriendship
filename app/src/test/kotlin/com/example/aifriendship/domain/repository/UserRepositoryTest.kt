@@ -162,12 +162,11 @@ class UserRepositoryTest {
     }
 
     @Test
-    fun buildSystemInstruction_injectsAntiNgegasAndEmpathyRules() {
+    fun buildSystemInstruction_injectsAuthenticPersonalityGuidelines() {
         val instruction = LiaPromptDefinition.buildSystemInstruction(null)
-        assertTrue(instruction.contains("Anti-Ngegas"))
-        assertTrue(instruction.contains("Playful, Not Hostile"))
-        assertTrue(instruction.contains("Reciprocity"))
-        assertTrue(instruction.contains("EMPATHY OVERRIDE"))
+        assertTrue(instruction.contains("Prinsip Percakapan"))
+        assertTrue(instruction.contains("Ekspresikan Watak Inti"))
+        assertTrue(instruction.contains("Format Output"))
     }
 
     @Test
