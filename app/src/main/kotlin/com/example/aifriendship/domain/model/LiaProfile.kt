@@ -8,7 +8,8 @@ data class LiaStatus(
     val isOnline: Boolean = true,
     val isTyping: Boolean = false,
     val isCooldown: Boolean = false,
-    val cooldownSecondsRemaining: Int = 0
+    val cooldownSecondsRemaining: Int = 0,
+    val cooldownUntilTimestamp: Long = 0L
 )
 
 data class LiaProfile(

@@ -20,6 +20,7 @@ import com.example.aifriendship.domain.service.AiService
 import com.example.aifriendship.domain.service.AllModelsQuotaExceededException
 import com.example.aifriendship.domain.service.AppUpdateService
 import com.example.aifriendship.domain.service.CompanionScheduler
+import com.example.aifriendship.domain.service.DailyQuotaExceededException
 import com.example.aifriendship.domain.service.FarewellDetector
 import com.example.aifriendship.domain.service.QuotaExceededException
 import kotlinx.coroutines.Dispatchers
@@ -108,6 +109,27 @@ class ChatViewModel(
     init {
         checkForUpdates(silent = true)
         initOnboarding()
+        checkAndRecoverCooldown()
+    }
+
+    private fun checkAndRecoverCooldown() {
+        viewModelScope.launch {
+            val status = chatRepository.getLiaStatus().first()
+            val now = System.currentTimeMillis()
+            if (status.isCooldown && status.cooldownUntilTimestamp > now) {
+                resumeRoleplayCooldown(status.cooldownUntilTimestamp)
+            } else if (status.isCooldown) {
+                chatRepository.updateLiaStatus(
+                    status.copy(
+                        subtitle = if (status.subtitle.contains("warung", ignoreCase = true)) "online" else status.subtitle,
+                        isOnline = true,
+                        isCooldown = false,
+                        cooldownSecondsRemaining = 0,
+                        cooldownUntilTimestamp = 0L
+                    )
+                )
+            }
+        }
     }
 
     private fun initOnboarding() {
@@ -304,9 +326,23 @@ class ChatViewModel(
 
     private suspend fun processAiReply(quoted: QuotedMessage?) {
         val currentStatus = chatRepository.getLiaStatus().first()
+        val now = System.currentTimeMillis()
+        val isStillCooldown = currentStatus.isCooldown && currentStatus.cooldownUntilTimestamp > now
+        if (currentStatus.isCooldown && !isStillCooldown) {
+            chatRepository.updateLiaStatus(
+                currentStatus.copy(
+                    subtitle = if (currentStatus.subtitle.contains("warung", ignoreCase = true)) "online" else currentStatus.subtitle,
+                    isOnline = true,
+                    isCooldown = false,
+                    cooldownSecondsRemaining = 0,
+                    cooldownUntilTimestamp = 0L
+                )
+            )
+        }
+
         val profile = userRepository.getUserProfile()
         val companionId = profile.activeCompanion.id
-        if (currentStatus.isCooldown) {
+        if (isStillCooldown) {
             val cooldownNotice = ChatMessage(
                 companionId = companionId,
                 sender = MessageSender.AI,
@@ -399,6 +435,26 @@ class ChatViewModel(
 
     private suspend fun handleAiError(error: Throwable) {
         when (error) {
+            is DailyQuotaExceededException -> {
+                delay(600L)
+                val errorMessage = ChatMessage(
+                    sender = MessageSender.AI,
+                    text = "Duh mata gue udah sepet banget, kuota energi ngobrol gue buat hari ini udah abis wkwk. Kita lanjut besok yaa! Atau kalau lu mau lanjut sekarang, lu bisa pasang API Key baru di Pengaturan (⚙️).",
+                    status = MessageDeliveryStatus.SENT
+                )
+                chatRepository.saveMessage(errorMessage)
+                val current = chatRepository.getLiaStatus().first()
+                chatRepository.updateLiaStatus(
+                    current.copy(
+                        subtitle = "istirahat dulu ya (kuota harian habis)",
+                        isOnline = false,
+                        isTyping = false,
+                        isCooldown = false,
+                        cooldownSecondsRemaining = 0,
+                        cooldownUntilTimestamp = 0L
+                    )
+                )
+            }
             is AllModelsQuotaExceededException, is QuotaExceededException -> {
                 triggerRoleplayCooldown()
             }
@@ -433,38 +489,52 @@ class ChatViewModel(
             )
             chatRepository.saveMessage(excuseMessage)
 
-            var remaining = 60
-            while (remaining > 0) {
-                chatRepository.updateLiaStatus(
-                    LiaStatus(
-                        subtitle = "Lagi ke warung bentar... (${remaining}s)",
-                        isOnline = false,
-                        isTyping = false,
-                        isCooldown = true,
-                        cooldownSecondsRemaining = remaining
-                    )
-                )
-                delay(1000L)
-                remaining--
-            }
+            val cooldownUntil = System.currentTimeMillis() + 60_000L
+            runCooldownLoop(cooldownUntil)
+        }
+    }
 
+    private fun resumeRoleplayCooldown(cooldownUntil: Long) {
+        cooldownJob?.cancel()
+        cooldownJob = viewModelScope.launch {
+            runCooldownLoop(cooldownUntil)
+        }
+    }
+
+    private suspend fun runCooldownLoop(cooldownUntil: Long) {
+        var remaining = ((cooldownUntil - System.currentTimeMillis()) / 1000L).toInt().coerceIn(1, 60)
+        while (remaining > 0) {
             chatRepository.updateLiaStatus(
                 LiaStatus(
-                    subtitle = "online",
-                    isOnline = true,
+                    subtitle = "Lagi ke warung bentar... (${remaining}s)",
+                    isOnline = false,
                     isTyping = false,
-                    isCooldown = false,
-                    cooldownSecondsRemaining = 0
+                    isCooldown = true,
+                    cooldownSecondsRemaining = remaining,
+                    cooldownUntilTimestamp = cooldownUntil
                 )
             )
-
-            val backMessage = ChatMessage(
-                sender = MessageSender.AI,
-                text = "Udah balik nih dari warung, tadi lu nanya apa?",
-                status = MessageDeliveryStatus.SENT
-            )
-            chatRepository.saveMessage(backMessage)
+            delay(1000L)
+            remaining--
         }
+
+        chatRepository.updateLiaStatus(
+            LiaStatus(
+                subtitle = "online",
+                isOnline = true,
+                isTyping = false,
+                isCooldown = false,
+                cooldownSecondsRemaining = 0,
+                cooldownUntilTimestamp = 0L
+            )
+        )
+
+        val backMessage = ChatMessage(
+            sender = MessageSender.AI,
+            text = "Udah balik nih dari warung, tadi lu nanya apa?",
+            status = MessageDeliveryStatus.SENT
+        )
+        chatRepository.saveMessage(backMessage)
     }
 
     fun clearChat() {

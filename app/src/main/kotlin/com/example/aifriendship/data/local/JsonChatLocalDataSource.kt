@@ -152,7 +152,18 @@ class JsonChatLocalDataSource(
             if (statusFile.exists()) {
                 val content = statusFile.readText()
                 if (content.isNotBlank()) {
-                    json.decodeFromString<LiaStatus>(content)
+                    val decoded = json.decodeFromString<LiaStatus>(content)
+                    if (decoded.isCooldown && decoded.cooldownUntilTimestamp <= System.currentTimeMillis()) {
+                        decoded.copy(
+                            isCooldown = false,
+                            cooldownSecondsRemaining = 0,
+                            subtitle = if (decoded.subtitle.contains("warung", ignoreCase = true)) "online" else decoded.subtitle,
+                            isOnline = true,
+                            cooldownUntilTimestamp = 0L
+                        )
+                    } else {
+                        decoded
+                    }
                 } else {
                     LiaStatus()
                 }

@@ -17,6 +17,7 @@ import com.example.aifriendship.domain.model.QuotedMessage
 import com.example.aifriendship.domain.model.UserProfile
 import com.example.aifriendship.domain.service.AiService
 import com.example.aifriendship.domain.service.AllModelsQuotaExceededException
+import com.example.aifriendship.domain.service.DailyQuotaExceededException
 import com.example.aifriendship.domain.service.QuotaExceededException
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
@@ -43,8 +44,10 @@ class GeminiAiService(
 ) : AiService {
 
     private val fallbackModelChain = listOf(
-        "gemini-3.5-flash-lite",
         "gemini-3.1-flash-lite",
+        "gemini-2.5-flash-lite",
+        "gemini-3-flash",
+        "gemini-3.5-flash-lite",
         "gemini-2.5-flash",
         "gemini-flash-latest"
     )
@@ -92,7 +95,15 @@ class GeminiAiService(
             try {
                 client.newCall(httpRequest).execute().use { response ->
                     if (response.code == 429) {
-                        lastException = AllModelsQuotaExceededException("Quota exceeded on $candidateModel", 429)
+                        val errorBody = response.body?.string().orEmpty()
+                        val isDaily = errorBody.contains("per day", ignoreCase = true) ||
+                            errorBody.contains("per_day", ignoreCase = true) ||
+                            errorBody.contains("daily", ignoreCase = true)
+                        lastException = if (isDaily) {
+                            DailyQuotaExceededException("Quota exceeded on $candidateModel (daily limit)", 429)
+                        } else {
+                            AllModelsQuotaExceededException("Quota exceeded on $candidateModel", 429)
+                        }
                         return@use
                     }
 
@@ -185,7 +196,15 @@ class GeminiAiService(
                     if (!response.isSuccessful) {
                         val code = response.code
                         if (code == 429) {
-                            lastException = QuotaExceededException("Quota exceeded on $model")
+                            val errorBody = response.body?.string().orEmpty()
+                            val isDaily = errorBody.contains("per day", ignoreCase = true) ||
+                                errorBody.contains("per_day", ignoreCase = true) ||
+                                errorBody.contains("daily", ignoreCase = true)
+                            lastException = if (isDaily) {
+                                DailyQuotaExceededException("Quota exceeded on $model (daily limit)", 429)
+                            } else {
+                                QuotaExceededException("Quota exceeded on $model")
+                            }
                             return@use
                         }
                         lastException = IOException("HTTP $code on $model")
