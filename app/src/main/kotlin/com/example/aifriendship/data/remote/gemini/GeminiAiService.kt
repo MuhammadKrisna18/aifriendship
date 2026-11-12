@@ -166,7 +166,7 @@ class GeminiAiService(
         val requestBodyDto = GeminiRequestDto(
             contents = contents,
             generationConfig = GeminiGenerationConfig(
-                temperature = 0.85f,
+                temperature = 0.92f,
                 topP = 0.95f
             )
         )
@@ -230,13 +230,6 @@ class GeminiAiService(
             formatTimeGap(gapMillis)
         } else null
 
-        val wordCount = lastUserMsg?.text?.trim()?.split("\\s+".toRegex())?.filter { it.isNotBlank() }?.size ?: 0
-        val mirroringInstruction = when {
-            wordCount in 1..4 -> "[Konteks: Chat user singkat ($wordCount kata). Balas secara ringkas, santai, dan proporsional dengan 1 bubble saja.]"
-            wordCount > 25 -> "[Konteks: User sedang bercerita atau curhat panjang. Tanggapi dengan mendalam dan hangat.]"
-            else -> null
-        }
-
         val lastUserIndex = contents.indexOfLast { it.role == "user" }
         if (lastUserIndex != -1) {
             var userText = contents[lastUserIndex].parts.firstOrNull()?.text.orEmpty()
@@ -245,9 +238,6 @@ class GeminiAiService(
             }
             if (quotedMessage != null) {
                 userText = "[Membalas ${quotedMessage.senderName}: \"${quotedMessage.text}\"]\n$userText"
-            }
-            if (mirroringInstruction != null) {
-                userText = "$mirroringInstruction\n$userText"
             }
             contents[lastUserIndex] = GeminiContent(
                 role = "user",
@@ -261,7 +251,7 @@ class GeminiAiService(
             ),
             contents = contents,
             generationConfig = GeminiGenerationConfig(
-                temperature = 0.88f,
+                temperature = 0.95f,
                 topP = 0.95f,
                 responseMimeType = "application/json"
             )
