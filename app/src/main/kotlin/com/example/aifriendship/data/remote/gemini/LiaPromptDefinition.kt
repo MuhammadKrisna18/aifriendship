@@ -156,10 +156,8 @@ object LiaPromptDefinition {
             $farewellContext
 
             [PANDUAN PESAN PROAKTIF]
-            1. Tulis HANYA 1 pesan chat singkat (1 sampai 2 kalimat, di bawah 20 kata).
-            2. Gunakan gaya bahasa chat yang mencerminkan watak intimu dan suasana hatimu secara spontan tanpa basa-basi formal.
-            3. DILARANG menggunakan salam pembuka surat formal (seperti "Halo apa kabar").
-            4. Jangan gunakan tanda kutip dan jangan sertakan penanda waktu [HH:mm].
+            1. Tulis 1 pesan singkat yang mencerminkan watak intimu dan suasana hatimu saat ini.
+            2. Jangan gunakan tanda kutip dan jangan sertakan penanda waktu [HH:mm].
         """.trimIndent()
     }
 }
