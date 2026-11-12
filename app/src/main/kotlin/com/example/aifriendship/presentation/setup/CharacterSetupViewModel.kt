@@ -113,9 +113,9 @@ class CharacterSetupViewModel(
                 traits = listOf(state.selectedTrait),
                 customTraitDescription = state.customTraitDescription.trim(),
                 avatarColorHex = state.avatarColorHex,
-                relationship = CompanionRelationship.TEMAN_BIASA,
+                relationship = CompanionRelationship.ORANG_ASING,
                 memory = CompanionMemory(
-                    currentRelationship = CompanionRelationship.TEMAN_BIASA,
+                    currentRelationship = CompanionRelationship.ORANG_ASING,
                     currentMood = CompanionMood.BIASA
                 )
             )
@@ -149,17 +149,25 @@ class CharacterSetupViewModel(
     }
 
     private fun buildFirstGreeting(userName: String, companion: AiCompanion): ChatMessage {
-        val greetings = listOf(
-            "Halo $userName! Salam kenal ya. Santai aja, ada yang pengen kamu obrolin atau ceritain hari ini? 😊",
-            "Hai $userName! Senang bisa kenalan sama kamu. Lagi senggang atau lagi ada kesibukan nih?",
-            "Halo $userName! Akhirnya kita bisa ngobrol di sini. Mau cerita santai atau bahas hal seru apa hari ini?"
-        )
-        val selectedGreeting = greetings.random()
+        val greetingText = when (companion.primaryTrait) {
+            CompanionTrait.BARBAR -> "Halo, siapa nih? Kenalin gue ${companion.name}. Lu yang namanya $userName kan?"
+            CompanionTrait.SAVAGE -> "Siapa ya? Lu $userName? Ada perlu apa?"
+            CompanionTrait.TSUNDERE -> "Kamu $userName ya? ...Kenalin, aku ${companion.name}. Gak usah aneh-aneh ya."
+            CompanionTrait.CHILL -> "Halo $userName, salam kenal ya. Gue ${companion.name}. Santai aja di sini."
+            CompanionTrait.SOFT -> "Halo $userName, salam kenal ya... Aku ${companion.name}."
+            CompanionTrait.CHEERFUL -> "Hai $userName! Salam kenal ya! Aku ${companion.name}, senang bisa kenal kamu! ✨"
+            CompanionTrait.MATERNAL -> "Halo $userName, salam kenal. Nama saya ${companion.name}. Semoga hari kamu baik ya."
+            CompanionTrait.ABSURD -> "Halo $userName! Aku ${companion.name}. Tiba-tiba muncul aja nih, salam kenal!"
+            CompanionTrait.INDIE -> "Malam atau siang pun di sana, salam kenal $userName. Aku ${companion.name}."
+            CompanionTrait.SMART -> "Halo $userName, salam kenal. Saya ${companion.name}."
+            CompanionTrait.AMBITIOUS -> "Halo $userName, salam kenal. Aku ${companion.name}."
+            CompanionTrait.CUSTOM -> "Halo $userName, salam kenal. Aku ${companion.name}."
+        }
 
         return ChatMessage(
             companionId = companion.id,
             sender = MessageSender.AI,
-            text = selectedGreeting,
+            text = greetingText,
             status = MessageDeliveryStatus.SENT
         )
     }

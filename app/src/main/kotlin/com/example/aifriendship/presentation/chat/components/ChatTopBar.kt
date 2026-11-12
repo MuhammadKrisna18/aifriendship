@@ -52,7 +52,7 @@ fun ChatTopBar(
     status: LiaStatus,
     companionName: String = "Lia",
     avatarColorHex: String = "#6366F1",
-    relationship: CompanionRelationship = CompanionRelationship.TEMAN_BIASA,
+    relationship: CompanionRelationship = CompanionRelationship.ORANG_ASING,
     mood: CompanionMood = CompanionMood.BIASA,
     onBackClick: () -> Unit = {},
     onClearChat: () -> Unit = {},

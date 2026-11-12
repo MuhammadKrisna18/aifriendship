@@ -10,7 +10,7 @@ data class AiCompanion(
     val traits: List<CompanionTrait> = emptyList(),
     val customTraitDescription: String = "",
     val avatarColorHex: String = "#6366F1",
-    val relationship: CompanionRelationship = CompanionRelationship.TEMAN_BIASA,
+    val relationship: CompanionRelationship = CompanionRelationship.ORANG_ASING,
     val memory: CompanionMemory = CompanionMemory(),
     val createdAt: Long = System.currentTimeMillis()
 ) {

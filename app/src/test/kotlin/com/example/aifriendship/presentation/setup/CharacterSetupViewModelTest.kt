@@ -115,7 +115,7 @@ class CharacterSetupViewModelTest {
         assertEquals("Krisna", profile.name)
         assertEquals("Clara", profile.activeCompanion.name)
         assertEquals("#10B981", profile.activeCompanion.avatarColorHex)
-        assertEquals(CompanionRelationship.TEMAN_BIASA, profile.activeCompanion.currentRelationship)
+        assertEquals(CompanionRelationship.ORANG_ASING, profile.activeCompanion.currentRelationship)
         assertEquals(CompanionMood.BIASA, profile.activeCompanion.currentMood)
         assertTrue(profile.isOnboardingCompleted)
 

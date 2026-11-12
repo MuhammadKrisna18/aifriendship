@@ -61,7 +61,7 @@ object LiaPromptDefinition {
             }
         }
 
-        val relationship = companion?.currentRelationship ?: CompanionRelationship.TEMAN_BIASA
+        val relationship = companion?.currentRelationship ?: CompanionRelationship.ORANG_ASING
         val relationshipInstruction = relationship.defaultToneInstruction
         val currentMood = companion?.currentMood ?: CompanionMood.BIASA
 

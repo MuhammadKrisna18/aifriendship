@@ -6,7 +6,7 @@ import kotlinx.serialization.Serializable
 data class CompanionMemory(
     val lastActivity: String? = null,
     val activityTimestamp: Long? = null,
-    val currentRelationship: CompanionRelationship = CompanionRelationship.TEMAN_BIASA,
+    val currentRelationship: CompanionRelationship = CompanionRelationship.ORANG_ASING,
     val currentMood: CompanionMood = CompanionMood.BIASA,
     val affinityScore: Int = 20,
     val userFacts: List<String> = emptyList(),

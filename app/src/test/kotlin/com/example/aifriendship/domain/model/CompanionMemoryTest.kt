@@ -12,7 +12,7 @@ class CompanionMemoryTest {
         val memory = CompanionMemory()
         assertNull(memory.lastActivity)
         assertNull(memory.activityTimestamp)
-        assertEquals(CompanionRelationship.TEMAN_BIASA, memory.currentRelationship)
+        assertEquals(CompanionRelationship.ORANG_ASING, memory.currentRelationship)
         assertEquals(CompanionMood.BIASA, memory.currentMood)
         assertEquals(20, memory.affinityScore)
         assertEquals(0, memory.userFacts.size)
@@ -42,7 +42,7 @@ class CompanionMemoryTest {
 
     @Test
     fun relationshipEnum_hasAllCategoriesAndInstructions() {
-        assertEquals(12, CompanionRelationship.entries.size)
+        assertEquals(13, CompanionRelationship.entries.size)
         CompanionRelationship.entries.forEach { rel ->
             assertNotNull(rel.title)
             assertNotNull(rel.iconEmoji)
