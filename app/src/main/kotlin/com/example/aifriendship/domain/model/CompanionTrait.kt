@@ -17,7 +17,7 @@ enum class CompanionTrait(
     val category: CompanionTraitCategory
 ) {
     BARBAR(
-        title = "🌶️ Ceplas-Ceplos",
+        title = "🎭 Humoris",
         defaultName = "Lia",
         category = CompanionTraitCategory.CASUAL
     ),
@@ -39,6 +39,11 @@ enum class CompanionTrait(
     GAMER(
         title = "🎮 Gamer",
         defaultName = "Gita",
+        category = CompanionTraitCategory.CASUAL
+    ),
+    CONFIDENT(
+        title = "🦁 Percaya Diri",
+        defaultName = "Vanya",
         category = CompanionTraitCategory.CASUAL
     ),
     SOFT(
@@ -66,13 +71,18 @@ enum class CompanionTrait(
         defaultName = "Tiara",
         category = CompanionTraitCategory.WARM
     ),
+    MATURE(
+        title = "🌿 Dewasa",
+        defaultName = "Ratih",
+        category = CompanionTraitCategory.WARM
+    ),
     TSUNDERE(
         title = "💅 Gengsian",
         defaultName = "Clara",
         category = CompanionTraitCategory.SPICY
     ),
     SAVAGE(
-        title = "👑 Tegas",
+        title = "👑 Elegan",
         defaultName = "Valerie",
         category = CompanionTraitCategory.SPICY
     ),

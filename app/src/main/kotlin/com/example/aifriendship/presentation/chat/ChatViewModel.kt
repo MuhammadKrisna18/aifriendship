@@ -164,13 +164,13 @@ class ChatViewModel(
             delay(1200L)
             val openingMessage = ChatMessage(
                 sender = MessageSender.AI,
-                text = "Woyy! Akhirnya online juga lu haha. Kenalin, gue Lia! Btw gue harus manggil lu siapa nih? Siapa nama panggilan lu?",
+                text = "Halo! Senang akhirnya kita bisa terhubung. Kenalin, aku Lia! Btw, aku enaknya manggil kamu siapa nih? Siapa nama panggilan kamu?",
                 status = MessageDeliveryStatus.SENT
             )
             chatRepository.saveMessage(openingMessage)
             chatRepository.updateLiaStatus(
                 LiaStatus(
-                    subtitle = "Penasaran sama lu",
+                    subtitle = "Penasaran sama kamu",
                     isOnline = true,
                     isTyping = false
                 )
@@ -272,7 +272,7 @@ class ChatViewModel(
             delay(1200L)
             val liaReply = ChatMessage(
                 sender = MessageSender.AI,
-                text = "Oalah $name! Siap sob $name. Lu jangan sungkan ya, kalau lagi gabut, pengen curhat, atau mau sharing apa aja langsung senggol gue di sini!",
+                text = "Salam kenal ya, $name! Kamu jangan sungkan ya, kalau lagi senggang, pengen curhat, atau mau cerita apa aja, langsung chat aku di sini ya!",
                 status = MessageDeliveryStatus.SENT
             )
             chatRepository.saveMessage(liaReply)
@@ -346,7 +346,7 @@ class ChatViewModel(
             val cooldownNotice = ChatMessage(
                 companionId = companionId,
                 sender = MessageSender.AI,
-                text = "Sabar napa, gue masih di warung nih! Tunggu bentar lagi ya.",
+                text = "Sabar sebentar ya, aku masih di warung nih! Tunggu sebentar lagi yaa.",
                 status = MessageDeliveryStatus.SENT
             )
             chatRepository.saveMessage(cooldownNotice)
@@ -439,7 +439,7 @@ class ChatViewModel(
                 delay(600L)
                 val errorMessage = ChatMessage(
                     sender = MessageSender.AI,
-                    text = "Duh mata gue udah sepet banget, kuota energi ngobrol gue buat hari ini udah abis wkwk. Kita lanjut besok yaa! Atau kalau lu mau lanjut sekarang, lu bisa pasang API Key baru di Pengaturan (⚙️).",
+                    text = "Duh mataku udah ngantuk banget, kuota energi ngobrol aku buat hari ini udah habis hehe. Kita lanjut besok yaa! Atau kalau kamu mau lanjut sekarang, kamu bisa pasang API Key baru di Pengaturan (⚙️).",
                     status = MessageDeliveryStatus.SENT
                 )
                 chatRepository.saveMessage(errorMessage)
@@ -462,7 +462,7 @@ class ChatViewModel(
                 delay(600L)
                 val errorMessage = ChatMessage(
                     sender = MessageSender.AI,
-                    text = "Duh ada kendala teknis pada koneksi AI gue nih, coba kirim lagi chatnya sebentar.",
+                    text = "Duh ada kendala teknis pada koneksi AI aku nih, coba kirim lagi chatnya sebentar ya.",
                     status = MessageDeliveryStatus.SENT
                 )
                 chatRepository.saveMessage(errorMessage)
@@ -471,7 +471,7 @@ class ChatViewModel(
                 delay(600L)
                 val errorMessage = ChatMessage(
                     sender = MessageSender.AI,
-                    text = "Duh sinyal lu lagi bapuk kali ya, coba kirim lagi chatnya barusan.",
+                    text = "Duh sinyal internetnya lagi kurang stabil sepertinya, coba kirim lagi chat kamu barusan ya.",
                     status = MessageDeliveryStatus.SENT
                 )
                 chatRepository.saveMessage(errorMessage)
@@ -484,7 +484,7 @@ class ChatViewModel(
         cooldownJob = viewModelScope.launch {
             val excuseMessage = ChatMessage(
                 sender = MessageSender.AI,
-                text = "Eh bentar ya woy, emak gue nyuruh beli garem dulu ke warung... 1 menit lagi gue balik!",
+                text = "Eh bentar yaa, ibuku minta tolong beli garem dulu ke warung... 1 menit lagi aku balik!",
                 status = MessageDeliveryStatus.SENT
             )
             chatRepository.saveMessage(excuseMessage)
@@ -531,7 +531,7 @@ class ChatViewModel(
 
         val backMessage = ChatMessage(
             sender = MessageSender.AI,
-            text = "Udah balik nih dari warung, tadi lu nanya apa?",
+            text = "Udah balik nih dari warung, tadi kamu nanya apa?",
             status = MessageDeliveryStatus.SENT
         )
         chatRepository.saveMessage(backMessage)
