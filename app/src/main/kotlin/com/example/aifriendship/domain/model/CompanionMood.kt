@@ -17,11 +17,11 @@ enum class CompanionMood(
     BANGGA("Bangga", "✨"),
     KHAWATIR("Khawatir", "🩺"),
     JAHIL("Jahil", "😜"),
-    NGAMBEK("Ngambek", "😤"),
-    CEMBURU("Cemburu", "😒"),
-    CUEK("Cuek", "🧊"),
+    NGAMBEK("Gemas", "🥰"),
+    CEMBURU("Peduli", "💚"),
+    CUEK("Tenang", "🍃"),
     MELOW("Melow", "🌙"),
-    MARAH("Marah", "😡");
+    MARAH("Semangat", "🔥");
 
     val emoji: String
         get() = iconEmoji
@@ -31,8 +31,8 @@ enum class CompanionMood(
 
     val maxProactiveSpamCount: Int
         get() = when (this) {
-            MANJA, KANGEN, KEPO, NGAMBEK, CEMBURU, KHAWATIR -> 3
+            MANJA, KANGEN, KEPO, NGAMBEK, CEMBURU, KHAWATIR, MARAH -> 3
             JAHIL, SALTING, SENANG, BAPER, MELOW, BANGGA -> 2
-            BIASA, CUEK, MARAH -> 1
+            BIASA, CUEK -> 1
         }
 }

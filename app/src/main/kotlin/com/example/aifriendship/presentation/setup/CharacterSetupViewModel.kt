@@ -150,9 +150,9 @@ class CharacterSetupViewModel(
 
     private fun buildFirstGreeting(userName: String, companion: AiCompanion): ChatMessage {
         val greetingText = when (companion.primaryTrait) {
-            CompanionTrait.BARBAR -> "Halo, siapa nih? Kenalin gue ${companion.name}. Lu yang namanya $userName kan?"
-            CompanionTrait.SAVAGE -> "Siapa ya? Lu $userName? Ada perlu apa?"
-            CompanionTrait.TSUNDERE -> "Kamu $userName ya? ...Kenalin, aku ${companion.name}. Gak usah aneh-aneh ya."
+            CompanionTrait.BARBAR -> "Halo woy! Kenalin gue ${companion.name}. Lu yang namanya $userName kan? Salam kenal ya!"
+            CompanionTrait.SAVAGE -> "Halo $userName, kenalin aku ${companion.name}. Senang bisa terhubung sama kamu."
+            CompanionTrait.TSUNDERE -> "Kamu $userName ya? ...Kenalin, aku ${companion.name}. Salam kenal ya."
             CompanionTrait.CHILL -> "Halo $userName, salam kenal ya. Gue ${companion.name}. Santai aja di sini."
             CompanionTrait.SOFT -> "Halo $userName, salam kenal ya... Aku ${companion.name}."
             CompanionTrait.CHEERFUL -> "Hai $userName! Salam kenal ya! Aku ${companion.name}, senang bisa kenal kamu! ✨"

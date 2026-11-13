@@ -13,7 +13,15 @@ data class AiResponse(
 ) {
     val parsedMood: CompanionMood?
         get() = mood?.let { m ->
-            CompanionMood.entries.firstOrNull { it.name.equals(m.trim(), ignoreCase = true) || it.label.equals(m.trim(), ignoreCase = true) }
+            when (m.trim().uppercase()) {
+                "GEMAS" -> CompanionMood.NGAMBEK
+                "PEDULI" -> CompanionMood.CEMBURU
+                "TENANG" -> CompanionMood.CUEK
+                "SEMANGAT" -> CompanionMood.MARAH
+                else -> CompanionMood.entries.firstOrNull {
+                    it.name.equals(m.trim(), ignoreCase = true) || it.label.equals(m.trim(), ignoreCase = true)
+                }
+            }
         }
 
     val parsedRelationship: CompanionRelationship?

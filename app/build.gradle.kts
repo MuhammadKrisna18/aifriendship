@@ -30,8 +30,8 @@ android {
     applicationId = "com.example.aifriendship"
     minSdk = 24
     targetSdk = 37
-    versionCode = 22
-    versionName = "1.12.0"
+    versionCode = 23
+    versionName = "1.13.0"
 
     val geminiApiKey = localProperties.getProperty("GEMINI_API_KEY") ?: ""
     buildConfigField("String", "GEMINI_API_KEY", "\"$geminiApiKey\"")

@@ -17,7 +17,7 @@ enum class CompanionTrait(
     val category: CompanionTraitCategory
 ) {
     BARBAR(
-        title = "🌶️ Barbar",
+        title = "🌶️ Ceplas-Ceplos",
         defaultName = "Lia",
         category = CompanionTraitCategory.CASUAL
     ),
@@ -67,12 +67,12 @@ enum class CompanionTrait(
         category = CompanionTraitCategory.WARM
     ),
     TSUNDERE(
-        title = "💅 Tsundere",
+        title = "💅 Gengsian",
         defaultName = "Clara",
         category = CompanionTraitCategory.SPICY
     ),
     SAVAGE(
-        title = "👑 Savage",
+        title = "👑 Tegas",
         defaultName = "Valerie",
         category = CompanionTraitCategory.SPICY
     ),
@@ -107,7 +107,7 @@ enum class CompanionTrait(
         category = CompanionTraitCategory.SMART
     ),
     REALISTIS(
-        title = "📐 Kritis",
+        title = "📐 Realistis",
         defaultName = "Sofi",
         category = CompanionTraitCategory.SMART
     ),
