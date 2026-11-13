@@ -291,7 +291,7 @@ class ChatViewModel(
         val companionId = profile.activeCompanion.id
         val quoted = _replyingTo.value?.let {
             QuotedMessage(
-                senderName = if (it.sender == MessageSender.USER) "Gue" else profile.activeCompanion.name,
+                senderName = if (it.sender == MessageSender.USER) profile.name.ifBlank { "Kamu" } else profile.activeCompanion.name,
                 text = it.text
             )
         }

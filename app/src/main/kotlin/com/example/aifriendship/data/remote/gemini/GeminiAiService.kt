@@ -177,8 +177,8 @@ class GeminiAiService(
         val requestBodyDto = GeminiRequestDto(
             contents = contents,
             generationConfig = GeminiGenerationConfig(
-                temperature = 0.92f,
-                topP = 0.95f
+                temperature = 0.80f,
+                topP = 0.90f
             )
         )
         val jsonString = json.encodeToString(requestBodyDto)
@@ -270,8 +270,8 @@ class GeminiAiService(
             ),
             contents = contents,
             generationConfig = GeminiGenerationConfig(
-                temperature = 0.95f,
-                topP = 0.95f,
+                temperature = 0.80f,
+                topP = 0.90f,
                 responseMimeType = "application/json"
             )
         )
