@@ -307,8 +307,6 @@ class ChatViewModel(
         _inputText.value = ""
         _replyingTo.value = null
 
-        val detectedFarewell = FarewellDetector.detectFarewell(textToSend)
-
         viewModelScope.launch {
             chatRepository.saveMessage(userMessage)
             companionScheduler?.cancelFollowUp(companionId)
@@ -316,7 +314,7 @@ class ChatViewModel(
             val activeCompanion = profile.activeCompanion
             val updatedMemory = activeCompanion.memory.copy(
                 consecutiveProactiveCount = 0,
-                pendingFarewellActivity = detectedFarewell ?: activeCompanion.memory.pendingFarewellActivity
+                pendingFarewellActivity = null
             )
             userRepository.updateCompanion(activeCompanion.copy(memory = updatedMemory))
 
@@ -418,12 +416,7 @@ class ChatViewModel(
 
                 val latestProfile = userRepository.getUserProfile()
                 val latestCompanion = latestProfile.activeCompanion
-                val pendingFarewell = latestCompanion.memory.pendingFarewellActivity
-                val delayMinutes = if (pendingFarewell != null) {
-                    FarewellDetector.suggestDelayMinutes(pendingFarewell)
-                } else {
-                    FarewellDetector.suggestRapidDelayMinutes()
-                }
+                val delayMinutes = FarewellDetector.suggestDelayMinutes()
                 companionScheduler?.scheduleFollowUp(companionId, delayMinutes)
             },
             onFailure = { error ->

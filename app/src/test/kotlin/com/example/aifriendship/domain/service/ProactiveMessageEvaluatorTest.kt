@@ -83,7 +83,11 @@ class ProactiveMessageEvaluatorTest {
     @Test
     fun evaluate_farewell_under10Minutes_returnsNull() {
         val now = getMiddayTimestamp()
-        val companion = AiCompanion(id = "comp-1", name = "Lia")
+        val companion = AiCompanion(
+            id = "comp-1",
+            name = "Lia",
+            memory = CompanionMemory(pendingFarewellActivity = "mandi")
+        )
         val messages = listOf(
             ChatMessage(
                 companionId = "comp-1",
@@ -100,7 +104,11 @@ class ProactiveMessageEvaluatorTest {
     @Test
     fun evaluate_farewell_after15Minutes_returnsUserFarewellFollowup() {
         val now = getMiddayTimestamp()
-        val companion = AiCompanion(id = "comp-1", name = "Lia")
+        val companion = AiCompanion(
+            id = "comp-1",
+            name = "Lia",
+            memory = CompanionMemory(pendingFarewellActivity = "mandi")
+        )
         val messages = listOf(
             ChatMessage(
                 companionId = "comp-1",

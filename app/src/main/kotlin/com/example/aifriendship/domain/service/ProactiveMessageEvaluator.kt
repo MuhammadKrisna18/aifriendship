@@ -58,9 +58,7 @@ object ProactiveMessageEvaluator {
             }
         }
 
-        val lastUserMessage = messages.lastOrNull { it.sender == MessageSender.USER }
         val farewellActivity = memory.pendingFarewellActivity
-            ?: lastUserMessage?.let { FarewellDetector.detectFarewell(it.text) }
 
         if (farewellActivity != null) {
             if (elapsedMinutes < 10) {
