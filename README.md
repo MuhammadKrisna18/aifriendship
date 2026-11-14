@@ -10,7 +10,7 @@ A modern Native Android AI Companion app built with **Kotlin** and **Jetpack Com
   - Companions take initiative to message you based on realistic conversational triggers:
     - **Rapid Silence Follow-up:** Jeda acak 1–5 menit saat user tiba-tiba menghilang atau belum membalas di tengah obrolan (*"Woy kok ngilang?", "Dih di-read doang wkwk"*).
     - **Farewell Activity Check-in:** Deteksi otomatis saat user pamit (mandi, makan, otw, nugas, tidur) dengan jeda follow-up 10–60 menit (*"Udah kelar mandinya belum?", "Udah sampe mana?"*).
-    - **Mood-Driven Dynamic Spam & Pings:** Frekuensi pesan susulan ditentukan langsung oleh mood sahabat AI (Mood Manja, Kangen, Kepo, Ngambek bisa spam 2–3 chat berturut-turut; Mood Cuek/Biasa tetap kalem).
+    - **Mood-Driven Dynamic Spam & Pings:** Frekuensi pesan susulan ditentukan langsung oleh mood sahabat AI (Mood Manja, Kangen, Ngambek bisa spam 2–3 chat berturut-turut; Mood Cuek/Biasa tetap kalem).
     - **Unanswered Pings & Topics:** Menanyakan kelanjutan cerita atau kegiatan setelah jeda beberapa jam.
     - **Activity Return & Random Thoughts:** Spontan menyapa setelah selesai beraktivitas atau sedang melamun santai.
   - **Anti-Spam & Battery Guardrails:** Batas maksimal rentetan spam sesuai mood (max 2–3 pings), jam tenang otomatis (00:00 – 07:00), dan auto-cancel timer begitu user membalas obrolan.
@@ -19,7 +19,7 @@ A modern Native Android AI Companion app built with **Kotlin** and **Jetpack Com
   - **Tab 1 (OBROLAN):** Overview of all active chats with companion avatars, dynamic relationship & mood badges, message previews, and formatted timestamps.
   - **Tab 2 (SAHABAT AI):** Manage your roster of companions, view their dynamic relationship stages, current mood, recent episodic activities, or add new companions.
 - **Dynamic Personality & Emotional Mood (15 Spectrum States):**
-  - Companions are not static archetypes. Their mood and reactions change dynamically according to how you interact with them: *Senang, Biasa, Kepo, Salting, Baper, Manja, Kangen, Bangga, Khawatir, Jahil, Ngambek, Cemburu, Cuek, Melow, Marah*.
+  - Companions are not static archetypes. Their mood and reactions change dynamically according to how you interact with them: *Senang, Biasa, Salting, Baper, Manja, Kangen, Bangga, Khawatir, Ngambek, Cemburu, Cuek, Melow, Marah*.
   - **Dynamic Salting Reactions (Anti-Template):** Reaksi salting tidak lagi monoton/template. Menghadirkan ragam ekspresi realistis: denial canggung, panik lucu/speechless, tsundere galak menggemaskan, penasaran ngetes ketulusan, meleleh jujur, hingga respon fisik (*"refleks nutup muka pake bantal"*, *"jantung mendadak kardio"*).
 - **Organic Relationship Progression (13 Stages):**
   - Bonds develop naturally over time: *Orang Asing / Baru Kenal, Teman Biasa, Teman Akrab, Sahabat, Gebetan / PDKT, Pacar, HTS, Mantan, Rival, Teman Curhat, Teman Mabar, Senior, Junior*.

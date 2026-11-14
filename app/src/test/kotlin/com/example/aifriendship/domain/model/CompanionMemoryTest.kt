@@ -50,7 +50,7 @@ class CompanionMemoryTest {
 
     @Test
     fun moodEnum_hasExpectedMoodsAndSubtitles() {
-        assertEquals(15, CompanionMood.entries.size)
+        assertEquals(13, CompanionMood.entries.size)
         CompanionMood.entries.forEach { mood ->
             assertNotNull(mood.label)
             assertNotNull(mood.iconEmoji)

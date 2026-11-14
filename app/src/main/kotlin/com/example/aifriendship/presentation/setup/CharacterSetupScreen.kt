@@ -429,7 +429,7 @@ fun CharacterSetupScreen(
                             }
                             Spacer(modifier = Modifier.height(8.dp))
                             Text(
-                                text = "Sahabatmu tidak terkunci pada watak kaku. Dia bisa tersenyum, salting saat kamu gombalin, baper, kepo, atau melow saat kamu lelah. Hubungan kalian dari Teman Biasa hingga Sahabat atau lebih akan terbentuk secara alami!",
+                                text = "Sahabatmu tidak terkunci pada watak kaku. Dia bisa tersenyum, salting saat kamu gombalin, baper, atau melow saat kamu lelah. Hubungan kalian dari Teman Biasa hingga Sahabat atau lebih akan terbentuk secara alami!",
                                 style = MaterialTheme.typography.bodyMedium,
                                 color = Color(0xFF334155),
                                 lineHeight = 20.sp
