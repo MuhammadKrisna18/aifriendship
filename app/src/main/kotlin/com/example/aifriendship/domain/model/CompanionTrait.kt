@@ -77,7 +77,7 @@ enum class CompanionTrait(
         category = CompanionTraitCategory.WARM
     ),
     TSUNDERE(
-        title = "💅 Gengsian",
+        title = "💅 Gengsian (Tsundere)",
         defaultName = "Clara",
         category = CompanionTraitCategory.SPICY
     ),

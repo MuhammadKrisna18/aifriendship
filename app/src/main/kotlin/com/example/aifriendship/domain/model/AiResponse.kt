@@ -14,10 +14,10 @@ data class AiResponse(
     val parsedMood: CompanionMood?
         get() = mood?.let { m ->
             when (m.trim().uppercase()) {
-                "GEMAS" -> CompanionMood.NGAMBEK
-                "PEDULI" -> CompanionMood.CEMBURU
-                "TENANG" -> CompanionMood.CUEK
-                "SEMANGAT" -> CompanionMood.MARAH
+                "NGAMBEK" -> CompanionMood.GEMAS
+                "CEMBURU" -> CompanionMood.PEDULI
+                "CUEK" -> CompanionMood.TENANG
+                "MARAH" -> CompanionMood.SEMANGAT
                 else -> CompanionMood.entries.firstOrNull {
                     it.name.equals(m.trim(), ignoreCase = true) || it.label.equals(m.trim(), ignoreCase = true)
                 }
