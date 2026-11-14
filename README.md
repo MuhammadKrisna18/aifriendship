@@ -6,6 +6,13 @@ A modern Native Android AI Companion app built with **Kotlin** and **Jetpack Com
 
 ## 📱 Features
 
+- **Modern Violet / Cyan Anime Aesthetic & Glassmorphism UI (v1.17.0):**
+  - **Unified Anime Background:** High-definition anime girl wallpaper across all screens (`HomeScreen`, `ChatScreen`, and `CharacterSetupScreen`) paired with an adaptive vertical scrim for optimal contrast and readability.
+  - **Modern Violet & Cyan Palette:** Refreshed visual identity featuring `#6366F1` (Violet) to `#06B6D4` (Cyan) gradient chat bubbles and polished accent highlights.
+  - **Translucent Glassmorphism Cards:** Chat items, companion profiles, and setup forms float gracefully as frosted glass cards (88% white alpha with subtle 1dp white borders).
+  - **Natural WhatsApp-Style Chat Bubbles:** Cleaned user chat bubble margins by removing redundant user avatars, providing maximum bubble space and readability.
+  - **Smart Consecutive AI Bubble Grouping:** AI avatars only display on the final bubble in consecutive multi-bubble responses for a clutter-free conversational flow.
+  - **Fixed Companion Card Badge Layout:** Mood badges (`☕ Biasa`, `🔥 Semangat`) cleanly positioned in the header row beside the companion name, completely preventing vertical text compression.
 - **Context-Driven Proactive Messaging (AI Chat Duluan):**
   - Companions take initiative to message you based on realistic conversational triggers:
     - **Rapid Silence Follow-up:** Jeda acak 1–5 menit saat user tiba-tiba menghilang atau belum membalas di tengah obrolan (*"Woy kok ngilang?", "Dih di-read doang wkwk"*).
@@ -65,6 +72,7 @@ com.example.aifriendship/
 │   ├── worker/          # ProactiveMessageWorker, ProactiveScheduler (WorkManager)
 │   └── repository/      # DefaultChatRepository & DefaultUserRepository
 ├── presentation/
+│   ├── components/      # AnimeThemeBackground (Reusable background wallpaper & scrim)
 │   ├── home/            # HomeScreen, HomeViewModel, HomeUiState
 │   ├── chat/            # ChatScreen, ChatViewModel, ChatUiState
 │   │   └── components/  # ChatTopBar, UserChatBubble, AiChatBubble, ChatBottomBar, TypingIndicator, UserProfileDialog
@@ -85,6 +93,22 @@ com.example.aifriendship/
 - **Navigation:** AndroidX Navigation 3
 - **Network & Serialization:** OkHttp, Kotlinx Serialization JSON
 - **Build System:** Gradle 9.x with Android Gradle Plugin 9.x
+
+---
+
+## 📝 Recent Releases
+
+- **v1.17.0:**
+  - **Modern Violet / Cyan Anime Theme:** High-definition anime girl wallpaper seamlessly across all app screens with frosted vertical scrim.
+  - **Glassmorphism Design:** Translucent cards (`Color.White` with 88% alpha and subtle borders) for chat threads and companion list.
+  - **Consecutive Message Avatars:** AI avatar only displays on the last bubble in consecutive AI messages.
+  - **Bubble Polish:** Removed redundant user avatar for wider bubble margins and cleaner appearance.
+  - **Companion Card Fix:** Companion mood badge relocated to top row next to companion name to prevent vertical squishing.
+- **v1.16.0:**
+  - **Mood Enum Harmonization:** Replaced negative legacy mood enum constants (`NGAMBEK`, `CEMBURU`, `CUEK`, `MARAH`) with positive counterparts (`GEMAS`, `PEDULI`, `TENANG`, `SEMANGAT`).
+  - **Natural Farewell Interval:** Replaced brittle regex detection with natural 15–45 minute delayed follow-up check-ins.
+  - **Anti-Judgment Golden Rules:** Added strict system guidelines preventing unsolicited advice, moralizing, or comparing user problems with others.
+  - **Enriched Personality Icebreakers:** Customized initial greeting questions per personality trait.
 
 ---
 
