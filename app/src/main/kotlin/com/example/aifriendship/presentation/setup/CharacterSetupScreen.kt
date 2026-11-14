@@ -1,5 +1,6 @@
 package com.example.aifriendship.presentation.setup
 
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -64,6 +65,7 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.aifriendship.domain.model.CompanionTrait
 import com.example.aifriendship.domain.model.CompanionTraitCategory
 import com.example.aifriendship.presentation.chat.components.LiaAvatar
+import com.example.aifriendship.presentation.components.AnimeThemeBackground
 import com.example.aifriendship.ui.theme.ChatCanvasBackground
 import com.example.aifriendship.ui.theme.parseHexColor
 import com.example.aifriendship.ui.theme.primaryLight
@@ -80,10 +82,7 @@ fun CharacterSetupScreen(
     val isFormValid = state.userName.trim().isNotBlank() && state.companionName.trim().isNotBlank()
     var selectedCategory by remember { mutableStateOf<CompanionTraitCategory?>(null) }
 
-    Surface(
-        color = ChatCanvasBackground,
-        modifier = modifier.fillMaxSize()
-    ) {
+    AnimeThemeBackground(modifier = modifier) {
         Column(
             modifier = Modifier
                 .fillMaxSize()
@@ -127,9 +126,9 @@ fun CharacterSetupScreen(
 
                 item {
                     Card(
-                        colors = CardDefaults.cardColors(containerColor = Color.White),
+                        colors = CardDefaults.cardColors(containerColor = Color.White.copy(alpha = 0.88f)),
                         shape = RoundedCornerShape(18.dp),
-                        elevation = CardDefaults.cardElevation(defaultElevation = 1.dp)
+                        border = BorderStroke(1.dp, Color.White.copy(alpha = 0.6f))
                     ) {
                         Column(modifier = Modifier.padding(16.dp)) {
                             Row(
@@ -242,9 +241,9 @@ fun CharacterSetupScreen(
 
                 item {
                     Card(
-                        colors = CardDefaults.cardColors(containerColor = Color.White),
+                        colors = CardDefaults.cardColors(containerColor = Color.White.copy(alpha = 0.88f)),
                         shape = RoundedCornerShape(18.dp),
-                        elevation = CardDefaults.cardElevation(defaultElevation = 1.dp)
+                        border = BorderStroke(1.dp, Color.White.copy(alpha = 0.6f))
                     ) {
                         Column(modifier = Modifier.padding(16.dp)) {
                             Text(
@@ -359,9 +358,9 @@ fun CharacterSetupScreen(
 
                 item {
                     Card(
-                        colors = CardDefaults.cardColors(containerColor = Color.White),
+                        colors = CardDefaults.cardColors(containerColor = Color.White.copy(alpha = 0.88f)),
                         shape = RoundedCornerShape(18.dp),
-                        elevation = CardDefaults.cardElevation(defaultElevation = 1.dp)
+                        border = BorderStroke(1.dp, Color.White.copy(alpha = 0.6f))
                     ) {
                         Column(modifier = Modifier.padding(16.dp)) {
                             Text(
@@ -407,8 +406,9 @@ fun CharacterSetupScreen(
 
                 item {
                     Card(
-                        colors = CardDefaults.cardColors(containerColor = Color(0xFFEEF2FF)),
+                        colors = CardDefaults.cardColors(containerColor = Color(0xFFEEF2FF).copy(alpha = 0.9f)),
                         shape = RoundedCornerShape(16.dp),
+                        border = BorderStroke(1.dp, Color.White.copy(alpha = 0.6f)),
                         modifier = Modifier.fillMaxWidth()
                     ) {
                         Column(modifier = Modifier.padding(16.dp)) {
@@ -444,7 +444,7 @@ fun CharacterSetupScreen(
             }
 
             Surface(
-                color = Color.White,
+                color = Color.White.copy(alpha = 0.92f),
                 shadowElevation = 8.dp,
                 modifier = Modifier.fillMaxWidth()
             ) {

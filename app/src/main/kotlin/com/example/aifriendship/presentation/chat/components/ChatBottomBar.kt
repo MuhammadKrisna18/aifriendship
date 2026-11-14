@@ -57,7 +57,7 @@ fun ChatBottomBar(
     modifier: Modifier = Modifier
 ) {
     Surface(
-        color = Color.White,
+        color = Color.White.copy(alpha = 0.92f),
         shadowElevation = 2.dp,
         modifier = modifier.fillMaxWidth()
     ) {

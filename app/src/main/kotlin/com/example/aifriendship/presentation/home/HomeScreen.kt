@@ -2,7 +2,9 @@ package com.example.aifriendship.presentation.home
 
 import android.content.Intent
 import android.net.Uri
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
+import com.example.aifriendship.presentation.components.AnimeThemeBackground
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -86,74 +88,76 @@ fun HomeScreen(
     val context = LocalContext.current
     var companionToDelete by remember { mutableStateOf<AiCompanion?>(null) }
 
-    Scaffold(
-        topBar = {
-            TopAppBar(
-                title = {
-                    Row(verticalAlignment = Alignment.CenterVertically) {
-                        Text(
-                            text = "AiFriendship",
-                            style = MaterialTheme.typography.titleLarge.copy(
-                                fontWeight = FontWeight.Bold
-                            )
-                        )
-                        Spacer(modifier = Modifier.width(6.dp))
-                        Icon(
-                            imageVector = Icons.Default.AutoAwesome,
-                            contentDescription = null,
-                            tint = MaterialTheme.colorScheme.primary,
-                            modifier = Modifier.size(20.dp)
-                        )
-                    }
-                },
-                actions = {
-                    IconButton(onClick = { viewModel.onOpenProfileDialog() }) {
-                        Box(
-                            modifier = Modifier
-                                .size(34.dp)
-                                .clip(CircleShape)
-                                .background(MaterialTheme.colorScheme.primaryContainer),
-                            contentAlignment = Alignment.Center
-                        ) {
+    AnimeThemeBackground {
+        Scaffold(
+            containerColor = Color.Transparent,
+            topBar = {
+                TopAppBar(
+                    title = {
+                        Row(verticalAlignment = Alignment.CenterVertically) {
                             Text(
-                                text = uiState.userProfile.name.take(1).uppercase().ifBlank { "U" },
-                                style = MaterialTheme.typography.labelLarge.copy(
-                                    fontWeight = FontWeight.Bold,
-                                    color = MaterialTheme.colorScheme.onPrimaryContainer
+                                text = "AiFriendship",
+                                style = MaterialTheme.typography.titleLarge.copy(
+                                    fontWeight = FontWeight.Bold
                                 )
                             )
+                            Spacer(modifier = Modifier.width(6.dp))
+                            Icon(
+                                imageVector = Icons.Default.AutoAwesome,
+                                contentDescription = null,
+                                tint = MaterialTheme.colorScheme.primary,
+                                modifier = Modifier.size(20.dp)
+                            )
                         }
-                    }
-                },
-                colors = TopAppBarDefaults.topAppBarColors(
-                    containerColor = MaterialTheme.colorScheme.surface
-                )
-            )
-        },
-        floatingActionButton = {
-            if (uiState.selectedTab == HomeTab.CHATS) {
-                FloatingActionButton(
-                    onClick = onCreateCompanion,
-                    containerColor = MaterialTheme.colorScheme.primary,
-                    contentColor = MaterialTheme.colorScheme.onPrimary
-                ) {
-                    Icon(
-                        imageVector = Icons.Default.Add,
-                        contentDescription = "Sahabat Baru"
+                    },
+                    actions = {
+                        IconButton(onClick = { viewModel.onOpenProfileDialog() }) {
+                            Box(
+                                modifier = Modifier
+                                    .size(34.dp)
+                                    .clip(CircleShape)
+                                    .background(MaterialTheme.colorScheme.primaryContainer),
+                                contentAlignment = Alignment.Center
+                            ) {
+                                Text(
+                                    text = uiState.userProfile.name.take(1).uppercase().ifBlank { "U" },
+                                    style = MaterialTheme.typography.labelLarge.copy(
+                                        fontWeight = FontWeight.Bold,
+                                        color = MaterialTheme.colorScheme.onPrimaryContainer
+                                    )
+                                )
+                            }
+                        }
+                    },
+                    colors = TopAppBarDefaults.topAppBarColors(
+                        containerColor = Color.White.copy(alpha = 0.88f)
                     )
+                )
+            },
+            floatingActionButton = {
+                if (uiState.selectedTab == HomeTab.CHATS) {
+                    FloatingActionButton(
+                        onClick = onCreateCompanion,
+                        containerColor = MaterialTheme.colorScheme.primary,
+                        contentColor = MaterialTheme.colorScheme.onPrimary
+                    ) {
+                        Icon(
+                            imageVector = Icons.Default.Add,
+                            contentDescription = "Sahabat Baru"
+                        )
+                    }
                 }
             }
-        }
-    ) { paddingValues ->
-        Column(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(paddingValues)
-        ) {
-            PrimaryTabRow(
-                selectedTabIndex = uiState.selectedTab.ordinal,
-                containerColor = MaterialTheme.colorScheme.surface
+        ) { paddingValues ->
+            Column(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(paddingValues)
             ) {
+                PrimaryTabRow(
+                    selectedTabIndex = uiState.selectedTab.ordinal,
+                    containerColor = Color.White.copy(alpha = 0.88f)
+                ) {
                 HomeTab.entries.forEach { tab ->
                     Tab(
                         selected = uiState.selectedTab == tab,
@@ -219,6 +223,7 @@ fun HomeScreen(
             }
         }
     }
+}
 
     AppUpdateDialog(
         updateInfo = uiState.updateInfo,
@@ -287,39 +292,57 @@ private fun ChatsTabContent(
                 .padding(24.dp),
             contentAlignment = Alignment.Center
         ) {
-            Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                Text(
-                    text = "Belum Ada Obrolan",
-                    style = MaterialTheme.typography.titleMedium,
-                    fontWeight = FontWeight.Bold
-                )
-                Spacer(modifier = Modifier.height(8.dp))
-                Text(
-                    text = "Buat sahabat AI pertamamu untuk mulai mengobrol!",
-                    style = MaterialTheme.typography.bodyMedium,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant
-                )
-                Spacer(modifier = Modifier.height(16.dp))
-                Button(onClick = onCreateCompanion) {
-                    Text("Buat Sahabat AI")
+            Card(
+                shape = RoundedCornerShape(16.dp),
+                colors = CardDefaults.cardColors(
+                    containerColor = Color.White.copy(alpha = 0.88f)
+                ),
+                border = BorderStroke(1.dp, Color.White.copy(alpha = 0.6f))
+            ) {
+                Column(
+                    modifier = Modifier.padding(24.dp),
+                    horizontalAlignment = Alignment.CenterHorizontally
+                ) {
+                    Text(
+                        text = "Belum Ada Obrolan",
+                        style = MaterialTheme.typography.titleMedium,
+                        fontWeight = FontWeight.Bold
+                    )
+                    Spacer(modifier = Modifier.height(8.dp))
+                    Text(
+                        text = "Buat sahabat AI pertamamu untuk mulai mengobrol!",
+                        style = MaterialTheme.typography.bodyMedium,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant
+                    )
+                    Spacer(modifier = Modifier.height(16.dp))
+                    Button(onClick = onCreateCompanion) {
+                        Text("Buat Sahabat AI")
+                    }
                 }
             }
         }
     } else {
         LazyColumn(
-            modifier = Modifier.fillMaxSize()
+            modifier = Modifier.fillMaxSize(),
+            contentPadding = PaddingValues(16.dp),
+            verticalArrangement = Arrangement.spacedBy(10.dp)
         ) {
             items(companions, key = { it.id }) { companion ->
                 val lastMessage = latestMessages[companion.id]
-                CompanionChatRow(
-                    companion = companion,
-                    lastMessage = lastMessage,
-                    onClick = { onCompanionClick(companion.id) }
-                )
-                HorizontalDivider(
-                    modifier = Modifier.padding(start = 76.dp),
-                    color = MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.4f)
-                )
+                Card(
+                    modifier = Modifier.fillMaxWidth(),
+                    shape = RoundedCornerShape(16.dp),
+                    colors = CardDefaults.cardColors(
+                        containerColor = Color.White.copy(alpha = 0.88f)
+                    ),
+                    border = BorderStroke(1.dp, Color.White.copy(alpha = 0.6f))
+                ) {
+                    CompanionChatRow(
+                        companion = companion,
+                        lastMessage = lastMessage,
+                        onClick = { onCompanionClick(companion.id) }
+                    )
+                }
             }
         }
     }
@@ -460,9 +483,10 @@ private fun CompanionsTabContent(
                     .fillMaxWidth()
                     .clickable(onClick = onCreateCompanion),
                 colors = CardDefaults.cardColors(
-                    containerColor = MaterialTheme.colorScheme.primaryContainer
+                    containerColor = MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.92f)
                 ),
-                shape = RoundedCornerShape(16.dp)
+                shape = RoundedCornerShape(16.dp),
+                border = BorderStroke(1.dp, Color.White.copy(alpha = 0.6f))
             ) {
                 Row(
                     modifier = Modifier.padding(16.dp),
@@ -508,8 +532,9 @@ private fun CompanionsTabContent(
                 modifier = Modifier.fillMaxWidth(),
                 shape = RoundedCornerShape(16.dp),
                 colors = CardDefaults.cardColors(
-                    containerColor = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.5f)
-                )
+                    containerColor = Color.White.copy(alpha = 0.88f)
+                ),
+                border = BorderStroke(1.dp, Color.White.copy(alpha = 0.6f))
             ) {
                 Column(modifier = Modifier.padding(16.dp)) {
                     Row(
@@ -533,22 +558,48 @@ private fun CompanionsTabContent(
                         }
                         Spacer(modifier = Modifier.width(12.dp))
                         Column(modifier = Modifier.weight(1f)) {
-                            Row(verticalAlignment = Alignment.CenterVertically) {
-                                Text(
-                                    text = companion.name,
-                                    style = MaterialTheme.typography.titleMedium,
-                                    fontWeight = FontWeight.Bold
-                                )
-                                Spacer(modifier = Modifier.width(4.dp))
-                                Icon(
-                                    imageVector = Icons.Default.AutoAwesome,
-                                    contentDescription = null,
-                                    tint = avatarColor,
-                                    modifier = Modifier.size(16.dp)
-                                )
-                            }
-                            Spacer(modifier = Modifier.height(3.dp))
                             Row(
+                                modifier = Modifier.fillMaxWidth(),
+                                verticalAlignment = Alignment.CenterVertically,
+                                horizontalArrangement = Arrangement.SpaceBetween
+                            ) {
+                                Row(
+                                    modifier = Modifier.weight(1f, fill = false),
+                                    verticalAlignment = Alignment.CenterVertically
+                                ) {
+                                    Text(
+                                        text = companion.name,
+                                        style = MaterialTheme.typography.titleMedium,
+                                        fontWeight = FontWeight.Bold,
+                                        maxLines = 1,
+                                        overflow = TextOverflow.Ellipsis
+                                    )
+                                    Spacer(modifier = Modifier.width(4.dp))
+                                    Icon(
+                                        imageVector = Icons.Default.AutoAwesome,
+                                        contentDescription = null,
+                                        tint = avatarColor,
+                                        modifier = Modifier.size(16.dp)
+                                    )
+                                }
+                                Spacer(modifier = Modifier.width(6.dp))
+                                Box(
+                                    modifier = Modifier
+                                        .clip(RoundedCornerShape(6.dp))
+                                        .background(Color(0xFFF1F5F9))
+                                        .padding(horizontal = 6.dp, vertical = 2.dp)
+                                ) {
+                                    Text(
+                                        text = "${companion.currentMood.emoji} ${companion.currentMood.title}",
+                                        fontSize = 11.sp,
+                                        fontWeight = FontWeight.Medium,
+                                        color = Color(0xFF475569)
+                                    )
+                                }
+                            }
+                            Spacer(modifier = Modifier.height(4.dp))
+                            Row(
+                                modifier = Modifier.fillMaxWidth(),
                                 verticalAlignment = Alignment.CenterVertically,
                                 horizontalArrangement = Arrangement.spacedBy(6.dp)
                             ) {
@@ -562,7 +613,8 @@ private fun CompanionsTabContent(
                                         text = companion.primaryTrait.title,
                                         fontSize = 11.sp,
                                         fontWeight = FontWeight.SemiBold,
-                                        color = Color(0xFF334155)
+                                        color = Color(0xFF334155),
+                                        maxLines = 1
                                     )
                                 }
 
@@ -576,21 +628,9 @@ private fun CompanionsTabContent(
                                         text = companion.currentRelationship.title,
                                         fontSize = 11.sp,
                                         fontWeight = FontWeight.SemiBold,
-                                        color = avatarColor
-                                    )
-                                }
-
-                                Box(
-                                    modifier = Modifier
-                                        .clip(RoundedCornerShape(6.dp))
-                                        .background(Color(0xFFF1F5F9))
-                                        .padding(horizontal = 6.dp, vertical = 2.dp)
-                                ) {
-                                    Text(
-                                        text = "${companion.currentMood.emoji} ${companion.currentMood.title}",
-                                        fontSize = 11.sp,
-                                        fontWeight = FontWeight.Medium,
-                                        color = Color(0xFF475569)
+                                        color = avatarColor,
+                                        maxLines = 1,
+                                        overflow = TextOverflow.Ellipsis
                                     )
                                 }
                             }

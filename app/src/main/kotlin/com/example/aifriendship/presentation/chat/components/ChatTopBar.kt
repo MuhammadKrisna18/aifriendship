@@ -65,7 +65,7 @@ fun ChatTopBar(
     var menuExpanded by remember { mutableStateOf(false) }
 
     Surface(
-        color = Color.White,
+        color = Color.White.copy(alpha = 0.90f),
         shadowElevation = 1.dp,
         modifier = modifier.fillMaxWidth()
     ) {

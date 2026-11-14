@@ -103,12 +103,5 @@ fun UserChatBubble(
                 }
             }
         }
-
-        Spacer(modifier = Modifier.width(6.dp))
-
-        UserAvatar(
-            size = 32.dp,
-            modifier = Modifier.align(Alignment.Bottom)
-        )
     }
 }

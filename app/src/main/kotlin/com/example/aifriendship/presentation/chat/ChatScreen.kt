@@ -17,7 +17,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
@@ -45,6 +45,8 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
+import com.example.aifriendship.presentation.components.AnimeThemeBackground
 import androidx.compose.ui.platform.LocalClipboardManager
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.AnnotatedString
@@ -228,90 +230,95 @@ fun ChatScreen(
         onDismiss = { viewModel.dismissUpdateDialog() }
     )
 
-    Scaffold(
-        topBar = {
-            ChatTopBar(
-                status = uiState.liaStatus,
-                companionName = companionName,
-                avatarColorHex = avatarColorHex,
-                relationship = companion.currentRelationship,
-                mood = companion.currentMood,
-                onBackClick = onBackClick,
-                onClearChat = { showClearChatDialog = true },
-                onCheckUpdateClick = { viewModel.checkForUpdates(silent = false) },
-                onProfileClick = { viewModel.showUserProfileDialog() },
-                onChangeCompanionClick = onChangeCompanionClick,
-                onMemoryClick = { viewModel.showMemoryDialog() }
-            )
-        },
-        bottomBar = {
-            ChatBottomBar(
-                inputText = uiState.inputText,
-                onInputChanged = { viewModel.onInputTextChanged(it) },
-                onSendMessage = { viewModel.sendMessage() },
-                companionName = companionName,
-                placeholder = if (uiState.onboardingStep == OnboardingStep.ASK_NAME) "Ketik nama panggilanmu..." else "Ketik pesan ke $companionName...",
-                replyingTo = uiState.replyingTo,
-                onDismissReply = { viewModel.onReplyMessage(null) },
-                onEmojiClick = {
-                    Toast.makeText(context, "Papan emoji dapat diakses melalui keyboard perangkatmu 😊", Toast.LENGTH_SHORT).show()
-                },
-                onMicClick = {
-                    Toast.makeText(context, "Fitur pesan suara akan segera hadir!", Toast.LENGTH_SHORT).show()
-                }
-            )
-        },
-        containerColor = ChatCanvasBackground,
-        modifier = modifier.fillMaxSize()
-    ) { innerPadding ->
-        Box(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(innerPadding)
-                .background(ChatCanvasBackground)
-        ) {
-            if (uiState.messages.isEmpty() && !uiState.liaStatus.isTyping) {
-                Box(
-                    modifier = Modifier.fillMaxSize(),
-                    contentAlignment = Alignment.Center
-                ) {
-                    Text(
-                        text = "Mulai obrolan santai dengan $companionName...",
-                        color = ChatTimestampColor,
-                        fontSize = 14.sp
-                    )
-                }
-            } else {
-                LazyColumn(
-                    state = listState,
-                    contentPadding = PaddingValues(top = 10.dp, bottom = 10.dp),
-                    modifier = Modifier.fillMaxSize()
-                ) {
-                    items(
-                        items = uiState.messages,
-                        key = { it.id }
-                    ) { message ->
-                        if (message.sender == MessageSender.USER) {
-                            UserChatBubble(
-                                message = message,
-                                onLongClick = { selectedMessageForAction = message }
-                            )
-                        } else {
-                            AiChatBubble(
-                                message = message,
-                                companionName = companionName,
-                                avatarColorHex = avatarColorHex,
-                                onLongClick = { selectedMessageForAction = message }
-                            )
-                        }
+    AnimeThemeBackground {
+        Scaffold(
+            topBar = {
+                ChatTopBar(
+                    status = uiState.liaStatus,
+                    companionName = companionName,
+                    avatarColorHex = avatarColorHex,
+                    relationship = companion.currentRelationship,
+                    mood = companion.currentMood,
+                    onBackClick = onBackClick,
+                    onClearChat = { showClearChatDialog = true },
+                    onCheckUpdateClick = { viewModel.checkForUpdates(silent = false) },
+                    onProfileClick = { viewModel.showUserProfileDialog() },
+                    onChangeCompanionClick = onChangeCompanionClick,
+                    onMemoryClick = { viewModel.showMemoryDialog() }
+                )
+            },
+            bottomBar = {
+                ChatBottomBar(
+                    inputText = uiState.inputText,
+                    onInputChanged = { viewModel.onInputTextChanged(it) },
+                    onSendMessage = { viewModel.sendMessage() },
+                    companionName = companionName,
+                    placeholder = if (uiState.onboardingStep == OnboardingStep.ASK_NAME) "Ketik nama panggilanmu..." else "Ketik pesan ke $companionName...",
+                    replyingTo = uiState.replyingTo,
+                    onDismissReply = { viewModel.onReplyMessage(null) },
+                    onEmojiClick = {
+                        Toast.makeText(context, "Papan emoji dapat diakses melalui keyboard perangkatmu 😊", Toast.LENGTH_SHORT).show()
+                    },
+                    onMicClick = {
+                        Toast.makeText(context, "Fitur pesan suara akan segera hadir!", Toast.LENGTH_SHORT).show()
                     }
+                )
+            },
+            containerColor = Color.Transparent,
+            modifier = modifier.fillMaxSize()
+        ) { innerPadding ->
+            Box(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(innerPadding)
+            ) {
+                if (uiState.messages.isEmpty() && !uiState.liaStatus.isTyping) {
+                    Box(
+                        modifier = Modifier.fillMaxSize(),
+                        contentAlignment = Alignment.Center
+                    ) {
+                        Text(
+                            text = "Mulai obrolan santai dengan $companionName...",
+                            color = ChatTimestampColor,
+                            fontSize = 14.sp
+                        )
+                    }
+                } else {
+                    LazyColumn(
+                        state = listState,
+                        contentPadding = PaddingValues(top = 10.dp, bottom = 10.dp),
+                        modifier = Modifier.fillMaxSize()
+                    ) {
+                        itemsIndexed(
+                            items = uiState.messages,
+                            key = { _, message -> message.id }
+                        ) { index, message ->
+                            val isLastInBlock = index == uiState.messages.lastIndex ||
+                                    uiState.messages.getOrNull(index + 1)?.sender != message.sender
 
-                    if (uiState.liaStatus.isTyping) {
-                        item(key = "typing_indicator") {
-                            TypingIndicator(
-                                companionName = companionName,
-                                avatarColorHex = avatarColorHex
-                            )
+                            if (message.sender == MessageSender.USER) {
+                                UserChatBubble(
+                                    message = message,
+                                    onLongClick = { selectedMessageForAction = message }
+                                )
+                            } else {
+                                AiChatBubble(
+                                    message = message,
+                                    companionName = companionName,
+                                    avatarColorHex = avatarColorHex,
+                                    showAvatar = isLastInBlock,
+                                    onLongClick = { selectedMessageForAction = message }
+                                )
+                            }
+                        }
+
+                        if (uiState.liaStatus.isTyping) {
+                            item(key = "typing_indicator") {
+                                TypingIndicator(
+                                    companionName = companionName,
+                                    avatarColorHex = avatarColorHex
+                                )
+                            }
                         }
                     }
                 }

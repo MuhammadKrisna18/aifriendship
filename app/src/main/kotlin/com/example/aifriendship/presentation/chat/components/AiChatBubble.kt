@@ -35,23 +35,28 @@ fun AiChatBubble(
     companionName: String = "Lia",
     avatarColorHex: String = "#6366F1",
     avatarUrl: String = "",
+    showAvatar: Boolean = true,
     onLongClick: () -> Unit = {},
     modifier: Modifier = Modifier
 ) {
     Row(
         modifier = modifier
             .fillMaxWidth()
-            .padding(horizontal = 14.dp, vertical = 4.dp),
+            .padding(horizontal = 14.dp, vertical = 3.dp),
         horizontalArrangement = Arrangement.Start,
         verticalAlignment = Alignment.Bottom
     ) {
-        LiaAvatar(
-            name = companionName,
-            avatarColorHex = avatarColorHex,
-            imageUrl = avatarUrl,
-            size = 34.dp,
-            modifier = Modifier.align(Alignment.Bottom)
-        )
+        if (showAvatar) {
+            LiaAvatar(
+                name = companionName,
+                avatarColorHex = avatarColorHex,
+                imageUrl = avatarUrl,
+                size = 34.dp,
+                modifier = Modifier.align(Alignment.Bottom)
+            )
+        } else {
+            Spacer(modifier = Modifier.width(34.dp))
+        }
 
         Spacer(modifier = Modifier.width(8.dp))
 
